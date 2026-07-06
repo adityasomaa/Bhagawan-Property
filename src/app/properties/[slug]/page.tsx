@@ -1,0 +1,210 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Reveal from "@/components/motion/Reveal";
+import Gallery from "@/components/Gallery";
+import PropertyCard from "@/components/PropertyCard";
+import ContactForm from "@/components/ContactForm";
+import { TransitionLink } from "@/components/motion/PageTransition";
+import { byArea, getProperty, properties } from "@/data/properties";
+import { formatNumber, formatPrice } from "@/lib/format";
+import { site } from "@/lib/site";
+
+export function generateStaticParams() {
+  return properties.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const property = getProperty(slug);
+  if (!property) return {};
+  return {
+    title: `${property.name} — ${property.areaName}, Bali (${property.tenure})`,
+    description: `${property.excerpt} ${formatPrice(property.price)} · ${
+      property.bedrooms > 0 ? `${property.bedrooms} bedrooms · ` : ""
+    }${property.landSize} m² land in ${property.areaName}, Bali.`,
+    alternates: { canonical: `/properties/${slug}` },
+    openGraph: { images: [{ url: property.images[0] }] },
+  };
+}
+
+export default async function PropertyDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const property = getProperty(slug);
+  if (!property) notFound();
+
+  const related = byArea(property.area)
+    .filter((p) => p.slug !== property.slug)
+    .concat(properties.filter((p) => p.area !== property.area && p.tenure === property.tenure))
+    .slice(0, 3);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: property.name,
+    description: property.excerpt,
+    image: property.images,
+    category: "Real Estate",
+    offers: {
+      "@type": "Offer",
+      price: property.price,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: `${site.url}/properties/${property.slug}`,
+      seller: { "@type": "RealEstateAgent", name: site.name, url: site.url },
+    },
+  };
+
+  const specs: [string, string][] = [
+    ["Tenure", property.tenure === "leasehold" ? `Leasehold · ${property.leaseholdYears} years` : "Freehold"],
+    ["Type", property.type],
+    ["Location", `${property.areaName}, Bali`],
+    ["Land size", `${formatNumber(property.landSize)} m²`],
+    ...(property.buildingSize ? [["Building size", `${formatNumber(property.buildingSize)} m²`] as [string, string]] : []),
+    ...(property.bedrooms > 0 ? [["Bedrooms", String(property.bedrooms)] as [string, string]] : []),
+    ...(property.bathrooms > 0 ? [["Bathrooms", String(property.bathrooms)] as [string, string]] : []),
+    ["Price", formatPrice(property.price)],
+  ];
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+      <article className="container-x pb-24 pt-32 md:pb-32 md:pt-40">
+        <Reveal>
+          <nav className="mb-8 flex flex-wrap items-center gap-2 text-[10px] font-medium tracking-[0.25em] uppercase text-muted" aria-label="Breadcrumb">
+            <TransitionLink href="/properties" className="link-line">Properties</TransitionLink>
+            <span>/</span>
+            <TransitionLink href={`/properties/${property.tenure}`} className="link-line">
+              {property.tenure}
+            </TransitionLink>
+            <span>/</span>
+            <span className="text-bronze-deep">{property.name}</span>
+          </nav>
+          <Gallery images={property.images} name={property.name} />
+        </Reveal>
+
+        <div className="mt-12 grid gap-14 lg:grid-cols-[1.6fr_1fr]">
+          <div>
+            <Reveal>
+              <div className="flex flex-wrap items-start justify-between gap-6">
+                <div>
+                  <p className="eyebrow">
+                    {property.areaName}, Bali &middot; {property.tenure}
+                  </p>
+                  <h1 className="font-display mt-3 text-4xl font-light text-ink md:text-5xl">
+                    {property.name}
+                  </h1>
+                </div>
+                <p className="font-display text-3xl text-bronze-deep md:text-4xl">
+                  {formatPrice(property.price)}
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.1}>
+              <div className="mt-10 space-y-5 text-base leading-relaxed text-ink-soft md:text-lg">
+                {property.description.map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.1}>
+              <h2 className="font-display mt-14 text-2xl text-ink">Investment highlights</h2>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+                {property.highlights.map((h) => (
+                  <li key={h} className="flex gap-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
+                    <span className="mt-2 block h-px w-6 shrink-0 bg-bronze" />
+                    {h}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
+            <Reveal delay={0.1}>
+              <h2 className="font-display mt-14 text-2xl text-ink">Features</h2>
+              <ul className="mt-6 flex flex-wrap gap-3">
+                {property.features.map((f) => (
+                  <li key={f} className="border border-line bg-paper px-4 py-2 text-xs tracking-wide text-ink-soft">
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+
+            <Reveal delay={0.1}>
+              <h2 className="font-display mt-14 text-2xl text-ink">Location</h2>
+              <p className="mt-3 text-sm text-muted">
+                Exact address shared after an introductory call — a courtesy we extend to every seller.
+              </p>
+              <div className="img-frame mt-6 aspect-[16/9]">
+                <iframe
+                  title={`Map of ${property.areaName}, Bali`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(property.mapQuery)}&z=13&output=embed`}
+                  className="h-full w-full border-0 grayscale-[0.4]"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </Reveal>
+          </div>
+
+          <aside>
+            <Reveal delay={0.15}>
+              <div className="border border-line bg-paper p-7 md:p-9 lg:sticky lg:top-28">
+                <h2 className="font-display text-xl text-ink">Specifications</h2>
+                <dl className="mt-5">
+                  {specs.map(([k, v]) => (
+                    <div key={k} className="flex items-baseline justify-between gap-4 border-t border-line py-3 text-sm">
+                      <dt className="text-muted">{k}</dt>
+                      <dd className="text-right font-medium capitalize text-ink">{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {property.nightlyRate && (
+                  <TransitionLink
+                    href={`/roi-calculator?price=${property.price}&nightly=${property.nightlyRate}&occupancy=${property.occupancy ?? 70}${property.leaseholdYears ? `&years=${property.leaseholdYears}` : ""}`}
+                    className="mt-5 block border border-bronze/40 bg-cream p-4 text-center text-[10px] font-medium tracking-[0.25em] uppercase text-bronze-deep transition-colors hover:border-bronze"
+                  >
+                    Run the ROI numbers →
+                  </TransitionLink>
+                )}
+                <div className="mt-8">
+                  <h3 className="font-display text-xl text-ink">Enquire about {property.name}</h3>
+                  <div className="mt-6">
+                    <ContactForm subject={`${property.name}, ${property.areaName} (${formatPrice(property.price)})`} />
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </aside>
+        </div>
+
+        {related.length > 0 && (
+          <section className="mt-24 border-t border-line pt-16">
+            <Reveal>
+              <h2 className="font-display text-3xl font-light text-ink md:text-4xl">
+                You may also love
+              </h2>
+            </Reveal>
+            <div className="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((p, i) => (
+                <Reveal key={p.slug} delay={i * 0.1}>
+                  <PropertyCard property={p} />
+                </Reveal>
+              ))}
+            </div>
+          </section>
+        )}
+      </article>
+    </>
+  );
+}
