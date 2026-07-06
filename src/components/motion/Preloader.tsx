@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsapClient";
+import LogoMark from "@/components/Logo";
 
 /**
  * First-visit preloader. An inline <head> script sets
@@ -31,6 +32,7 @@ export default function Preloader() {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    const logo = el.querySelector(".pl-logo");
     const letters = el.querySelectorAll(".pl-letter");
     const line = el.querySelector(".pl-line");
     const sub = el.querySelector(".pl-sub");
@@ -53,13 +55,23 @@ export default function Preloader() {
           finish();
         },
       })
-      .to(letters, {
-        yPercent: -100,
+      .to(logo, {
+        opacity: 1,
+        scale: 1,
         duration: 0.9,
-        stagger: 0.055,
-        ease: "power4.out",
-        delay: 0.25,
+        ease: "power3.out",
+        delay: 0.2,
       })
+      .to(
+        letters,
+        {
+          yPercent: -100,
+          duration: 0.9,
+          stagger: 0.055,
+          ease: "power4.out",
+        },
+        "-=0.45"
+      )
       .to(line, { scaleX: 1, duration: 0.9, ease: "power3.inOut" }, "-=0.55")
       .to(sub, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.45")
       .add(() => {
@@ -78,6 +90,12 @@ export default function Preloader() {
   return (
     <div id="preloader" aria-hidden="true">
       <div className="text-center">
+        <div
+          className="pl-logo mx-auto mb-6 text-bronze"
+          style={{ opacity: 0, transform: "scale(0.85)" }}
+        >
+          <LogoMark className="mx-auto h-14 w-14 md:h-16 md:w-16" />
+        </div>
         <div className="flex justify-center overflow-hidden pb-1">
           {"BHAGAWAN".split("").map((ch, i) => (
             <span

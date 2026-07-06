@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Select from "@/components/Select";
 import { areas } from "@/data/areas";
 import { site, waLink } from "@/lib/site";
 
 export default function SellForm() {
   const [sent, setSent] = useState(false);
+  const [propertyType, setPropertyType] = useState("Villa");
+  const [areaValue, setAreaValue] = useState("Canggu");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -63,27 +66,28 @@ export default function SellForm() {
           <label htmlFor="sf-phone" className="eyebrow">Phone / WhatsApp</label>
           <input id="sf-phone" name="phone" required className="field mt-1" placeholder="+62 ..." />
         </div>
-        <div>
-          <label htmlFor="sf-type" className="eyebrow">Property type</label>
-          <select id="sf-type" name="type" className="field mt-1" defaultValue="Villa">
-            <option>Villa</option>
-            <option>Land</option>
-            <option>Townhouse</option>
-            <option>Commercial</option>
-            <option>Other</option>
-          </select>
-        </div>
+        <Select
+          label="Property type"
+          name="type"
+          value={propertyType}
+          onChange={setPropertyType}
+          options={["Villa", "Land", "Townhouse", "Commercial", "Other"].map((v) => ({
+            value: v,
+            label: v,
+          }))}
+        />
       </div>
       <div className="grid gap-7 sm:grid-cols-2">
-        <div>
-          <label htmlFor="sf-area" className="eyebrow">Area</label>
-          <select id="sf-area" name="area" className="field mt-1" defaultValue="Canggu">
-            {areas.map((a) => (
-              <option key={a.slug}>{a.name}</option>
-            ))}
-            <option>Other</option>
-          </select>
-        </div>
+        <Select
+          label="Area"
+          name="area"
+          value={areaValue}
+          onChange={setAreaValue}
+          options={[
+            ...areas.map((a) => ({ value: a.name, label: a.name })),
+            { value: "Other", label: "Other" },
+          ]}
+        />
         <div>
           <label htmlFor="sf-price" className="eyebrow">Asking price (USD or IDR)</label>
           <input id="sf-price" name="price" required className="field mt-1" placeholder="e.g. $650,000" />

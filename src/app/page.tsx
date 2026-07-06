@@ -74,7 +74,7 @@ export default function HomePage() {
               className="object-cover"
             />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/55 to-ink/45" />
         </div>
 
         <div className="container-x relative pb-20 pt-40 md:pb-28">

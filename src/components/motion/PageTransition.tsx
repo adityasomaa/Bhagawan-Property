@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { gsap, ScrollTrigger } from "@/lib/gsapClient";
+import LogoMark from "@/components/Logo";
 
 /**
  * Page transitions: on click the curtain CLOSES over the page, the route
@@ -66,18 +67,22 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
         pushed = true;
         router.push(href);
       };
-      const fallback = setTimeout(push, 2500);
+      const fallback = setTimeout(push, 3500);
 
+      // The route only changes in onComplete — i.e. strictly AFTER the
+      // curtain has fully covered the page. Sequence: close → change
+      // content → scroll top → open.
       closeTlRef.current = gsap
-        .timeline()
+        .timeline({
+          onComplete: () => {
+            clearTimeout(fallback);
+            push();
+          },
+        })
         .set(curtain, { yPercent: 101 })
-        .set(mark, { opacity: 0, y: 24 })
-        .to(curtain, { yPercent: 0, duration: 0.8, ease: "power4.inOut" })
-        .to(mark, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.3")
-        .add(() => {
-          clearTimeout(fallback);
-          push();
-        });
+        .set(mark, { opacity: 0, y: 28 })
+        .to(curtain, { yPercent: 0, duration: 1.0, ease: "power4.inOut" })
+        .to(mark, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.35");
     },
     [pathname, router]
   );
@@ -106,6 +111,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     }
 
     let finished = false;
+    let tl: gsap.core.Timeline | null = null;
     const finish = () => {
       if (finished) return;
       finished = true;
@@ -113,22 +119,36 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       window.__lenis?.start();
     };
 
-    const tl = gsap
-      .timeline({ delay: 0.35 }) // let the new page settle behind the curtain
-      .to(mark, { opacity: 0, y: -20, duration: 0.4, ease: "power2.in" })
-      .to(curtain, { yPercent: -101, duration: 0.9, ease: "power4.inOut" }, "-=0.15")
-      .set(curtain, { yPercent: 101 })
-      .add(finish);
+    // Let the new page's hero image finish decoding behind the curtain so
+    // the reveal shows a fully painted page (capped so it can never hang).
+    const heroReady = () => {
+      const img = document.querySelector<HTMLImageElement>("main img");
+      if (!img || img.complete) return Promise.resolve();
+      return Promise.race([
+        img.decode().catch(() => {}),
+        new Promise((r) => setTimeout(r, 1200)),
+      ]);
+    };
+
+    heroReady().then(() => {
+      if (finished) return;
+      tl = gsap
+        .timeline({ delay: 0.3 })
+        .to(mark, { opacity: 0, y: -22, duration: 0.45, ease: "power2.in" })
+        .to(curtain, { yPercent: -101, duration: 1.1, ease: "power4.inOut" }, "-=0.15")
+        .set(curtain, { yPercent: 101 })
+        .add(finish);
+    });
 
     // Safety net: if rAF is throttled, snap the curtain away instead of
     // leaving the page covered and navigation locked.
     setTimeout(() => {
       if (finished) return;
-      tl.kill();
+      tl?.kill();
       gsap.set(curtain, { yPercent: 101 });
       gsap.set(mark, { opacity: 0 });
       finish();
-    }, 4000);
+    }, 4500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -137,6 +157,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       {children}
       <div id="transition-curtain" aria-hidden="true">
         <div className="curtain-mark text-center">
+          <LogoMark className="mx-auto mb-5 h-12 w-12 text-bronze" />
           <span className="font-display block text-2xl tracking-[0.35em] uppercase md:text-3xl">
             Bhagawan
           </span>

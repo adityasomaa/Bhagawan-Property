@@ -37,7 +37,9 @@ export default function SmoothScroll() {
       lenis.on("scroll", ScrollTrigger.update);
       tickerFn = (time: number) => lenis?.raf(time * 1000);
       gsap.ticker.add(tickerFn);
-      gsap.ticker.lagSmoothing(0);
+      // Keep GSAP's default lag smoothing: after a main-thread stall (image
+      // decode, hydration) animations RESUME instead of jumping to the end —
+      // critical for the page-transition curtain to stay sequential.
     };
 
     const destroy = () => {

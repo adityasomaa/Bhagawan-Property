@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import PropertyCard from "@/components/PropertyCard";
+import Select from "@/components/Select";
 import type { Property } from "@/data/properties";
 import { areas } from "@/data/areas";
 
@@ -45,68 +46,50 @@ export default function PropertyCatalogue({ items }: { items: Property[] }) {
   return (
     <div>
       <div className="grid gap-x-8 gap-y-5 border-y border-line py-6 sm:grid-cols-2 lg:grid-cols-5">
-        <label className="block">
-          <span className="eyebrow">Area</span>
-          <select className="field mt-1" value={area} onChange={(e) => setArea(e.target.value)}>
-            <option value="all">All areas</option>
-            {areas.map((a) => (
-              <option key={a.slug} value={a.slug}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="eyebrow">Property type</span>
-          <select className="field mt-1" value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="all">All types</option>
-            <option value="villa">Villa</option>
-            <option value="townhouse">Townhouse</option>
-            <option value="land">Land</option>
-          </select>
-        </label>
-        <label className="block">
-          <span className="eyebrow">Price</span>
-          <select
-            className="field mt-1"
-            value={price}
-            onChange={(e) => setPrice(Number(e.target.value))}
-          >
-            {priceBands.map((b, i) => (
-              <option key={b.label} value={i}>
-                {b.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="block">
-          <span className="eyebrow">Bedrooms</span>
-          <select
-            className="field mt-1"
-            value={beds}
-            onChange={(e) => setBeds(Number(e.target.value))}
-          >
-            <option value={0}>Any</option>
-            <option value={2}>2+</option>
-            <option value={3}>3+</option>
-            <option value={4}>4+</option>
-            <option value={5}>5+</option>
-          </select>
-        </label>
-        <label className="block">
-          <span className="eyebrow">Land size</span>
-          <select
-            className="field mt-1"
-            value={land}
-            onChange={(e) => setLand(Number(e.target.value))}
-          >
-            {landBands.map((b, i) => (
-              <option key={b.label} value={i}>
-                {b.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Select
+          label="Area"
+          value={area}
+          onChange={setArea}
+          options={[
+            { value: "all", label: "All areas" },
+            ...areas.map((a) => ({ value: a.slug, label: a.name })),
+          ]}
+        />
+        <Select
+          label="Property type"
+          value={type}
+          onChange={setType}
+          options={[
+            { value: "all", label: "All types" },
+            { value: "villa", label: "Villa" },
+            { value: "townhouse", label: "Townhouse" },
+            { value: "land", label: "Land" },
+          ]}
+        />
+        <Select
+          label="Price"
+          value={String(price)}
+          onChange={(v) => setPrice(Number(v))}
+          options={priceBands.map((b, i) => ({ value: String(i), label: b.label }))}
+        />
+        <Select
+          label="Bedrooms"
+          value={String(beds)}
+          onChange={(v) => setBeds(Number(v))}
+          options={[
+            { value: "0", label: "Any" },
+            { value: "2", label: "2+" },
+            { value: "3", label: "3+" },
+            { value: "4", label: "4+" },
+            { value: "5", label: "5+" },
+          ]}
+        />
+        <Select
+          label="Land size"
+          value={String(land)}
+          onChange={(v) => setLand(Number(v))}
+          options={landBands.map((b, i) => ({ value: String(i), label: b.label }))}
+        />
       </div>
 
       <p className="mt-6 text-[11px] font-medium tracking-[0.25em] uppercase text-muted">
