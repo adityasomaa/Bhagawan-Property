@@ -38,6 +38,22 @@ export default function Header() {
     return () => window.removeEventListener("pt:close-menu", close);
   }, []);
 
+  // Close the mobile menu on Escape, or when the viewport grows to desktop
+  // (the menu and hamburger are lg:hidden, so a lingering open state would
+  // otherwise keep the desktop header hidden).
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onDesktop = () => mq.matches && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    mq.addEventListener("change", onDesktop);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onDesktop);
+    };
+  }, [menuOpen]);
+
   // Animate mobile menu + lock scrolling behind it.
   useEffect(() => {
     const el = menuRef.current;
@@ -69,7 +85,11 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-opacity duration-300 ${
+          menuOpen ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+      >
         <div className="container-x pt-3 md:pt-5">
           <div
             className={`flex h-14 items-center justify-between rounded-full pl-5 pr-2.5 transition-all duration-500 md:h-16 md:pl-7 md:pr-3 ${
@@ -189,9 +209,27 @@ export default function Header() {
         aria-hidden={!menuOpen}
       >
         <div
-          className="flex h-full flex-col justify-between overflow-y-auto px-8 pb-10 pt-32"
+          className="flex h-full flex-col justify-between overflow-y-auto px-8 pb-10 pt-8"
           data-lenis-prevent
         >
+          <div className="m-link mb-8 flex items-center justify-between">
+            <TransitionLink href="/" className="flex items-center gap-3 text-cream">
+              <LogoMark className="h-8 w-8" />
+              <span className="font-display text-base font-semibold tracking-[0.18em]">
+                BHAGAWAN
+              </span>
+            </TransitionLink>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
+              className="glass flex h-11 w-11 items-center justify-center rounded-full text-cream transition-colors hover:bg-white/20"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.4" />
+              </svg>
+            </button>
+          </div>
           <nav className="flex flex-col gap-1" aria-label="Mobile">
             {nav.map((item) => (
               <div key={item.href} className="m-link">
