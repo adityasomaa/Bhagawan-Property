@@ -5,9 +5,9 @@ import { gsap } from "@/lib/gsapClient";
 import LogoMark from "@/components/Logo";
 
 /**
- * First-visit preloader — logo only. An inline <head> script sets
- * html[data-preloaded="1"] before paint on repeat visits, and CSS hides the
- * overlay entirely, so this only ever plays once per session.
+ * First-visit preloader — logo + counting percentage. An inline <head>
+ * script sets html[data-preloaded="1"] before paint on repeat visits, and
+ * CSS hides the overlay entirely, so this only ever plays once per session.
  *
  * The element is removed via React state (never el.remove()) so React's
  * reconciler stays in sync during later route transitions.
@@ -15,6 +15,7 @@ import LogoMark from "@/components/Logo";
 export default function Preloader() {
   const played = useRef(false);
   const [done, setDone] = useState(false);
+  const [pct, setPct] = useState(0);
 
   useEffect(() => {
     if (played.current) return;
@@ -38,7 +39,7 @@ export default function Preloader() {
     document.body.style.overflow = "hidden";
 
     const logo = el.querySelector(".pl-logo");
-    const ring = el.querySelector(".pl-ring");
+    const bar = el.querySelector(".pl-bar");
 
     let finished = false;
     const finish = () => {
@@ -54,6 +55,9 @@ export default function Preloader() {
     // behind the preloader.
     const fallback = setTimeout(finish, 5000);
 
+    // Drive the counter 0 → 100 through a tweened proxy.
+    const counter = { v: 0 };
+
     gsap
       .timeline({
         onComplete: () => {
@@ -64,16 +68,21 @@ export default function Preloader() {
       // Logo is visible from first paint — this just settles it in.
       .fromTo(
         logo,
-        { scale: 0.8, opacity: 0.3 },
+        { scale: 0.82, opacity: 0.3 },
         { scale: 1, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.1 }
       )
-      .fromTo(
-        ring,
-        { scale: 0.7, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.9, ease: "power2.out" },
-        "-=0.7"
+      .to(
+        counter,
+        {
+          v: 100,
+          duration: 1.7,
+          ease: "power2.inOut",
+          onUpdate: () => setPct(Math.round(counter.v)),
+        },
+        "-=0.6"
       )
-      .add(ready, "+=0.45")
+      .to(bar, { scaleX: 1, duration: 1.7, ease: "power2.inOut" }, "<")
+      .add(ready, "+=0.2")
       .to(logo, { scale: 1.08, duration: 0.4, ease: "power2.in" })
       .to(
         el,
@@ -90,9 +99,21 @@ export default function Preloader() {
 
   return (
     <div id="preloader" aria-hidden="true">
-      <div className="pl-logo relative flex items-center justify-center text-ink">
-        <span className="pl-ring absolute h-28 w-28 rounded-full border border-ink/15 md:h-32 md:w-32" />
-        <LogoMark className="h-16 w-16 md:h-20 md:w-20" />
+      <div className="flex flex-col items-center">
+        <div className="pl-logo text-ink">
+          <LogoMark className="h-16 w-16 md:h-20 md:w-20" />
+        </div>
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <span className="font-display text-sm font-medium tabular-nums tracking-[0.35em] text-ink">
+            {String(pct).padStart(3, "0")}
+          </span>
+          <span className="relative block h-px w-40 overflow-hidden bg-ink/15 md:w-56">
+            <span
+              className="pl-bar absolute inset-0 origin-left bg-ink"
+              style={{ transform: "scaleX(0)" }}
+            />
+          </span>
+        </div>
       </div>
     </div>
   );

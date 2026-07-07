@@ -72,10 +72,10 @@ export default function HomePage() {
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <HeroEntrance>
-        <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+        <section className="relative flex min-h-[112svh] items-end overflow-hidden md:min-h-[100svh]">
           <HeroSlider slides={heroSlides} />
 
-          <div className="container-x relative z-10 pb-24 pt-40 md:pb-32">
+          <div className="container-x relative z-10 pb-48 pt-36 md:pb-32 md:pt-40">
             <div data-hero style={{ opacity: 0 }}>
               <span className="glass inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-[10px] font-semibold tracking-[0.32em] uppercase text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" />
