@@ -5,7 +5,7 @@ import { gsap } from "@/lib/gsapClient";
 import LogoMark from "@/components/Logo";
 
 /**
- * First-visit preloader. An inline <head> script sets
+ * First-visit preloader — logo only. An inline <head> script sets
  * html[data-preloaded="1"] before paint on repeat visits, and CSS hides the
  * overlay entirely, so this only ever plays once per session.
  *
@@ -38,9 +38,7 @@ export default function Preloader() {
     document.body.style.overflow = "hidden";
 
     const logo = el.querySelector(".pl-logo");
-    const letters = el.querySelectorAll(".pl-letter");
-    const line = el.querySelector(".pl-line");
-    const sub = el.querySelector(".pl-sub");
+    const ring = el.querySelector(".pl-ring");
 
     let finished = false;
     const finish = () => {
@@ -54,7 +52,7 @@ export default function Preloader() {
 
     // Safety net: if rAF is throttled (background tab), never trap the user
     // behind the preloader.
-    const fallback = setTimeout(finish, 6000);
+    const fallback = setTimeout(finish, 5000);
 
     gsap
       .timeline({
@@ -63,62 +61,38 @@ export default function Preloader() {
           finish();
         },
       })
-      // Logo is visible from the first paint — this just settles it in.
+      // Logo is visible from first paint — this just settles it in.
       .fromTo(
         logo,
-        { scale: 0.82, y: 8 },
-        { scale: 1, y: 0, duration: 1.0, ease: "power3.out", delay: 0.15 }
+        { scale: 0.8, opacity: 0.3 },
+        { scale: 1, opacity: 1, duration: 0.9, ease: "power3.out", delay: 0.1 }
       )
+      .fromTo(
+        ring,
+        { scale: 0.7, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.9, ease: "power2.out" },
+        "-=0.7"
+      )
+      .add(ready, "+=0.45")
+      .to(logo, { scale: 1.08, duration: 0.4, ease: "power2.in" })
       .to(
-        letters,
+        el,
         {
-          yPercent: -100,
-          duration: 0.9,
-          stagger: 0.05,
-          ease: "power4.out",
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.inOut",
         },
-        "-=0.6"
-      )
-      .to(line, { scaleX: 1, duration: 0.9, ease: "power3.inOut" }, "-=0.55")
-      .to(sub, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.45")
-      .add(ready, "+=0.5")
-      .to(el, {
-        yPercent: -100,
-        duration: 1.0,
-        ease: "power4.inOut",
-        delay: 0.1,
-      });
+        "-=0.15"
+      );
   }, []);
 
   if (done) return null;
 
   return (
     <div id="preloader" aria-hidden="true">
-      <div className="text-center">
-        <div className="pl-logo mx-auto mb-7 text-ink">
-          <LogoMark className="mx-auto h-16 w-16 md:h-20 md:w-20" />
-        </div>
-        <div className="flex justify-center overflow-hidden pb-1">
-          {"BHAGAWAN".split("").map((ch, i) => (
-            <span
-              key={i}
-              className="pl-letter font-display inline-block text-3xl font-medium tracking-[0.3em] text-ink md:text-5xl"
-              style={{ transform: "translateY(110%)" }}
-            >
-              {ch}
-            </span>
-          ))}
-        </div>
-        <div
-          className="pl-line mx-auto mt-5 h-px w-40 bg-ink/40 md:w-56"
-          style={{ transform: "scaleX(0)" }}
-        />
-        <p
-          className="pl-sub mt-5 text-[10px] font-medium tracking-[0.55em] uppercase text-muted"
-          style={{ opacity: 0, transform: "translateY(12px)" }}
-        >
-          Property &middot; Bali &middot; #Here4U
-        </p>
+      <div className="pl-logo relative flex items-center justify-center text-ink">
+        <span className="pl-ring absolute h-28 w-28 rounded-full border border-ink/15 md:h-32 md:w-32" />
+        <LogoMark className="h-16 w-16 md:h-20 md:w-20" />
       </div>
     </div>
   );

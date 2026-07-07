@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import Reveal from "@/components/motion/Reveal";
 import HeroEntrance from "@/components/motion/HeroEntrance";
+import HeroSlider, { type HeroSlide } from "@/components/HeroSlider";
 import SectionHeading from "@/components/SectionHeading";
 import PropertyCard from "@/components/PropertyCard";
 import AreaCard from "@/components/AreaCard";
@@ -12,6 +13,13 @@ import { featuredProperties } from "@/data/properties";
 import { areas, img } from "@/data/areas";
 import { articles } from "@/data/articles";
 import { site, waLink } from "@/lib/site";
+
+const heroSlides: HeroSlide[] = areas.map((a) => ({
+  name: a.name,
+  slug: a.slug,
+  caption: a.tagline,
+  image: a.heroImage,
+}));
 
 export const metadata: Metadata = {
   title: "Bhagawan Property — Find Exceptional Property in Bali",
@@ -64,22 +72,10 @@ export default function HomePage() {
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <HeroEntrance>
-        <section className="relative flex min-h-[100svh] items-end">
-          <div className="absolute inset-0 overflow-hidden">
-            <div data-hero-img className="absolute inset-0" style={{ opacity: 0 }}>
-              <Image
-                src={img("1537996194471-e657df975ab4", 2400)}
-                alt="Luxury villa living in Bali"
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover"
-              />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/55 to-ink/40" />
-          </div>
+        <section className="relative flex min-h-[100svh] items-end overflow-hidden">
+          <HeroSlider slides={heroSlides} />
 
-          <div className="container-x relative pb-20 pt-40 md:pb-24">
+          <div className="container-x relative z-10 pb-24 pt-40 md:pb-32">
             <div data-hero style={{ opacity: 0 }}>
               <span className="glass inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-[10px] font-semibold tracking-[0.32em] uppercase text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" />

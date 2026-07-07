@@ -157,14 +157,8 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
     <TransitionContext.Provider value={{ navigate }}>
       {children}
       <div id="transition-curtain" aria-hidden="true">
-        <div className="curtain-mark text-center">
-          <LogoMark className="mx-auto mb-5 h-12 w-12 text-cream" />
-          <span className="font-display block text-2xl font-medium tracking-[0.3em] uppercase md:text-3xl">
-            Bhagawan
-          </span>
-          <span className="mt-2 block text-[10px] tracking-[0.5em] uppercase opacity-50">
-            #Here4U
-          </span>
+        <div className="curtain-mark">
+          <LogoMark className="h-16 w-16 text-cream md:h-20 md:w-20" />
         </div>
       </div>
     </TransitionContext.Provider>

@@ -79,26 +79,32 @@ body {
   font-weight: 500;
 }
 
-/* Glassmorphism */
+/* Glassmorphism.
+   Values are wrapped in a var() so Lightning CSS (Tailwind v4's compiler)
+   cannot treat the prefixed/standard pair as mergeable and strip the
+   unprefixed `backdrop-filter` — keeping blur working in every browser. */
 @layer components {
   .glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    --glass: blur(48px) saturate(160%);
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.18);
   }
   .glass-light {
-    background: rgba(255, 255, 255, 0.62);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    --glass: blur(44px) saturate(160%);
+    background: rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
     border: 1px solid rgba(255, 255, 255, 0.7);
     box-shadow: 0 24px 60px -32px rgba(11, 11, 12, 0.25);
   }
   .glass-dark {
+    --glass: blur(40px) saturate(150%);
     background: rgba(11, 11, 12, 0.35);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    -webkit-backdrop-filter: var(--glass);
+    backdrop-filter: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 }
 
@@ -197,11 +203,12 @@ body {
   border-color: var(--ink-soft);
 }
 .btn-light {
+  --glass: blur(36px) saturate(160%);
   border-color: rgba(255, 255, 255, 0.35);
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
 }
 .btn-light::before {
   background: #fff;
@@ -246,7 +253,7 @@ body {
   justify-content: center;
 }
 #transition-curtain.is-animating {
-  transition: transform 1.05s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
 }
 #transition-curtain.is-closed {
   transform: translateY(0);
@@ -257,19 +264,19 @@ body {
 #transition-curtain .curtain-mark {
   color: var(--cream);
   opacity: 0;
-  transform: translateY(22px);
+  transform: translateY(18px) scale(0.92);
   transition:
-    opacity 0.5s ease 0s,
-    transform 0.5s ease 0s;
+    opacity 0.35s ease 0s,
+    transform 0.35s ease 0s;
 }
 #transition-curtain.is-closed .curtain-mark {
   opacity: 1;
   transform: none;
-  transition-delay: 0.45s;
+  transition-delay: 0.25s;
 }
 #transition-curtain.is-closed.is-opening .curtain-mark {
   opacity: 0;
-  transform: translateY(-18px);
+  transform: translateY(-14px) scale(0.96);
   transition-delay: 0s;
 }
 
