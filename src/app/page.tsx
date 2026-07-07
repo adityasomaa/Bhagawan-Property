@@ -14,12 +14,20 @@ import { areas, img } from "@/data/areas";
 import { articles } from "@/data/articles";
 import { site, waLink } from "@/lib/site";
 
-const heroSlides: HeroSlide[] = areas.map((a) => ({
-  name: a.name,
-  slug: a.slug,
-  caption: a.tagline,
-  image: a.heroImage,
-}));
+// Hero slider order + landmark labels requested for the homepage.
+const heroOrder: { slug: string; caption: string }[] = [
+  { slug: "canggu", caption: "Canggu Beach" },
+  { slug: "uluwatu", caption: "Uluwatu Beach" },
+  { slug: "sanur", caption: "Sanur Beach" },
+  { slug: "ubud", caption: "Tegalalang Rice Terrace" },
+  { slug: "seminyak", caption: "Seminyak Beach" },
+  { slug: "pererenan", caption: "Pererenan Beach" },
+];
+
+const heroSlides: HeroSlide[] = heroOrder.map(({ slug, caption }) => {
+  const a = areas.find((x) => x.slug === slug)!;
+  return { name: a.name, slug: a.slug, caption, image: a.heroImage };
+});
 
 export const metadata: Metadata = {
   title: "Bhagawan Property — Find Exceptional Property in Bali",

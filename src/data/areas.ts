@@ -72,8 +72,8 @@ export const areas: Area[] = [
     slug: "canggu",
     name: "Canggu",
     tagline: "Bali's creative capital — rice fields, surf breaks, and a thriving global community.",
-    heroImage: img("1570737209810-87a8e7245f88", 2200),
-    cardImage: img("1570737209810-87a8e7245f88", 1200),
+    heroImage: img("1565030276121-5a3325bec270", 2200),
+    cardImage: img("1565030276121-5a3325bec270", 1200),
     intro: [
       "Canggu is where Bali's energy concentrates. What was rice paddies and a quiet surf beach fifteen years ago is now Southeast Asia's most talked-about neighbourhood — a magnet for founders, creatives, and remote professionals from every corner of the world.",
       "The appeal is the mix: black-sand surf beaches, speciality coffee on every corner, some of Asia's best restaurants and gyms, and a social scene that runs from sunrise surf to late-night beach bars. For investors, Canggu remains the island's most liquid, most proven rental market.",
@@ -161,8 +161,8 @@ export const areas: Area[] = [
     slug: "seminyak",
     name: "Seminyak",
     tagline: "Polished beach resort living with Bali's finest dining and boutiques.",
-    heroImage: img("1540541338287-41700207dee6", 2200),
-    cardImage: img("1540541338287-41700207dee6", 1200),
+    heroImage: img("1616484093834-e9aa39f160f9", 2200),
+    cardImage: img("1616484093834-e9aa39f160f9", 1200),
     intro: [
       "Seminyak is Bali's grande dame — the neighbourhood that first defined tropical-chic. Wide golden beaches meet a grid of streets lined with designer boutiques, destination restaurants, and the beach clubs that made Bali famous.",
       "It remains the island's most complete resort address: everything is walkable, standards are international, and the rental market is as established as it gets. For buyers, Seminyak offers something increasingly rare in Bali — maturity.",
@@ -205,8 +205,8 @@ export const areas: Area[] = [
     slug: "ubud",
     name: "Ubud",
     tagline: "Jungle serenity, artistic soul, and Bali's spiritual heartland.",
-    heroImage: img("1544644181-1484b3fdfc62", 2200),
-    cardImage: img("1544644181-1484b3fdfc62", 1200),
+    heroImage: img("1559628233-100c798642d4", 2200),
+    cardImage: img("1559628233-100c798642d4", 1200),
     intro: [
       "Ubud is Bali's cultural and spiritual centre — a highland town wrapped in rainforest, rice terraces, and river gorges. Mornings begin with birdsong and temple bells; evenings end with jungle sunsets and some of the finest farm-to-table dining in Asia.",
       "The wellness economy calls Ubud home: yoga institutions, healing retreats, and plant-based kitchens draw a global audience year-round. Property here means privacy, nature, and views that no development can replicate.",
@@ -250,8 +250,8 @@ export const areas: Area[] = [
     slug: "pererenan",
     name: "Pererenan",
     tagline: "Canggu's stylish quiet neighbour — rice fields meeting a black-sand surf beach.",
-    heroImage: img("1531778272849-d1dd22444c06", 2200),
-    cardImage: img("1531778272849-d1dd22444c06", 1200),
+    heroImage: img("1564221549673-b43c122d1c29", 2200),
+    cardImage: img("1564221549673-b43c122d1c29", 1200),
     intro: [
       "Pererenan is where those who know Bali best are buying now. One river west of Canggu, it offers the same surf, the same café culture, and the same international community — at a gentler pace and with rice-field horizons still intact.",
       "Design-led restaurants and boutique gyms have arrived, but the village character remains: ceremonies pass the beach road, herons work the paddies, and the black-sand beach at sunset belongs to surfers and horse riders rather than crowds.",

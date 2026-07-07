@@ -9,18 +9,25 @@ function num(v: string | null, fallback: number, min: number, max: number) {
   return v && Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
 }
 
+type Mode = "freehold" | "leasehold";
+
 export default function RoiCalculator() {
   const params = useSearchParams();
 
+  const [mode, setMode] = useState<Mode>(() =>
+    num(params.get("years"), 0, 0, 50) > 0 ? "leasehold" : "freehold"
+  );
   const [price, setPrice] = useState(() => num(params.get("price"), 500000, 50000, 5000000));
   const [nightly, setNightly] = useState(() => num(params.get("nightly"), 350, 50, 3000));
   const [occupancy, setOccupancy] = useState(() => num(params.get("occupancy"), 70, 30, 95));
   const [mgmtFee, setMgmtFee] = useState(20);
   const [runningCosts, setRunningCosts] = useState(12000);
   const [taxRate, setTaxRate] = useState(10);
-  const [leaseYears, setLeaseYears] = useState(() => num(params.get("years"), 0, 0, 50)); // 0 = freehold
+  const [leaseYears, setLeaseYears] = useState(() => num(params.get("years"), 27, 5, 50));
   const [appreciation, setAppreciation] = useState(6);
   const [holdYears, setHoldYears] = useState(10);
+
+  const isLease = mode === "leasehold";
 
   const r = useMemo(() => {
     const nightsBooked = 365 * (occupancy / 100);
@@ -32,7 +39,6 @@ export default function RoiCalculator() {
     const netYield = (netIncome / price) * 100;
     const paybackYears = netIncome > 0 ? price / netIncome : Infinity;
 
-    const isLease = leaseYears > 0;
     const effectiveHold = isLease ? Math.min(holdYears, leaseYears) : holdYears;
 
     // Income over the hold period (flat, conservative — no rate growth assumed)
@@ -60,9 +66,8 @@ export default function RoiCalculator() {
       totalReturnPct,
       annualisedRoi,
       effectiveHold,
-      isLease,
     };
-  }, [price, nightly, occupancy, mgmtFee, runningCosts, taxRate, leaseYears, appreciation, holdYears]);
+  }, [price, nightly, occupancy, mgmtFee, runningCosts, taxRate, leaseYears, appreciation, holdYears, isLease]);
 
   const slider = (
     label: string,
@@ -97,31 +102,61 @@ export default function RoiCalculator() {
     <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr]">
       {/* Inputs */}
       <div className="space-y-8 rounded-3xl border border-line bg-paper p-7 md:p-10">
+        {/* Tenure tabs */}
         <div>
+          <p className="eyebrow">Tenure</p>
+          <div
+            role="tablist"
+            aria-label="Property tenure"
+            className="mt-3 grid grid-cols-2 gap-1.5 rounded-full border border-line bg-cream p-1.5"
+          >
+            {(["freehold", "leasehold"] as Mode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="tab"
+                aria-selected={mode === m}
+                onClick={() => setMode(m)}
+                className={`rounded-full py-2.5 text-[11px] font-semibold capitalize tracking-[0.2em] uppercase transition-colors duration-300 ${
+                  mode === m ? "bg-ink text-cream" : "text-muted hover:text-ink"
+                }`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            {isLease
+              ? "Leasehold amortises toward zero over the remaining lease — the model reflects that."
+              : "Freehold retains land value — the model applies your assumed appreciation."}
+          </p>
+        </div>
+
+        <div className="border-t border-line pt-8">
           <p className="font-display text-xl text-ink">The property</p>
           <div className="mt-6 space-y-7">
             {slider("Purchase price", price, setPrice, 100000, 3000000, 10000, formatPrice(price))}
-            {slider(
-              "Tenure",
-              leaseYears,
-              setLeaseYears,
-              0,
-              50,
-              1,
-              leaseYears === 0 ? "Freehold" : `Leasehold · ${leaseYears} yrs`,
-              "Slide to 0 for freehold. For leasehold, set the remaining lease years."
-            )}
-            {leaseYears === 0 &&
-              slider(
-                "Assumed appreciation",
-                appreciation,
-                setAppreciation,
-                0,
-                15,
-                0.5,
-                `${appreciation}% / yr`,
-                "Long-run land appreciation assumption for freehold."
-              )}
+            {isLease
+              ? slider(
+                  "Remaining lease",
+                  leaseYears,
+                  setLeaseYears,
+                  5,
+                  50,
+                  1,
+                  `${leaseYears} years`,
+                  "Years left on the lease — extensions should be priced into the term."
+                )
+              : slider(
+                  "Assumed appreciation",
+                  appreciation,
+                  setAppreciation,
+                  0,
+                  15,
+                  0.5,
+                  `${appreciation}% / yr`,
+                  "Long-run land appreciation assumption for freehold."
+                )}
             {slider(
               "Hold period",
               holdYears,
@@ -129,7 +164,7 @@ export default function RoiCalculator() {
               1,
               30,
               1,
-              `${Math.min(holdYears, leaseYears || 99)} years`
+              `${isLease ? Math.min(holdYears, leaseYears) : holdYears} years`
             )}
           </div>
         </div>
@@ -218,7 +253,7 @@ export default function RoiCalculator() {
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/60">
-                  {r.isLease ? "Remaining lease value (straight-line)" : "Projected property value"}
+                  {isLease ? "Remaining lease value (straight-line)" : "Projected property value"}
                 </span>
                 <span className="font-medium">{formatPrice(r.endValue)}</span>
               </div>
