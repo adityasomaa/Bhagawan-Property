@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import Reveal from "@/components/motion/Reveal";
+import HeroEntrance from "@/components/motion/HeroEntrance";
 import SectionHeading from "@/components/SectionHeading";
 import PropertyCard from "@/components/PropertyCard";
 import AreaCard from "@/components/AreaCard";
@@ -62,70 +63,92 @@ export default function HomePage() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[100svh] items-end">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="hero-anim-img absolute inset-0">
-            <Image
-              src={img("1537996194471-e657df975ab4", 2400)}
-              alt="Luxury villa living in Bali"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
+      <HeroEntrance>
+        <section className="relative flex min-h-[100svh] items-end">
+          <div className="absolute inset-0 overflow-hidden">
+            <div data-hero-img className="absolute inset-0" style={{ opacity: 0 }}>
+              <Image
+                src={img("1537996194471-e657df975ab4", 2400)}
+                alt="Luxury villa living in Bali"
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/55 to-ink/40" />
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/55 to-ink/45" />
-        </div>
 
-        <div className="container-x relative pb-20 pt-40 md:pb-28">
-          <p
-            className="hero-anim text-[11px] font-medium tracking-[0.4em] uppercase text-cream/80"
-            style={{ transitionDelay: "0.1s" }}
-          >
-            Bali Property Advisory &middot; #Here4U
-          </p>
-          <h1
-            className="hero-anim font-display mt-6 max-w-4xl text-5xl leading-[1.05] font-light text-cream md:text-7xl lg:text-[5.5rem]"
-            style={{ transitionDelay: "0.22s" }}
-          >
-            Find Exceptional
-            <br />
-            Property in <em className="italic text-bronze">Bali</em>
-          </h1>
-          <p
-            className="hero-anim mt-7 max-w-xl text-base leading-relaxed text-cream/80 md:text-lg"
-            style={{ transitionDelay: "0.34s" }}
-          >
-            Curated freehold and leasehold villas, land, and investment opportunities across
-            Bali — guided by honest, buyer-first advice.
-          </p>
-          <div
-            className="hero-anim mt-10 flex flex-col gap-4 sm:flex-row sm:items-center"
-            style={{ transitionDelay: "0.46s" }}
-          >
-            <TransitionLink href="/properties/freehold" className="btn btn-light">
-              Browse Freehold
-            </TransitionLink>
-            <TransitionLink href="/properties/leasehold" className="btn btn-light">
-              Browse Leasehold
-            </TransitionLink>
-            <TransitionLink
-              href="/contact"
-              className="link-line ml-0 text-[11px] font-medium tracking-[0.25em] uppercase text-cream sm:ml-4"
+          <div className="container-x relative pb-20 pt-40 md:pb-24">
+            <div data-hero style={{ opacity: 0 }}>
+              <span className="glass inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-[10px] font-semibold tracking-[0.32em] uppercase text-white/90">
+                <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                Bali Property Advisory &middot; #Here4U
+              </span>
+            </div>
+            <h1
+              data-hero
+              className="font-display mt-7 max-w-4xl text-5xl leading-[1.02] font-medium tracking-tight text-white md:text-7xl lg:text-[5.5rem]"
+              style={{ opacity: 0 }}
             >
-              Contact Us
-            </TransitionLink>
+              Find Exceptional
+              <br />
+              Property in Bali
+            </h1>
+            <p
+              data-hero
+              className="mt-7 max-w-xl text-base leading-relaxed text-white/75 md:text-lg"
+              style={{ opacity: 0 }}
+            >
+              Curated freehold and leasehold villas, land, and investment opportunities across
+              Bali — guided by honest, buyer-first advice.
+            </p>
+            <div
+              data-hero
+              className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center"
+              style={{ opacity: 0 }}
+            >
+              <TransitionLink href="/properties/freehold" className="btn btn-light">
+                Browse Freehold
+              </TransitionLink>
+              <TransitionLink href="/properties/leasehold" className="btn btn-light">
+                Browse Leasehold
+              </TransitionLink>
+              <TransitionLink
+                href="/contact"
+                className="link-line ml-0 text-[11px] font-medium tracking-[0.25em] uppercase text-white sm:ml-4"
+              >
+                Contact Us
+              </TransitionLink>
+            </div>
+            <div
+              data-hero
+              className="mt-12 grid max-w-2xl grid-cols-3 gap-3"
+              style={{ opacity: 0 }}
+            >
+              {[
+                ["14", "Curated listings"],
+                ["6", "Bali areas covered"],
+                ["100%", "Buyer-first advice"],
+              ].map(([n, label]) => (
+                <div key={label} className="glass rounded-2xl px-4 py-4 md:px-6">
+                  <p className="font-display text-2xl font-medium text-white md:text-3xl">{n}</p>
+                  <p className="mt-1 text-[10px] tracking-[0.2em] uppercase text-white/60">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </HeroEntrance>
 
       {/* ── Philosophy strip ─────────────────────────────────── */}
       <section className="border-b border-line bg-paper">
         <div className="container-x py-16 md:py-20">
           <Reveal className="mx-auto max-w-3xl text-center">
-            <p className="font-display text-2xl leading-snug font-light text-ink md:text-[2.1rem]">
-              &ldquo;We don&apos;t just sell property — <em className="italic text-bronze-deep">we help
-              people buy the right one.</em>&rdquo;
+            <p className="font-display text-2xl leading-snug font-medium tracking-tight text-ink md:text-[2.1rem]">
+              &ldquo;We don&apos;t just sell property — we help people buy the right one.&rdquo;
             </p>
             <p className="mt-5 text-[10px] font-medium tracking-[0.45em] uppercase text-muted">
               Our Philosophy &middot; #Here4U
@@ -183,10 +206,10 @@ export default function HomePage() {
           title="A trusted advisor, not another agency"
           description="Trust is not a slogan here — it is the operating principle behind every listing, meeting, and recommendation."
         />
-        <div className="mt-14 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {whyUs.map((item, i) => (
-            <Reveal key={item.title} delay={(i % 3) * 0.08} className="bg-cream">
-              <div className="group h-full p-8 transition-colors duration-500 hover:bg-paper md:p-10">
+            <Reveal key={item.title} delay={(i % 3) * 0.08}>
+              <div className="group h-full rounded-3xl border border-line bg-paper p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(11,11,12,0.35)] md:p-10">
                 <svg
                   width="30"
                   height="30"
@@ -196,7 +219,7 @@ export default function HomePage() {
                   strokeWidth="1.1"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-bronze"
+                  className="text-ink"
                   aria-hidden
                 >
                   {item.icon.split(" M").map((d, j) => (
@@ -252,7 +275,7 @@ export default function HomePage() {
                   ["Local", "Expertise"],
                 ].map(([a, b]) => (
                   <div key={b}>
-                    <p className="font-display text-2xl text-bronze">{a}</p>
+                    <p className="font-display text-2xl font-medium text-white">{a}</p>
                     <p className="mt-1 text-[10px] tracking-[0.3em] uppercase text-cream/50">{b}</p>
                   </div>
                 ))}
@@ -305,7 +328,7 @@ export default function HomePage() {
                   rel="noopener noreferrer"
                   className="group flex items-center gap-5"
                 >
-                  <span className="flex h-12 w-12 items-center justify-center border border-line text-bronze transition-colors group-hover:border-bronze">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-line bg-paper text-ink transition-colors group-hover:border-ink">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                       <path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5s.8 1.9.8 2c.1.1.1.3 0 .5l-.4.6c-.1.2-.3.3-.1.6.1.3.7 1.2 1.6 1.9 1.1.9 2 1.2 2.3 1.3.3.1.4.1.6-.1l.9-1c.2-.3.4-.2.7-.1l1.9.9c.3.1.5.2.5.4.1 0 .1.6-.2 1.2Z" />
                     </svg>
@@ -318,7 +341,7 @@ export default function HomePage() {
                   </span>
                 </a>
                 <a href={`mailto:${site.email}`} className="group flex items-center gap-5">
-                  <span className="flex h-12 w-12 items-center justify-center border border-line text-bronze transition-colors group-hover:border-bronze">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-line bg-paper text-ink transition-colors group-hover:border-ink">
                     <svg
                       width="18"
                       height="18"

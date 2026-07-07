@@ -79,7 +79,7 @@ export default async function AreaGuidePage({
             <p className="text-[11px] font-medium tracking-[0.4em] uppercase text-cream/75">
               Area Guide
             </p>
-            <h1 className="font-display mt-4 text-5xl font-light text-cream md:text-7xl">
+            <h1 className="font-display mt-4 text-5xl font-medium tracking-tight text-cream md:text-7xl">
               {area.name}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/80 md:text-lg">
@@ -96,7 +96,7 @@ export default async function AreaGuidePage({
             {area.stats.map((s) => (
               <div key={s.label} className="border-t border-line pt-4">
                 <p className="text-[10px] tracking-[0.3em] uppercase text-muted">{s.label}</p>
-                <p className="font-display mt-1 text-2xl text-bronze-deep">{s.value}</p>
+                <p className="font-display mt-1 text-2xl font-medium text-ink">{s.value}</p>
               </div>
             ))}
           </div>
@@ -105,15 +105,15 @@ export default async function AreaGuidePage({
           <Reveal>
             <div className="space-y-6 text-lg leading-relaxed text-ink-soft md:text-xl">
               {area.intro.map((p, i) => (
-                <p key={i} className={i === 0 ? "font-display font-light text-ink" : "text-base md:text-lg"}>
+                <p key={i} className={i === 0 ? "font-display font-medium tracking-tight text-ink" : "text-base md:text-lg"}>
                   {p}
                 </p>
               ))}
             </div>
           </Reveal>
           <Reveal delay={0.1}>
-            <div className="mt-10 border-l-2 border-bronze bg-paper p-6 md:p-8">
-              <p className="text-[10px] tracking-[0.3em] uppercase text-bronze">Ideal for</p>
+            <div className="mt-10 rounded-3xl border border-line bg-paper p-6 md:p-8">
+              <p className="eyebrow">Ideal for</p>
               <p className="mt-3 text-base leading-relaxed text-ink-soft">{area.idealFor}</p>
             </div>
           </Reveal>
@@ -124,10 +124,10 @@ export default async function AreaGuidePage({
       <section className="bg-sand/50 py-20 md:py-28">
         <div className="container-x">
           <SectionHeading eyebrow="Lifestyle" title={`Living in ${area.name}`} />
-          <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {area.lifestyle.map((l, i) => (
-              <Reveal key={l.title} delay={(i % 3) * 0.07} className="bg-cream">
-                <div className="h-full p-7 md:p-9">
+              <Reveal key={l.title} delay={(i % 3) * 0.07}>
+                <div className="h-full rounded-3xl border border-line bg-paper p-7 md:p-9">
                   <h3 className="font-display text-lg text-ink">{l.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-muted">{l.description}</p>
                 </div>
@@ -149,7 +149,7 @@ export default async function AreaGuidePage({
             <ol className="space-y-0">
               {area.thingsToDo.map((t, i) => (
                 <li key={t} className="flex gap-6 border-t border-line py-5 last:border-b">
-                  <span className="font-display text-lg text-bronze">
+                  <span className="font-display text-lg font-medium text-muted">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="text-base leading-relaxed text-ink-soft">{t}</span>
@@ -171,8 +171,8 @@ export default async function AreaGuidePage({
           <div className="mt-12 grid gap-10 md:grid-cols-2">
             {investment.map(([title, body], i) => (
               <Reveal key={title} delay={(i % 2) * 0.08}>
-                <div className="border-t border-cream/15 pt-6">
-                  <h3 className="text-[11px] font-medium tracking-[0.3em] uppercase text-bronze">
+                <div className="glass h-full rounded-3xl p-7">
+                  <h3 className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/60">
                     {title}
                   </h3>
                   <p className="mt-4 text-base leading-relaxed text-cream/70">{body}</p>
@@ -180,8 +180,8 @@ export default async function AreaGuidePage({
               </Reveal>
             ))}
             <Reveal delay={0.16}>
-              <div className="flex h-full flex-col justify-between border-t border-cream/15 pt-6">
-                <p className="font-display text-2xl font-light leading-snug text-cream">
+              <div className="glass flex h-full flex-col justify-between rounded-3xl p-7">
+                <p className="font-display text-2xl font-medium tracking-tight leading-snug text-cream">
                   Want the numbers for a specific property in {area.name}?
                 </p>
                 <TransitionLink href="/roi-calculator" className="btn btn-light mt-8 self-start">
@@ -216,7 +216,7 @@ export default async function AreaGuidePage({
           </div>
         ) : (
           <Reveal>
-            <div className="mt-12 border border-line bg-paper p-14 text-center">
+            <div className="mt-12 rounded-3xl border border-line bg-paper p-14 text-center">
               <p className="font-display text-2xl text-ink">
                 Our {area.name} listings are currently off-market.
               </p>

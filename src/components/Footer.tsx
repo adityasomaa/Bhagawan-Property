@@ -1,4 +1,5 @@
 import { TransitionLink } from "@/components/motion/PageTransition";
+import LogoMark from "@/components/Logo";
 import { areas } from "@/data/areas";
 import { site, waLink } from "@/lib/site";
 
@@ -23,10 +24,15 @@ export default function Footer() {
       <div className="container-x pb-10 pt-20 md:pt-28">
         <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
-            <TransitionLink href="/" className="inline-block">
-              <span className="font-display block text-3xl tracking-[0.2em]">BHAGAWAN</span>
-              <span className="mt-1.5 block text-[10px] font-medium tracking-[0.5em] uppercase text-bronze">
-                Property &middot; Bali
+            <TransitionLink href="/" className="inline-flex items-center gap-4">
+              <LogoMark className="h-10 w-10 text-cream" />
+              <span>
+                <span className="font-display block text-2xl font-semibold tracking-[0.16em]">
+                  BHAGAWAN
+                </span>
+                <span className="mt-1 block text-[10px] font-medium tracking-[0.5em] uppercase text-cream/50">
+                  Property &middot; Bali
+                </span>
               </span>
             </TransitionLink>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/60">

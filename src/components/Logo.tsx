@@ -1,32 +1,19 @@
 /**
- * Bhagawan Property logo mark — a minimal candi bentar (Balinese split gate)
- * with a rising sun in the opening. Thin strokes, editorial weight.
+ * Bhagawan Property logo mark — a modern, solid trace of a candi bentar
+ * (Balinese split gateway): two mirrored arch halves, a sun in the opening,
+ * and a grounding base. Filled shapes so it stays crisp at any size.
  */
-export default function LogoMark({
-  className,
-  strokeWidth = 1.5,
-}: {
-  className?: string;
-  strokeWidth?: number;
-}) {
+export default function LogoMark({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 64 64"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="square"
-      className={className}
-      aria-hidden="true"
-    >
-      {/* left half of the gate */}
-      <path d="M10 54 V38 H14 V30 H18 V22 H22 V13 H26 V54" />
-      {/* right half of the gate */}
-      <path d="M54 54 V38 H50 V30 H46 V22 H42 V13 H38 V54" />
-      {/* sun in the opening */}
-      <circle cx="32" cy="24" r="3.25" />
+    <svg viewBox="0 0 48 48" fill="currentColor" className={className} aria-hidden="true">
+      {/* left arch half */}
+      <path d="M10 40.5 L10 26 C10 15.2 14.6 7 21 7 L21 40.5 Z" />
+      {/* right arch half (mirrored) */}
+      <path d="M38 40.5 L38 26 C38 15.2 33.4 7 27 7 L27 40.5 Z" />
+      {/* sun in the gateway */}
+      <circle cx="24" cy="16.5" r="2.6" />
       {/* base */}
-      <path d="M6 54 H58" />
+      <rect x="7" y="43" width="34" height="2.4" rx="1.2" />
     </svg>
   );
 }

@@ -1,15 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --cream: #f5f1e8;
-  --paper: #fbf9f3;
-  --sand: #ece5d5;
-  --ink: #221e15;
-  --ink-soft: #4a4436;
-  --muted: #7d7462;
-  --line: #ddd5c2;
-  --bronze: #8a6f4b;
-  --bronze-deep: #6b5637;
+  /* Monochrome palette (token names kept for compatibility) */
+  --cream: #f4f4f5; /* page background */
+  --paper: #ffffff; /* raised surfaces */
+  --sand: #e9e9eb; /* alt section background */
+  --ink: #0b0b0c; /* near-black */
+  --ink-soft: #3f3f46;
+  --muted: #71717a;
+  --line: #e4e4e7;
+  --bronze: #52525b; /* accent-mid (labels) */
+  --bronze-deep: #18181b; /* accent-strong */
 }
 
 @theme inline {
@@ -22,8 +23,8 @@
   --color-line: var(--line);
   --color-bronze: var(--bronze);
   --color-bronze-deep: var(--bronze-deep);
-  --font-sans: var(--font-instrument);
-  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space);
 }
 
 html {
@@ -33,13 +34,13 @@ html {
 body {
   background: var(--cream);
   color: var(--ink);
-  font-family: var(--font-instrument), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--bronze);
+  background: var(--ink);
   color: var(--cream);
 }
 
@@ -54,7 +55,7 @@ body {
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--bronze);
+  background: var(--muted);
 }
 
 /* Layout helpers */
@@ -66,21 +67,46 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-space), system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .eyebrow {
   font-size: 0.6875rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--bronze);
+  color: var(--muted);
   font-weight: 500;
+}
+
+/* Glassmorphism */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .glass-light {
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 24px 60px -32px rgba(11, 11, 12, 0.25);
+  }
+  .glass-dark {
+    background: rgba(11, 11, 12, 0.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
 }
 
 /* Editorial image treatment */
 .img-frame {
   overflow: hidden;
   background: var(--sand);
+  border-radius: 1.25rem;
 }
 .img-frame img {
   transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
@@ -116,31 +142,39 @@ body {
   transform-origin: left;
 }
 
-/* Buttons */
+/* Buttons — modern pills */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  padding: 0.95rem 2rem;
+  padding: 0.9rem 1.9rem;
   font-size: 0.75rem;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   border: 1px solid var(--ink);
+  border-radius: 999px;
   color: var(--ink);
   background: transparent;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: color 0.45s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.45s;
+  transition:
+    color 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s,
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 1;
+}
+.btn:active {
+  transform: scale(0.97);
 }
 .btn::before {
   content: "";
   position: absolute;
   inset: 0;
   background: var(--ink);
+  border-radius: 999px;
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
@@ -157,21 +191,24 @@ body {
   color: var(--cream);
 }
 .btn-solid::before {
-  background: var(--bronze-deep);
+  background: var(--ink-soft);
 }
 .btn-solid:hover {
-  border-color: var(--bronze-deep);
+  border-color: var(--ink-soft);
 }
 .btn-light {
-  border-color: rgba(245, 241, 232, 0.7);
-  color: var(--cream);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 .btn-light::before {
-  background: var(--cream);
+  background: #fff;
 }
 .btn-light:hover {
   color: var(--ink);
-  border-color: var(--cream);
+  border-color: #fff;
 }
 
 /* Inputs */
@@ -191,24 +228,49 @@ body {
   color: var(--muted);
 }
 .field:focus {
-  border-color: var(--bronze);
+  border-color: var(--ink);
 }
 
-/* Page transition curtain */
+/* ── Page transition curtain — CSS/compositor-driven so it can never be
+      desynced by main-thread jank. JS only toggles classes and listens to
+      transitionend. Sequence: close → swap content → scroll top → open. ── */
 #transition-curtain {
   position: fixed;
   inset: 0;
   z-index: 90;
   background: var(--ink);
-  transform: translateY(101%);
+  transform: translateY(102%);
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+#transition-curtain.is-animating {
+  transition: transform 1.05s cubic-bezier(0.76, 0, 0.24, 1);
+}
+#transition-curtain.is-closed {
+  transform: translateY(0);
+}
+#transition-curtain.is-closed.is-opening {
+  transform: translateY(-102%);
+}
 #transition-curtain .curtain-mark {
-  opacity: 0;
   color: var(--cream);
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.5s ease 0s,
+    transform 0.5s ease 0s;
+}
+#transition-curtain.is-closed .curtain-mark {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.45s;
+}
+#transition-curtain.is-closed.is-opening .curtain-mark {
+  opacity: 0;
+  transform: translateY(-18px);
+  transition-delay: 0s;
 }
 
 /* Preloader */
@@ -223,30 +285,6 @@ body {
 }
 html[data-preloaded="1"] #preloader {
   display: none;
-}
-
-/* Hero entrance — plays once the preloader finishes (or immediately if skipped) */
-.hero-anim {
-  opacity: 0;
-  transform: translateY(34px);
-  transition:
-    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-}
-html[data-app-ready="1"] .hero-anim {
-  opacity: 1;
-  transform: none;
-}
-.hero-anim-img {
-  opacity: 0;
-  transform: scale(1.06);
-  transition:
-    opacity 1.6s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 2.2s cubic-bezier(0.22, 1, 0.36, 1);
-}
-html[data-app-ready="1"] .hero-anim-img {
-  opacity: 1;
-  transform: scale(1);
 }
 
 /* Range slider (ROI calculator) */
@@ -264,9 +302,9 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: var(--bronze);
+  background: var(--ink);
   border: 2px solid var(--cream);
-  box-shadow: 0 0 0 1px var(--bronze);
+  box-shadow: 0 0 0 1px var(--ink);
   cursor: pointer;
   transition: transform 0.2s;
 }
@@ -277,9 +315,9 @@ input[type="range"]::-moz-range-thumb {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--bronze);
+  background: var(--ink);
   border: 2px solid var(--cream);
-  box-shadow: 0 0 0 1px var(--bronze);
+  box-shadow: 0 0 0 1px var(--ink);
   cursor: pointer;
 }
 
@@ -290,20 +328,22 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1.85;
 }
 .prose-editorial h2 {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-space), system-ui, sans-serif;
+  letter-spacing: -0.02em;
   color: var(--ink);
   font-size: clamp(1.5rem, 2.4vw, 1.9rem);
   margin-top: 2.75rem;
   margin-bottom: 1rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 .prose-editorial h3 {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-space), system-ui, sans-serif;
+  letter-spacing: -0.01em;
   color: var(--ink);
   font-size: 1.25rem;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 .prose-editorial p {
   margin-bottom: 1.4rem;
@@ -325,14 +365,14 @@ input[type="range"]::-moz-range-thumb {
   top: 0.75em;
   width: 0.9rem;
   height: 1px;
-  background: var(--bronze);
+  background: var(--muted);
 }
 .prose-editorial strong {
   color: var(--ink);
   font-weight: 600;
 }
 .prose-editorial a {
-  color: var(--bronze-deep);
+  color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

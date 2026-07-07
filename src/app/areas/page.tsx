@@ -16,7 +16,7 @@ export default function AreasPage() {
       <section className="container-x pb-16 pt-36 md:pt-44">
         <Reveal>
           <p className="eyebrow">Bali Areas</p>
-          <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-light text-ink md:text-6xl">
+          <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
             The island, neighbourhood by neighbourhood
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">

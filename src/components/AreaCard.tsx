@@ -6,10 +6,10 @@ export default function AreaCard({ area, tall = false }: { area: Area; tall?: bo
   return (
     <TransitionLink
       href={`/areas/${area.slug}`}
-      className="group relative block overflow-hidden"
+      className="group relative block"
       aria-label={`Explore ${area.name}`}
     >
-      <div className={`img-frame relative ${tall ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
+      <div className={`img-frame relative rounded-3xl ${tall ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
         <Image
           src={area.cardImage}
           alt={`${area.name}, Bali`}
@@ -17,17 +17,21 @@ export default function AreaCard({ area, tall = false }: { area: Area; tall?: bo
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/10 to-transparent" />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-        <h3 className="font-display text-2xl text-cream md:text-3xl">{area.name}</h3>
-        <p className="mt-2 line-clamp-2 max-w-xs text-sm leading-relaxed text-cream/75">
-          {area.tagline}
-        </p>
-        <span className="mt-4 inline-flex items-center gap-2 text-[10px] font-medium tracking-[0.3em] uppercase text-cream">
-          Explore Area
-          <span className="block h-px w-8 bg-bronze transition-all duration-500 group-hover:w-14" />
-        </span>
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent" />
+        <div className="absolute inset-x-3 bottom-3">
+          <div className="glass rounded-2xl p-5 transition-colors duration-500 group-hover:bg-white/15 md:p-6">
+            <h3 className="font-display text-xl font-medium tracking-tight text-white md:text-2xl">
+              {area.name}
+            </h3>
+            <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-white/70">
+              {area.tagline}
+            </p>
+            <span className="mt-3 inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.28em] uppercase text-white">
+              Explore Area
+              <span className="block h-px w-7 bg-white/70 transition-all duration-500 group-hover:w-12" />
+            </span>
+          </div>
+        </div>
       </div>
     </TransitionLink>
   );

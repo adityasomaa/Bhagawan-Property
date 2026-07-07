@@ -28,17 +28,17 @@ export default function ContactForm({ subject }: { subject?: string }) {
 
   if (sent) {
     return (
-      <div className="border border-line bg-paper p-10 text-center">
+      <div className="rounded-3xl border border-line bg-paper p-10 text-center">
         <p className="font-display text-2xl text-ink">Thank you.</p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Your message has been prepared in WhatsApp — press send and we&apos;ll come back to you
           within one working day. Prefer email? Write to{" "}
-          <a href={`mailto:${site.email}`} className="text-bronze-deep underline">
+          <a href={`mailto:${site.email}`} className="text-ink underline">
             {site.email}
           </a>
           .
         </p>
-        <p className="mt-4 text-[10px] tracking-[0.4em] uppercase text-bronze">#Here4U</p>
+        <p className="mt-4 text-[10px] tracking-[0.4em] uppercase text-muted">#Here4U</p>
       </div>
     );
   }

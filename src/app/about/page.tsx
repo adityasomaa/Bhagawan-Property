@@ -62,7 +62,7 @@ export default function AboutPage() {
             <p className="text-[11px] font-medium tracking-[0.4em] uppercase text-cream/75">
               About Bhagawan Property
             </p>
-            <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-light text-cream md:text-6xl">
+            <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-cream md:text-6xl">
               A trusted advisor, by design
             </h1>
           </Reveal>
@@ -78,7 +78,7 @@ export default function AboutPage() {
         <Reveal delay={0.1}>
           <div className="space-y-6 text-base leading-relaxed text-ink-soft md:text-lg">
             <p>
-              <em className="font-display italic text-ink">Bhagawan</em> — from the Sanskrit for
+              <strong className="font-display font-medium text-ink">Bhagawan</strong> — from the Sanskrit for
               &ldquo;the fortunate one, the revered&rdquo; — is a name that carries a
               responsibility. In Bali, where the spiritual and the practical share every address,
               we believe a property advisor should be worthy of the trust placed in them.
@@ -96,7 +96,7 @@ export default function AboutPage() {
               notaries and lawyers we use ourselves. And when the right answer is &ldquo;wait&rdquo;
               or &ldquo;walk away,&rdquo; that is exactly what we say.
             </p>
-            <p className="font-display text-xl italic text-bronze-deep">
+            <p className="font-display text-xl font-medium text-ink">
               {site.tagline}
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function AboutPage() {
             {values.map((v, i) => (
               <Reveal key={v.title} delay={i * 0.04}>
                 <div className="grid gap-4 border-t border-cream/15 py-8 md:grid-cols-[100px_1fr_2fr] md:gap-10">
-                  <span className="font-display text-3xl text-bronze">
+                  <span className="font-display text-3xl text-white/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="font-display text-xl text-cream">{v.title}</h3>
@@ -127,7 +127,7 @@ export default function AboutPage() {
       <section className="container-x py-24 text-center md:py-32">
         <Reveal>
           <p className="eyebrow">Our Signature</p>
-          <p className="font-display mt-6 text-5xl font-light text-ink md:text-7xl">#Here4U</p>
+          <p className="font-display mt-6 text-5xl font-medium tracking-tight text-ink md:text-7xl">#Here4U</p>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
             Before the purchase, during the process, and long after the keys — one message away,
             whenever Bali calls.

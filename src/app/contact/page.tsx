@@ -54,7 +54,7 @@ export default function ContactPage() {
           </Reveal>
         </div>
         <Reveal delay={0.15}>
-          <div className="border border-line bg-paper p-8 md:p-12">
+          <div className="rounded-3xl border border-line bg-paper p-8 md:p-12">
             <ContactForm />
           </div>
         </Reveal>

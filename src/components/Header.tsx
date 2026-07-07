@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import { nav, site, waLink } from "@/lib/site";
+import LogoMark from "@/components/Logo";
+import { nav, waLink } from "@/lib/site";
 import { gsap } from "@/lib/gsapClient";
 
 const IMMERSIVE = [
@@ -68,130 +69,135 @@ export default function Header() {
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ${
-          scrolled && !menuOpen
-            ? "border-b border-line/70 bg-cream/90 backdrop-blur-md"
-            : "border-b border-transparent"
-        }`}
-      >
-        <div className="container-x flex h-20 items-center justify-between md:h-24">
-          <TransitionLink
-            href="/"
-            aria-label="Bhagawan Property — home"
-            className={`transition-colors duration-500 ${light ? "text-cream" : "text-ink"}`}
-          >
-            <span className="font-display block text-xl leading-none tracking-[0.22em] md:text-2xl">
-              BHAGAWAN
-            </span>
-            <span
-              className={`mt-1 block text-[9px] font-medium tracking-[0.5em] uppercase ${
-                light ? "text-cream/70" : "text-bronze"
-              }`}
-            >
-              Property &middot; Bali
-            </span>
-          </TransitionLink>
-
-          {/* Desktop nav */}
-          <nav
-            className={`hidden items-center gap-8 lg:flex ${light ? "text-cream" : "text-ink"}`}
-            aria-label="Primary"
-          >
-            {nav.map((item) =>
-              "children" in item && item.children ? (
-                <div key={item.href} className="group relative">
-                  <TransitionLink
-                    href={item.href}
-                    className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.22em] uppercase"
-                    style={{ display: "inline-flex" }}
-                  >
-                    <span className="link-line">{item.label}</span>
-                    <svg
-                      width="9"
-                      height="6"
-                      viewBox="0 0 10 6"
-                      fill="none"
-                      aria-hidden
-                      className="shrink-0 transition-transform duration-300 group-hover:rotate-180"
-                    >
-                      <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" />
-                    </svg>
-                  </TransitionLink>
-                  <div className="invisible absolute left-1/2 top-full -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                    <div className="flex min-w-44 flex-col border border-line bg-paper py-2 text-ink shadow-[0_20px_50px_-24px_rgba(34,30,21,0.35)]">
-                      {item.children.map((child) => (
-                        <TransitionLink
-                          key={child.href}
-                          href={child.href}
-                          className="px-6 py-3 text-[11px] font-medium tracking-[0.22em] uppercase transition-colors hover:bg-sand hover:text-bronze-deep"
-                        >
-                          {child.label}
-                        </TransitionLink>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <TransitionLink
-                  key={item.href}
-                  href={item.href}
-                  className={`link-line text-[11px] font-medium tracking-[0.22em] uppercase ${
-                    pathname === item.href ? "active" : ""
-                  }`}
-                >
-                  {item.label}
-                </TransitionLink>
-              )
-            )}
-            <a
-              href={waLink("Hi Bhagawan Property, I'd like to enquire about property in Bali.")}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`btn !px-5 !py-2.5 !text-[10px] ${light ? "btn-light" : ""}`}
-            >
-              WhatsApp
-            </a>
-          </nav>
-
-          {/* Hamburger */}
-          <button
-            type="button"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((v) => !v)}
-            className={`relative z-[70] flex h-11 w-11 flex-col items-center justify-center gap-[7px] lg:hidden ${
-              menuOpen ? "text-cream" : light ? "text-cream" : "text-ink"
+      <header className="fixed inset-x-0 top-0 z-50">
+        <div className="container-x pt-3 md:pt-5">
+          <div
+            className={`flex h-14 items-center justify-between rounded-full pl-5 pr-2.5 transition-all duration-500 md:h-16 md:pl-7 md:pr-3 ${
+              menuOpen
+                ? "bg-transparent border border-transparent text-cream"
+                : light
+                  ? "glass text-white"
+                  : "glass-light text-ink"
             }`}
           >
-            <span
-              className={`block h-px w-7 bg-current transition-transform duration-400 ${
-                menuOpen ? "translate-y-[4px] rotate-45" : ""
-              }`}
-            />
-            <span
-              className={`block h-px w-7 bg-current transition-transform duration-400 ${
-                menuOpen ? "-translate-y-[4px] -rotate-45" : ""
-              }`}
-            />
-          </button>
+            <TransitionLink
+              href="/"
+              aria-label="Bhagawan Property — home"
+              className="flex items-center gap-3"
+            >
+              <LogoMark className="h-7 w-7 md:h-8 md:w-8" />
+              <span>
+                <span className="font-display block text-base leading-none font-semibold tracking-[0.18em] md:text-lg">
+                  BHAGAWAN
+                </span>
+                <span
+                  className={`mt-0.5 block text-[8px] font-medium tracking-[0.42em] uppercase ${
+                    light || menuOpen ? "opacity-60" : "text-muted"
+                  }`}
+                >
+                  Property &middot; Bali
+                </span>
+              </span>
+            </TransitionLink>
+
+            {/* Desktop nav */}
+            <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
+              {nav.map((item) =>
+                "children" in item && item.children ? (
+                  <div key={item.href} className="group relative">
+                    <TransitionLink
+                      href={item.href}
+                      className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.2em] uppercase"
+                      style={{ display: "inline-flex" }}
+                    >
+                      <span className="link-line">{item.label}</span>
+                      <svg
+                        width="9"
+                        height="6"
+                        viewBox="0 0 10 6"
+                        fill="none"
+                        aria-hidden
+                        className="shrink-0 transition-transform duration-300 group-hover:rotate-180"
+                      >
+                        <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.2" />
+                      </svg>
+                    </TransitionLink>
+                    <div className="invisible absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                      <div className="glass-light flex min-w-48 flex-col rounded-2xl p-2 text-ink">
+                        {item.children.map((child) => (
+                          <TransitionLink
+                            key={child.href}
+                            href={child.href}
+                            className="rounded-xl px-5 py-3 text-[11px] font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink/5"
+                          >
+                            {child.label}
+                          </TransitionLink>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <TransitionLink
+                    key={item.href}
+                    href={item.href}
+                    className={`link-line text-[11px] font-medium tracking-[0.2em] uppercase ${
+                      pathname === item.href ? "active" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </TransitionLink>
+                )
+              )}
+              <a
+                href={waLink("Hi Bhagawan Property, I'd like to enquire about property in Bali.")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`btn !px-5 !py-2.5 !text-[10px] ${light ? "btn-light" : "btn-solid"}`}
+              >
+                WhatsApp
+              </a>
+            </nav>
+
+            {/* Hamburger */}
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+              className="relative z-[70] flex h-11 w-11 flex-col items-center justify-center gap-[7px] text-current lg:hidden"
+            >
+              <span
+                className={`block h-px w-6 bg-current transition-transform duration-400 ${
+                  menuOpen ? "translate-y-[4px] rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`block h-px w-6 bg-current transition-transform duration-400 ${
+                  menuOpen ? "-translate-y-[4px] -rotate-45" : ""
+                }`}
+              />
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Mobile full-screen menu */}
       <div
         ref={menuRef}
-        className="fixed inset-0 z-[60] hidden flex-col bg-ink text-cream lg:hidden"
+        className="fixed inset-0 z-[60] hidden flex-col bg-ink/95 text-cream backdrop-blur-2xl lg:hidden"
         style={{ display: "none", opacity: 0 }}
         aria-hidden={!menuOpen}
       >
-        <div className="flex h-full flex-col justify-between overflow-y-auto px-8 pb-10 pt-32" data-lenis-prevent>
+        <div
+          className="flex h-full flex-col justify-between overflow-y-auto px-8 pb-10 pt-32"
+          data-lenis-prevent
+        >
           <nav className="flex flex-col gap-1" aria-label="Mobile">
             {nav.map((item) => (
               <div key={item.href} className="m-link">
                 <TransitionLink
                   href={item.href}
-                  className="font-display block py-2.5 text-3xl tracking-wide text-cream transition-colors hover:text-bronze sm:text-4xl"
+                  className="font-display block py-2.5 text-3xl font-medium tracking-tight text-cream transition-colors hover:text-white/60 sm:text-4xl"
                 >
                   {item.label}
                 </TransitionLink>
@@ -201,7 +207,7 @@ export default function Header() {
                       <TransitionLink
                         key={child.href}
                         href={child.href}
-                        className="text-[11px] font-medium tracking-[0.3em] uppercase text-cream/60 transition-colors hover:text-bronze"
+                        className="text-[11px] font-medium tracking-[0.3em] uppercase text-cream/60 transition-colors hover:text-white"
                       >
                         {child.label}
                       </TransitionLink>

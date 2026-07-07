@@ -115,7 +115,7 @@ export default function Select({ label, value, onChange, options, name, classNam
           aria-labelledby={label ? `${id}-label` : undefined}
           onKeyDown={onListKeyDown}
           data-lenis-prevent
-          className="absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto border border-line bg-paper py-1.5 shadow-[0_24px_60px_-28px_rgba(34,30,21,0.45)]"
+          className="glass-light absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl p-1.5"
         >
           {options.map((o) => {
             const selected = o.value === current?.value;
@@ -130,12 +130,12 @@ export default function Select({ label, value, onChange, options, name, classNam
                     onChange(o.value);
                     setOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-sand focus:bg-sand focus:outline-none ${
-                    selected ? "text-bronze-deep" : "text-ink-soft"
+                  className={`flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-ink/5 focus:bg-ink/5 focus:outline-none ${
+                    selected ? "font-semibold text-ink" : "text-ink-soft"
                   }`}
                 >
                   <span className="truncate">{o.label}</span>
-                  {selected && <span className="h-px w-4 shrink-0 bg-bronze" />}
+                  {selected && <span className="h-px w-4 shrink-0 bg-ink" />}
                 </button>
               </li>
             );

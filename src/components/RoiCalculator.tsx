@@ -96,7 +96,7 @@ export default function RoiCalculator() {
   return (
     <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr]">
       {/* Inputs */}
-      <div className="space-y-8 border border-line bg-paper p-7 md:p-10">
+      <div className="space-y-8 rounded-3xl border border-line bg-paper p-7 md:p-10">
         <div>
           <p className="font-display text-xl text-ink">The property</p>
           <div className="mt-6 space-y-7">
@@ -174,8 +174,8 @@ export default function RoiCalculator() {
 
       {/* Results */}
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <div className="bg-ink p-7 text-cream md:p-10">
-          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-bronze">
+        <div className="rounded-3xl bg-ink p-7 text-cream md:p-10">
+          <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/60">
             Projected returns
           </p>
           <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-7">
@@ -185,7 +185,7 @@ export default function RoiCalculator() {
             </div>
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Net yield</p>
-              <p className="font-display mt-1.5 text-3xl text-bronze">{formatPercent(r.netYield)}</p>
+              <p className="font-display mt-1.5 text-3xl text-white">{formatPercent(r.netYield)}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Gross revenue / yr</p>
@@ -224,13 +224,13 @@ export default function RoiCalculator() {
               </div>
               <div className="flex justify-between gap-4 border-t border-cream/15 pt-3 text-base">
                 <span className="text-cream/80">Total return</span>
-                <span className={`font-display text-xl ${r.totalReturn >= 0 ? "text-bronze" : "text-red-300"}`}>
+                <span className={`font-display text-xl ${r.totalReturn >= 0 ? "text-white" : "text-red-300"}`}>
                   {formatPrice(r.totalReturn)} ({formatPercent(r.totalReturnPct, 0)})
                 </span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/60">Annualised ROI</span>
-                <span className="font-medium text-bronze">{formatPercent(r.annualisedRoi)} / yr</span>
+                <span className="font-medium text-white">{formatPercent(r.annualisedRoi)} / yr</span>
               </div>
             </div>
           </div>

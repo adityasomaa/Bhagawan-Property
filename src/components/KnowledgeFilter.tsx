@@ -20,10 +20,10 @@ export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
             key={c}
             type="button"
             onClick={() => setActive(c)}
-            className={`px-4 py-2 text-[10px] font-medium tracking-[0.22em] uppercase transition-colors duration-300 ${
+            className={`rounded-full px-4 py-2 text-[10px] font-semibold tracking-[0.22em] uppercase transition-colors duration-300 ${
               active === c
                 ? "bg-ink text-cream"
-                : "border border-line bg-transparent text-muted hover:border-bronze hover:text-bronze-deep"
+                : "border border-line bg-transparent text-muted hover:border-ink hover:text-ink"
             }`}
           >
             {c}
@@ -37,7 +37,7 @@ export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
           ))}
         </div>
       ) : (
-        <div className="mt-10 border border-line bg-paper p-14 text-center">
+        <div className="mt-10 rounded-3xl border border-line bg-paper p-14 text-center">
           <p className="font-display text-2xl text-ink">More {active.toLowerCase()} guides are on the way.</p>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
             We publish new guides regularly. In the meantime, ask us directly — advice is free.

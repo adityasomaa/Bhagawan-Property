@@ -82,9 +82,9 @@ export default async function ArticlePage({
                 Knowledge Base
               </TransitionLink>
               <span>/</span>
-              <span className="text-bronze-deep">{article.category}</span>
+              <span className="text-ink">{article.category}</span>
             </nav>
-            <h1 className="font-display mt-6 text-3xl leading-[1.15] font-light text-ink md:text-5xl">
+            <h1 className="font-display mt-6 text-3xl leading-[1.15] font-medium tracking-tight text-ink md:text-5xl">
               {article.title}
             </h1>
             <div className="mt-6 flex items-center gap-4 text-[11px] tracking-[0.2em] uppercase text-muted">
@@ -134,7 +134,7 @@ export default async function ArticlePage({
 
         {article.faq && (
           <Reveal>
-            <div className="mx-auto mt-16 max-w-3xl border border-line bg-paper p-8 md:p-10">
+            <div className="mx-auto mt-16 max-w-3xl rounded-3xl border border-line bg-paper p-8 md:p-10">
               <h2 className="font-display text-2xl text-ink">Frequently asked</h2>
               <dl className="mt-6 space-y-6">
                 {article.faq.map((f) => (
@@ -149,8 +149,8 @@ export default async function ArticlePage({
         )}
 
         <Reveal>
-          <div className="mx-auto mt-16 max-w-3xl border-l-2 border-bronze bg-paper p-8 text-center md:p-10">
-            <p className="font-display text-2xl font-light text-ink">
+          <div className="mx-auto mt-16 max-w-3xl rounded-3xl border border-line bg-paper p-8 text-center md:p-10">
+            <p className="font-display text-2xl font-medium tracking-tight text-ink">
               Questions this guide didn&apos;t answer?
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
@@ -164,7 +164,7 @@ export default async function ArticlePage({
 
         <section className="mt-24 border-t border-line pt-16">
           <Reveal>
-            <h2 className="font-display text-3xl font-light text-ink md:text-4xl">Keep reading</h2>
+            <h2 className="font-display text-3xl font-medium tracking-tight text-ink md:text-4xl">Keep reading</h2>
           </Reveal>
           <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((a, i) => (

@@ -88,7 +88,7 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
           <button
             type="button"
             onClick={close}
-            className="fixed right-6 top-6 z-10 flex h-12 w-12 items-center justify-center border border-cream/30 text-cream transition-colors hover:border-cream"
+            className="glass fixed right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors hover:bg-white/20"
             aria-label="Close gallery"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -101,7 +101,7 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
                 {name} &middot; {images.length} photos
               </p>
               {images.map((src, i) => (
-                <div key={src + i} className="relative aspect-[16/10] w-full">
+                <div key={src + i} className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
                   <Image
                     src={src}
                     alt={`${name} — photo ${i + 1}`}

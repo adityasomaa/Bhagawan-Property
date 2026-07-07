@@ -17,7 +17,7 @@ export default function RoiCalculatorPage() {
       <section className="container-x pb-12 pt-36 md:pt-44">
         <Reveal>
           <p className="eyebrow">Investment Tools</p>
-          <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-light text-ink md:text-6xl">
+          <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
             The ROI Calculator
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
@@ -37,7 +37,7 @@ export default function RoiCalculatorPage() {
       <section className="container-x pb-24 md:pb-32">
         <Reveal>
           <div className="border border-line bg-paper p-8 text-center md:p-12">
-            <p className="font-display text-2xl font-light text-ink md:text-3xl">
+            <p className="font-display text-2xl font-medium tracking-tight text-ink md:text-3xl">
               Want these numbers for a real property, with real comparable data?
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">

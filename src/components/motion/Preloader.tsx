@@ -9,7 +9,7 @@ import LogoMark from "@/components/Logo";
  * html[data-preloaded="1"] before paint on repeat visits, and CSS hides the
  * overlay entirely, so this only ever plays once per session.
  *
- * NOTE: the element is removed via React state (never el.remove()) so React's
+ * The element is removed via React state (never el.remove()) so React's
  * reconciler stays in sync during later route transitions.
  */
 export default function Preloader() {
@@ -20,9 +20,14 @@ export default function Preloader() {
     if (played.current) return;
     played.current = true;
 
+    const ready = () => {
+      document.documentElement.dataset.appReady = "1";
+      window.dispatchEvent(new CustomEvent("bp:app-ready"));
+    };
+
     const el = document.getElementById("preloader");
     if (!el || document.documentElement.dataset.preloaded === "1") {
-      document.documentElement.dataset.appReady = "1";
+      ready();
       setDone(true);
       return;
     }
@@ -37,8 +42,11 @@ export default function Preloader() {
     const line = el.querySelector(".pl-line");
     const sub = el.querySelector(".pl-sub");
 
+    let finished = false;
     const finish = () => {
-      document.documentElement.dataset.appReady = "1";
+      if (finished) return;
+      finished = true;
+      ready();
       document.body.style.overflow = prevOverflow;
       window.__lenis?.start();
       setDone(true);
@@ -55,28 +63,25 @@ export default function Preloader() {
           finish();
         },
       })
-      .to(logo, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.9,
-        ease: "power3.out",
-        delay: 0.2,
-      })
+      // Logo is visible from the first paint — this just settles it in.
+      .fromTo(
+        logo,
+        { scale: 0.82, y: 8 },
+        { scale: 1, y: 0, duration: 1.0, ease: "power3.out", delay: 0.15 }
+      )
       .to(
         letters,
         {
           yPercent: -100,
           duration: 0.9,
-          stagger: 0.055,
+          stagger: 0.05,
           ease: "power4.out",
         },
-        "-=0.45"
+        "-=0.6"
       )
       .to(line, { scaleX: 1, duration: 0.9, ease: "power3.inOut" }, "-=0.55")
       .to(sub, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.45")
-      .add(() => {
-        document.documentElement.dataset.appReady = "1";
-      }, "+=0.55")
+      .add(ready, "+=0.5")
       .to(el, {
         yPercent: -100,
         duration: 1.0,
@@ -90,17 +95,14 @@ export default function Preloader() {
   return (
     <div id="preloader" aria-hidden="true">
       <div className="text-center">
-        <div
-          className="pl-logo mx-auto mb-6 text-bronze"
-          style={{ opacity: 0, transform: "scale(0.85)" }}
-        >
-          <LogoMark className="mx-auto h-14 w-14 md:h-16 md:w-16" />
+        <div className="pl-logo mx-auto mb-7 text-ink">
+          <LogoMark className="mx-auto h-16 w-16 md:h-20 md:w-20" />
         </div>
         <div className="flex justify-center overflow-hidden pb-1">
           {"BHAGAWAN".split("").map((ch, i) => (
             <span
               key={i}
-              className="pl-letter font-display inline-block translate-y-full text-4xl tracking-[0.3em] text-ink md:text-6xl"
+              className="pl-letter font-display inline-block text-3xl font-medium tracking-[0.3em] text-ink md:text-5xl"
               style={{ transform: "translateY(110%)" }}
             >
               {ch}
@@ -108,7 +110,7 @@ export default function Preloader() {
           ))}
         </div>
         <div
-          className="pl-line mx-auto mt-5 h-px w-40 bg-bronze md:w-56"
+          className="pl-line mx-auto mt-5 h-px w-40 bg-ink/40 md:w-56"
           style={{ transform: "scaleX(0)" }}
         />
         <p

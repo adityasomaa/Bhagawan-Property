@@ -103,7 +103,7 @@ export default function PropertyCatalogue({ items }: { items: Property[] }) {
           ))}
         </div>
       ) : (
-        <div className="mt-8 border border-line bg-paper p-14 text-center">
+        <div className="mt-8 rounded-3xl border border-line bg-paper p-14 text-center">
           <p className="font-display text-2xl text-ink">Nothing matches those filters — yet.</p>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
             Our best properties often sell before they reach the website. Tell us what you&apos;re

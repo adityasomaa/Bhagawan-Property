@@ -10,13 +10,19 @@ import {
 } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { gsap, ScrollTrigger } from "@/lib/gsapClient";
+import { ScrollTrigger } from "@/lib/gsapClient";
 import LogoMark from "@/components/Logo";
 
 /**
- * Page transitions: on click the curtain CLOSES over the page, the route
- * content swaps behind it, the window scrolls to top instantly, then the
- * curtain OPENS. All the change happens while the page is covered.
+ * Page transitions with a guaranteed sequence:
+ *   1. curtain CLOSES over the page
+ *   2. route content swaps behind it
+ *   3. window scrolls to top instantly (still covered)
+ *   4. curtain OPENS
+ *
+ * The curtain is driven by CSS transitions (compositor thread), so
+ * main-thread jank can never desync it, and the route only changes after
+ * the curtain's own `transitionend` confirms it is fully closed.
  */
 const TransitionContext = createContext<{ navigate: (href: string) => void }>({
   navigate: () => {},
@@ -26,12 +32,30 @@ export function usePageTransition() {
   return useContext(TransitionContext);
 }
 
+/** Wait for the curtain's transform transition to finish (with a hard cap). */
+function afterTransition(el: HTMLElement, capMs: number) {
+  return new Promise<void>((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      el.removeEventListener("transitionend", onEnd);
+      clearTimeout(timer);
+      resolve();
+    };
+    const onEnd = (e: TransitionEvent) => {
+      if (e.target === el && e.propertyName === "transform") finish();
+    };
+    el.addEventListener("transitionend", onEnd);
+    const timer = setTimeout(finish, capMs);
+  });
+}
+
 export function TransitionProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const pendingRef = useRef<string | null>(null);
   const busyRef = useRef(false);
-  const closeTlRef = useRef<gsap.core.Timeline | null>(null);
 
   const navigate = useCallback(
     (href: string) => {
@@ -47,108 +71,85 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      const curtain = document.getElementById("transition-curtain");
+      if (!curtain) {
+        router.push(href);
+        return;
+      }
+
       busyRef.current = true;
       pendingRef.current = href;
       window.dispatchEvent(new CustomEvent("pt:close-menu"));
       window.__lenis?.stop();
 
-      const curtain = document.getElementById("transition-curtain");
-      const mark = curtain?.querySelector(".curtain-mark");
-      if (!curtain || !mark) {
-        router.push(href);
-        return;
-      }
+      // Phase 1 — CLOSE. The route changes only after the curtain has
+      // fully covered the viewport.
+      curtain.classList.add("is-animating");
+      // Force a style flush so the transition reliably starts from 102%.
+      void curtain.getBoundingClientRect();
+      curtain.classList.add("is-closed");
 
-      // Safety net: if rAF is throttled (background tab), never strand the
-      // user — force the route change after a grace period.
-      let pushed = false;
-      const push = () => {
-        if (pushed) return;
-        pushed = true;
+      afterTransition(curtain, 1400).then(() => {
         router.push(href);
-      };
-      const fallback = setTimeout(push, 3500);
-
-      // The route only changes in onComplete — i.e. strictly AFTER the
-      // curtain has fully covered the page. Sequence: close → change
-      // content → scroll top → open.
-      closeTlRef.current = gsap
-        .timeline({
-          onComplete: () => {
-            clearTimeout(fallback);
-            push();
-          },
-        })
-        .set(curtain, { yPercent: 101 })
-        .set(mark, { opacity: 0, y: 28 })
-        .to(curtain, { yPercent: 0, duration: 1.0, ease: "power4.inOut" })
-        .to(mark, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.35");
+      });
     },
     [pathname, router]
   );
 
-  // Route committed behind the closed curtain: scroll to top, then open.
+  // Phase 2+3+4 — route committed behind the closed curtain: scroll to top,
+  // let the new hero image decode, then open.
   useEffect(() => {
     if (!pendingRef.current) return;
     pendingRef.current = null;
 
-    // The close timeline has served its purpose — make sure a throttled
-    // remnant can never resume and re-cover the page.
-    closeTlRef.current?.kill();
-    closeTlRef.current = null;
+    const curtain = document.getElementById("transition-curtain");
 
     // Instant scroll-to-top while covered.
     window.__lenis?.scrollTo(0, { immediate: true, force: true });
     window.scrollTo(0, 0);
     ScrollTrigger.refresh();
 
-    const curtain = document.getElementById("transition-curtain");
-    const mark = curtain?.querySelector(".curtain-mark");
-    if (!curtain || !mark) {
+    const finish = () => {
       busyRef.current = false;
       window.__lenis?.start();
+    };
+
+    if (!curtain) {
+      finish();
       return;
     }
 
-    let finished = false;
-    let tl: gsap.core.Timeline | null = null;
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      busyRef.current = false;
-      window.__lenis?.start();
-    };
-
     // Let the new page's hero image finish decoding behind the curtain so
     // the reveal shows a fully painted page (capped so it can never hang).
-    const heroReady = () => {
-      const img = document.querySelector<HTMLImageElement>("main img");
-      if (!img || img.complete) return Promise.resolve();
-      return Promise.race([
-        img.decode().catch(() => {}),
-        new Promise((r) => setTimeout(r, 1200)),
-      ]);
+    const img = document.querySelector<HTMLImageElement>("main img");
+    const heroReady =
+      !img || img.complete
+        ? Promise.resolve()
+        : Promise.race([
+            img.decode().catch(() => {}),
+            new Promise((r) => setTimeout(r, 1200)),
+          ]);
+
+    let cancelled = false;
+    heroReady
+      .then(() => new Promise((r) => setTimeout(r, 300))) // settle beat
+      .then(() => {
+        if (cancelled) return;
+        curtain.classList.add("is-opening");
+        return afterTransition(curtain, 1400);
+      })
+      .then(() => {
+        if (cancelled) return;
+        // Reset to the resting position (below the viewport) without
+        // animating: drop the transition class first.
+        curtain.classList.remove("is-animating");
+        curtain.classList.remove("is-closed", "is-opening");
+        finish();
+      });
+
+    return () => {
+      cancelled = true;
     };
-
-    heroReady().then(() => {
-      if (finished) return;
-      tl = gsap
-        .timeline({ delay: 0.3 })
-        .to(mark, { opacity: 0, y: -22, duration: 0.45, ease: "power2.in" })
-        .to(curtain, { yPercent: -101, duration: 1.1, ease: "power4.inOut" }, "-=0.15")
-        .set(curtain, { yPercent: 101 })
-        .add(finish);
-    });
-
-    // Safety net: if rAF is throttled, snap the curtain away instead of
-    // leaving the page covered and navigation locked.
-    setTimeout(() => {
-      if (finished) return;
-      tl?.kill();
-      gsap.set(curtain, { yPercent: 101 });
-      gsap.set(mark, { opacity: 0 });
-      finish();
-    }, 4500);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -157,11 +158,11 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       {children}
       <div id="transition-curtain" aria-hidden="true">
         <div className="curtain-mark text-center">
-          <LogoMark className="mx-auto mb-5 h-12 w-12 text-bronze" />
-          <span className="font-display block text-2xl tracking-[0.35em] uppercase md:text-3xl">
+          <LogoMark className="mx-auto mb-5 h-12 w-12 text-cream" />
+          <span className="font-display block text-2xl font-medium tracking-[0.3em] uppercase md:text-3xl">
             Bhagawan
           </span>
-          <span className="mt-2 block text-[10px] tracking-[0.5em] uppercase opacity-60">
+          <span className="mt-2 block text-[10px] tracking-[0.5em] uppercase opacity-50">
             #Here4U
           </span>
         </div>

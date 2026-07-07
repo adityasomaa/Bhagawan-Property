@@ -16,7 +16,7 @@ export default function TermsOfUsePage() {
       <div className="mx-auto max-w-3xl">
         <Reveal>
           <p className="eyebrow">Legal</p>
-          <h1 className="font-display mt-4 text-4xl font-light text-ink md:text-5xl">
+          <h1 className="font-display mt-4 text-4xl font-medium tracking-tight text-ink md:text-5xl">
             Terms of Use
           </h1>
           <p className="mt-4 text-sm text-muted">Last updated: 1 July 2026</p>

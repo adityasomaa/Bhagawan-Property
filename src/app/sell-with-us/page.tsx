@@ -99,7 +99,7 @@ export default function SellWithUsPage() {
             <p className="text-[11px] font-medium tracking-[0.4em] uppercase text-cream/75">
               Sell With Us
             </p>
-            <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-light text-cream md:text-6xl">
+            <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-cream md:text-6xl">
               Sell your property with confidence
             </h1>
             <p className="mt-6 max-w-xl text-base leading-relaxed text-cream/80 md:text-lg">
@@ -120,11 +120,11 @@ export default function SellWithUsPage() {
           title="Sellers deserve honesty too"
           description="An overpriced listing helps nobody — it goes stale, and stale listings sell low. Our approach gets properties sold at their true value."
         />
-        <div className="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {advantages.map((a, i) => (
-            <Reveal key={a.title} delay={(i % 3) * 0.08} className="bg-cream">
-              <div className="h-full p-8 md:p-10">
-                <span className="font-display text-lg text-bronze">{String(i + 1).padStart(2, "0")}</span>
+            <Reveal key={a.title} delay={(i % 3) * 0.08}>
+              <div className="h-full rounded-3xl border border-line bg-paper p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(11,11,12,0.35)] md:p-10">
+                <span className="font-display text-lg font-medium text-muted">{String(i + 1).padStart(2, "0")}</span>
                 <h3 className="font-display mt-4 text-xl text-ink">{a.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">{a.description}</p>
               </div>
@@ -145,7 +145,7 @@ export default function SellWithUsPage() {
             {process.map((p, i) => (
               <Reveal key={p.step} delay={i * 0.05}>
                 <div className="grid gap-4 border-t border-cream/15 py-8 md:grid-cols-[100px_1fr_2fr] md:gap-10">
-                  <span className="font-display text-3xl text-bronze">{p.step}</span>
+                  <span className="font-display text-3xl text-white/60">{p.step}</span>
                   <h3 className="font-display text-xl text-cream">{p.title}</h3>
                   <p className="text-base leading-relaxed text-cream/65">{p.description}</p>
                 </div>
@@ -165,7 +165,7 @@ export default function SellWithUsPage() {
             align="center"
           />
           <Reveal delay={0.15}>
-            <div className="mt-12 border border-line bg-paper p-8 md:p-12">
+            <div className="mt-12 rounded-3xl border border-line bg-paper p-8 md:p-12">
               <SellForm />
             </div>
           </Reveal>

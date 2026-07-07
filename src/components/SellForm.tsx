@@ -34,17 +34,17 @@ export default function SellForm() {
 
   if (sent) {
     return (
-      <div className="border border-line bg-cream p-10 text-center">
+      <div className="rounded-3xl border border-line bg-cream p-10 text-center">
         <p className="font-display text-2xl text-ink">Thank you — we&apos;re on it.</p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Your listing details are ready in WhatsApp — press send (and attach photos there if you
           like). We&apos;ll review and come back within one working day. Prefer email? Reach us at{" "}
-          <a href={`mailto:${site.email}`} className="text-bronze-deep underline">
+          <a href={`mailto:${site.email}`} className="text-ink underline">
             {site.email}
           </a>
           .
         </p>
-        <p className="mt-4 text-[10px] tracking-[0.4em] uppercase text-bronze">#Here4U</p>
+        <p className="mt-4 text-[10px] tracking-[0.4em] uppercase text-muted">#Here4U</p>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function SellForm() {
           placeholder="Bedrooms, land size, tenure (freehold / leasehold + years), current rental income, anything special..."
         />
       </div>
-      <div className="border border-dashed border-line bg-cream/60 p-5 text-sm leading-relaxed text-muted">
+      <div className="rounded-2xl border border-dashed border-line bg-cream/60 p-5 text-sm leading-relaxed text-muted">
         <strong className="text-ink">Photos (optional):</strong> after submitting, you can attach
         photos directly in the WhatsApp conversation this form opens.
       </div>

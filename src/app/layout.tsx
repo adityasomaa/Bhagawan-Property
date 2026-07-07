@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -9,16 +9,15 @@ import SmoothScroll from "@/components/motion/SmoothScroll";
 import { TransitionProvider } from "@/components/motion/PageTransition";
 import { site } from "@/lib/site";
 
-const fraunces = Fraunces({
+const space = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-fraunces",
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+  variable: "--font-space",
+  weight: ["400", "500", "600", "700"],
 });
 
-const instrument = Instrument_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-instrument",
+  variable: "--font-inter",
   weight: ["400", "500", "600"],
 });
 
@@ -109,7 +108,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${instrument.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${space.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         <Script id="preload-check" strategy="beforeInteractive">
           {`try{if(sessionStorage.getItem("bp-preloaded")==="1"){document.documentElement.dataset.preloaded="1";document.documentElement.dataset.appReady="1"}}catch(e){}`}

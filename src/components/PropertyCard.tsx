@@ -10,7 +10,7 @@ export default function PropertyCard({ property }: { property: Property }) {
       className="group block"
       aria-label={`View ${property.name} in ${property.areaName}`}
     >
-      <div className="img-frame relative aspect-[4/3]">
+      <div className="img-frame relative aspect-[4/3] rounded-3xl">
         <Image
           src={property.images[0]}
           alt={`${property.name} — ${property.areaName}, Bali`}
@@ -18,36 +18,44 @@ export default function PropertyCard({ property }: { property: Property }) {
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           className="object-cover"
         />
-        <span className="absolute left-4 top-4 bg-cream/95 px-3 py-1.5 text-[9px] font-semibold tracking-[0.28em] uppercase text-ink">
+        <span className="glass-dark absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[9px] font-semibold tracking-[0.24em] uppercase text-white">
           {property.tenure}
           {property.tenure === "leasehold" && property.leaseholdYears
             ? ` · ${property.leaseholdYears} yrs`
             : ""}
         </span>
+        <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
+          {formatPrice(property.price)}
+        </span>
       </div>
-      <div className="pt-5">
+      <div className="px-1 pt-5">
         <div className="flex items-baseline justify-between gap-4">
-          <h3 className="font-display text-xl text-ink transition-colors duration-300 group-hover:text-bronze-deep md:text-2xl">
+          <h3 className="font-display text-xl font-medium tracking-tight text-ink transition-colors duration-300 group-hover:text-muted md:text-2xl">
             {property.name}
           </h3>
-          <span className="shrink-0 text-sm font-semibold tracking-wide text-ink">
-            {formatPrice(property.price)}
+          <span className="link-line shrink-0 text-[10px] font-semibold tracking-[0.2em] uppercase text-ink">
+            View
           </span>
         </div>
         <p className="mt-1 text-[11px] font-medium tracking-[0.25em] uppercase text-muted">
           {property.areaName}, Bali
         </p>
-        <div className="mt-4 flex items-center gap-5 border-t border-line pt-4 text-xs text-ink-soft">
+        <div className="mt-4 flex items-center gap-2 text-xs text-ink-soft">
           {property.bedrooms > 0 && (
-            <span>
-              {property.bedrooms} bed{property.bedrooms > 1 ? "s" : ""}
-            </span>
+            <>
+              <span>
+                {property.bedrooms} bed{property.bedrooms > 1 ? "s" : ""}
+              </span>
+              <span className="h-1 w-1 rounded-full bg-line" />
+            </>
           )}
           <span>{formatNumber(property.landSize)} m² land</span>
-          {property.buildingSize && <span>{formatNumber(property.buildingSize)} m² build</span>}
-          <span className="link-line ml-auto hidden text-[10px] font-medium tracking-[0.2em] uppercase text-bronze-deep sm:inline">
-            View
-          </span>
+          {property.buildingSize && (
+            <>
+              <span className="h-1 w-1 rounded-full bg-line" />
+              <span>{formatNumber(property.buildingSize)} m² build</span>
+            </>
+          )}
         </div>
       </div>
     </TransitionLink>

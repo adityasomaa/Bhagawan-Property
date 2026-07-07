@@ -86,7 +86,7 @@ export default async function PropertyDetailPage({
               {property.tenure}
             </TransitionLink>
             <span>/</span>
-            <span className="text-bronze-deep">{property.name}</span>
+            <span className="text-ink">{property.name}</span>
           </nav>
           <Gallery images={property.images} name={property.name} />
         </Reveal>
@@ -99,11 +99,11 @@ export default async function PropertyDetailPage({
                   <p className="eyebrow">
                     {property.areaName}, Bali &middot; {property.tenure}
                   </p>
-                  <h1 className="font-display mt-3 text-4xl font-light text-ink md:text-5xl">
+                  <h1 className="font-display mt-3 text-4xl font-medium tracking-tight text-ink md:text-5xl">
                     {property.name}
                   </h1>
                 </div>
-                <p className="font-display text-3xl text-bronze-deep md:text-4xl">
+                <p className="font-display text-3xl font-medium text-ink md:text-4xl">
                   {formatPrice(property.price)}
                 </p>
               </div>
@@ -122,7 +122,7 @@ export default async function PropertyDetailPage({
               <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                 {property.highlights.map((h) => (
                   <li key={h} className="flex gap-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
-                    <span className="mt-2 block h-px w-6 shrink-0 bg-bronze" />
+                    <span className="mt-2 block h-px w-6 shrink-0 bg-ink" />
                     {h}
                   </li>
                 ))}
@@ -133,7 +133,7 @@ export default async function PropertyDetailPage({
               <h2 className="font-display mt-14 text-2xl text-ink">Features</h2>
               <ul className="mt-6 flex flex-wrap gap-3">
                 {property.features.map((f) => (
-                  <li key={f} className="border border-line bg-paper px-4 py-2 text-xs tracking-wide text-ink-soft">
+                  <li key={f} className="rounded-full border border-line bg-paper px-4 py-2 text-xs tracking-wide text-ink-soft">
                     {f}
                   </li>
                 ))}
@@ -159,7 +159,7 @@ export default async function PropertyDetailPage({
 
           <aside>
             <Reveal delay={0.15}>
-              <div className="border border-line bg-paper p-7 md:p-9 lg:sticky lg:top-28">
+              <div className="rounded-3xl border border-line bg-paper p-7 md:p-9 lg:sticky lg:top-28">
                 <h2 className="font-display text-xl text-ink">Specifications</h2>
                 <dl className="mt-5">
                   {specs.map(([k, v]) => (
@@ -172,7 +172,7 @@ export default async function PropertyDetailPage({
                 {property.nightlyRate && (
                   <TransitionLink
                     href={`/roi-calculator?price=${property.price}&nightly=${property.nightlyRate}&occupancy=${property.occupancy ?? 70}${property.leaseholdYears ? `&years=${property.leaseholdYears}` : ""}`}
-                    className="mt-5 block border border-bronze/40 bg-cream p-4 text-center text-[10px] font-medium tracking-[0.25em] uppercase text-bronze-deep transition-colors hover:border-bronze"
+                    className="mt-5 block rounded-full border border-ink/20 bg-cream p-4 text-center text-[10px] font-semibold tracking-[0.25em] uppercase text-ink transition-colors hover:border-ink"
                   >
                     Run the ROI numbers →
                   </TransitionLink>
@@ -191,7 +191,7 @@ export default async function PropertyDetailPage({
         {related.length > 0 && (
           <section className="mt-24 border-t border-line pt-16">
             <Reveal>
-              <h2 className="font-display text-3xl font-light text-ink md:text-4xl">
+              <h2 className="font-display text-3xl font-medium tracking-tight text-ink md:text-4xl">
                 You may also love
               </h2>
             </Reveal>
