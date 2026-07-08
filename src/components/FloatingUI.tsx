@@ -4,9 +4,12 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLocale, type Currency } from "@/lib/i18n/provider";
 import { LANGS, type Lang } from "@/lib/i18n/dict";
 import { CURRENCIES } from "@/lib/i18n/provider";
+import { useMountTransition, useBackdropTone } from "@/lib/uiHooks";
 import { site, waLink } from "@/lib/site";
 
-/** A pill trigger with a fully-opaque drop-UP menu (readable on any background). */
+type Tone = "light" | "dark";
+
+/** A pill trigger with an animated, fully-opaque drop-UP menu. */
 function DropUp({
   trigger,
   children,
@@ -20,6 +23,7 @@ function DropUp({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { mounted, show } = useMountTransition(open);
 
   useEffect(() => {
     if (!open) return;
@@ -42,12 +46,14 @@ function DropUp({
       <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
         {trigger(open)}
       </button>
-      {open && (
+      {mounted && (
         <div
           data-lenis-prevent
           className={`absolute bottom-full mb-2.5 ${
             align === "left" ? "left-0" : "right-0"
-          } z-10 overflow-hidden rounded-2xl border border-line bg-paper text-ink shadow-[0_28px_60px_-20px_rgba(11,11,12,0.5)] ${panelClass}`}
+          } z-10 origin-bottom overflow-hidden rounded-2xl border border-line bg-paper text-ink shadow-[0_28px_60px_-20px_rgba(11,11,12,0.5)] transition-all duration-240 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            show ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none translate-y-2 scale-95 opacity-0"
+          } ${panelClass}`}
         >
           {children(() => setOpen(false))}
         </div>
@@ -69,22 +75,34 @@ const chevron = (open: boolean) => (
   </svg>
 );
 
+/** Glass pill styling that flips with the backdrop tone, like the header nav. */
+const pill = (tone: Tone) =>
+  `flex items-center gap-2 rounded-full px-4 py-2.5 shadow-[0_16px_40px_-16px_rgba(11,11,12,0.5)] transition-colors duration-500 ${
+    tone === "dark" ? "glass text-white" : "glass-light text-ink"
+  }`;
+
 export default function FloatingUI() {
   const { lang, currency, setLang, setCurrency, t } = useLocale();
   const langLabel = LANGS.find((l) => l.code === lang)?.label ?? "EN";
 
+  const leftRef = useRef<HTMLDivElement>(null);
+  const rightRef = useRef<HTMLDivElement>(null);
+  const leftTone = useBackdropTone(leftRef);
+  const rightTone = useBackdropTone(rightRef);
+
   return (
     <>
       {/* ── Bottom-left: language + currency ─────────────────── */}
-      <div className="fixed bottom-4 left-4 z-40 flex items-center gap-2 md:bottom-6 md:left-6">
+      <div
+        ref={leftRef}
+        data-floating
+        className="fixed bottom-4 left-4 z-40 flex items-center gap-2 md:bottom-6 md:left-6"
+      >
         <DropUp
           align="left"
           panelClass="min-w-[11rem]"
           trigger={(open) => (
-            <span className="glass flex items-center gap-2 rounded-full px-4 py-2.5 text-white shadow-[0_16px_40px_-16px_rgba(11,11,12,0.5)]">
-              <span className="text-[8px] font-medium tracking-[0.28em] uppercase opacity-60">
-                {t("sw.language")}
-              </span>
+            <span className={pill(leftTone)}>
               <span className="text-[11px] font-semibold tracking-wide">{langLabel}</span>
               {chevron(open)}
             </span>
@@ -118,10 +136,7 @@ export default function FloatingUI() {
           align="left"
           panelClass="min-w-[8rem]"
           trigger={(open) => (
-            <span className="glass flex items-center gap-2 rounded-full px-4 py-2.5 text-white shadow-[0_16px_40px_-16px_rgba(11,11,12,0.5)]">
-              <span className="text-[8px] font-medium tracking-[0.28em] uppercase opacity-60">
-                {t("sw.currency")}
-              </span>
+            <span className={pill(leftTone)}>
               <span className="text-[11px] font-semibold tracking-wide">{currency}</span>
               {chevron(open)}
             </span>
@@ -152,15 +167,19 @@ export default function FloatingUI() {
       </div>
 
       {/* ── Bottom-right: contact ────────────────────────────── */}
-      <div className="fixed bottom-4 right-4 z-40 md:bottom-6 md:right-6">
+      <div ref={rightRef} data-floating className="fixed bottom-4 right-4 z-40 md:bottom-6 md:right-6">
         <DropUp
           align="right"
           panelClass="min-w-[13rem]"
           trigger={(open) => (
-            <span className="glass flex items-center gap-2.5 rounded-full py-2.5 pl-5 pr-4 text-white shadow-[0_16px_40px_-16px_rgba(11,11,12,0.5)]">
+            <span
+              className={`flex items-center gap-2.5 rounded-full py-2.5 pl-5 pr-4 shadow-[0_16px_40px_-16px_rgba(11,11,12,0.5)] transition-colors duration-500 ${
+                rightTone === "dark" ? "glass text-white" : "glass-light text-ink"
+              }`}
+            >
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-current" />
               </span>
               <span className="text-[11px] font-semibold tracking-[0.14em] uppercase">
                 {t("c.contactUs")}

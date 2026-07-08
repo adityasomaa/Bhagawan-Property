@@ -63,7 +63,7 @@ export default async function AreaGuidePage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       {/* Hero */}
-      <section className="relative flex min-h-[78svh] items-end">
+      <section data-tone="dark" className="relative flex min-h-[78svh] items-end">
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={area.heroImage}
@@ -162,7 +162,7 @@ export default async function AreaGuidePage({
       </section>
 
       {/* Investment insights */}
-      <section className="bg-ink py-20 text-cream md:py-28">
+      <section data-tone="dark" className="bg-ink py-20 text-cream md:py-28">
         <div className="container-x">
           <SectionHeading
             eyebrow={<T k="ag.investment" />}

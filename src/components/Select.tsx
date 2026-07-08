@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { useMountTransition } from "@/lib/uiHooks";
 
 export interface SelectOption {
   value: string;
@@ -23,6 +24,7 @@ interface SelectProps {
  */
 export default function Select({ label, value, onChange, options, name, className }: SelectProps) {
   const [open, setOpen] = useState(false);
+  const { mounted, show } = useMountTransition(open);
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const id = useId();
@@ -108,14 +110,16 @@ export default function Select({ label, value, onChange, options, name, classNam
       </button>
       {name && <input type="hidden" name={name} value={current?.value ?? ""} />}
 
-      {open && (
+      {mounted && (
         <ul
           ref={listRef}
           role="listbox"
           aria-labelledby={label ? `${id}-label` : undefined}
           onKeyDown={onListKeyDown}
           data-lenis-prevent
-          className="glass-light absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl p-1.5"
+          className={`glass-light absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl p-1.5 origin-top transition-all duration-240 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            show ? "translate-y-0 scale-100 opacity-100" : "pointer-events-none -translate-y-2 scale-95 opacity-0"
+          }`}
         >
           {options.map((o) => {
             const selected = o.value === current?.value;

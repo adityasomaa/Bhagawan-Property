@@ -51,7 +51,7 @@ export default function HomePage() {
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
       <HeroEntrance>
-        <section className="relative flex min-h-[112svh] items-end overflow-hidden md:min-h-[100svh]">
+        <section data-tone="dark" className="relative flex min-h-[112svh] items-end overflow-hidden md:min-h-[100svh]">
           <HeroSlider slides={heroSlides} />
 
           <div className="container-x relative z-10 pb-48 pt-36 md:pb-32 md:pt-40">
@@ -211,7 +211,7 @@ export default function HomePage() {
       </section>
 
       {/* ── About ────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-ink py-24 text-cream md:py-32">
+      <section data-tone="dark" className="relative overflow-hidden bg-ink py-24 text-cream md:py-32">
         <div className="container-x grid items-center gap-14 lg:grid-cols-2">
           <Reveal>
             <div className="img-frame relative aspect-[4/5] max-w-lg">

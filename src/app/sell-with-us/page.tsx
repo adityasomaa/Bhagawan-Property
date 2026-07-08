@@ -82,7 +82,7 @@ export default function SellWithUsPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative flex min-h-[72svh] items-end">
+      <section data-tone="dark" className="relative flex min-h-[72svh] items-end">
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={img("1600585154340-be6161a56a0c", 2400)}
@@ -134,7 +134,7 @@ export default function SellWithUsPage() {
       </section>
 
       {/* Process */}
-      <section className="bg-ink py-24 text-cream md:py-32">
+      <section data-tone="dark" className="bg-ink py-24 text-cream md:py-32">
         <div className="container-x">
           <SectionHeading
             eyebrow="Our Selling Process"

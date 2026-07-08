@@ -45,7 +45,7 @@ export default function AboutPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative flex min-h-[72svh] items-end">
+      <section data-tone="dark" className="relative flex min-h-[72svh] items-end">
         <div className="absolute inset-0 overflow-hidden">
           <Image
             src={img("1518548419970-58e3b4079ab2", 2400)}
@@ -104,7 +104,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="bg-ink py-24 text-cream md:py-32">
+      <section data-tone="dark" className="bg-ink py-24 text-cream md:py-32">
         <div className="container-x">
           <SectionHeading eyebrow="What We Stand For" title="Five promises, kept daily" light />
           <div className="mt-14">

@@ -25,7 +25,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-ink text-cream">
+    <footer data-tone="dark" className="bg-ink text-cream">
       <div className="container-x pb-10 pt-20 md:pt-28">
         <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
