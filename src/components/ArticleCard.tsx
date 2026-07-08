@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
+import { useT } from "@/lib/i18n/provider";
 import type { Article } from "@/data/articles";
 
 export default function ArticleCard({ article }: { article: Article }) {
+  const t = useT();
   return (
     <TransitionLink href={`/knowledge-base/${article.slug}`} className="group block">
       <div className="img-frame relative aspect-[16/10] rounded-2xl">
@@ -14,7 +18,7 @@ export default function ArticleCard({ article }: { article: Article }) {
           className="object-cover"
         />
         <span className="glass-dark absolute left-3.5 top-3.5 rounded-full px-3 py-1.5 text-[9px] font-semibold tracking-[0.22em] uppercase text-white">
-          {article.category}
+          {t(`kb.cat.${article.category}`)}
         </span>
       </div>
       <div className="px-1 pt-5">

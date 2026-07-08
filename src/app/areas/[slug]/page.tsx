@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import { T } from "@/lib/i18n/provider";
 import PropertyCard from "@/components/PropertyCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { areas, getArea } from "@/data/areas";
@@ -50,11 +51,11 @@ export default async function AreaGuidePage({
   };
 
   const investment = [
-    ["Market overview", area.investment.overview],
-    ["Typical buyer", area.investment.typicalBuyer],
-    ["Rental demand", area.investment.rentalDemand],
-    ["Capital growth", area.investment.capitalGrowth],
-    ["Best opportunities", area.investment.opportunities],
+    ["ag.marketOverview", area.investment.overview],
+    ["ag.typicalBuyer", area.investment.typicalBuyer],
+    ["ag.rentalDemand", area.investment.rentalDemand],
+    ["ag.capitalGrowth", area.investment.capitalGrowth],
+    ["ag.bestOpportunities", area.investment.opportunities],
   ];
 
   return (
@@ -77,7 +78,7 @@ export default async function AreaGuidePage({
         <div className="container-x relative pb-16 pt-48 md:pb-24">
           <Reveal>
             <p className="text-[11px] font-medium tracking-[0.4em] uppercase text-cream/75">
-              Area Guide
+              <T k="ag.guide" />
             </p>
             <h1 className="font-display mt-4 text-5xl font-medium tracking-tight text-cream md:text-7xl">
               {area.name}
@@ -113,7 +114,7 @@ export default async function AreaGuidePage({
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mt-10 rounded-3xl border border-line bg-paper p-6 md:p-8">
-              <p className="eyebrow">Ideal for</p>
+              <p className="eyebrow"><T k="ag.idealFor" /></p>
               <p className="mt-3 text-base leading-relaxed text-ink-soft">{area.idealFor}</p>
             </div>
           </Reveal>
@@ -123,7 +124,7 @@ export default async function AreaGuidePage({
       {/* Lifestyle */}
       <section className="bg-sand/50 py-20 md:py-28">
         <div className="container-x">
-          <SectionHeading eyebrow="Lifestyle" title={`Living in ${area.name}`} />
+          <SectionHeading eyebrow={<T k="ag.lifestyle" />} title={`Living in ${area.name}`} />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {area.lifestyle.map((l, i) => (
               <Reveal key={l.title} delay={(i % 3) * 0.07}>
@@ -141,7 +142,7 @@ export default async function AreaGuidePage({
       <section className="container-x py-20 md:py-28">
         <div className="grid gap-12 lg:grid-cols-2">
           <SectionHeading
-            eyebrow="Things to Do"
+            eyebrow={<T k="ag.thingsToDo" />}
             title={`Days well spent in ${area.name}`}
             description="The experiences we send our own friends and clients to first."
           />
@@ -164,7 +165,7 @@ export default async function AreaGuidePage({
       <section className="bg-ink py-20 text-cream md:py-28">
         <div className="container-x">
           <SectionHeading
-            eyebrow="Investment Insights"
+            eyebrow={<T k="ag.investment" />}
             title={`The ${area.name} investment case`}
             light
           />
@@ -173,7 +174,7 @@ export default async function AreaGuidePage({
               <Reveal key={title} delay={(i % 2) * 0.08}>
                 <div className="glass h-full rounded-3xl p-7">
                   <h3 className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/60">
-                    {title}
+                    <T k={title as string} />
                   </h3>
                   <p className="mt-4 text-base leading-relaxed text-cream/70">{body}</p>
                 </div>
@@ -182,10 +183,10 @@ export default async function AreaGuidePage({
             <Reveal delay={0.16}>
               <div className="glass flex h-full flex-col justify-between rounded-3xl p-7">
                 <p className="font-display text-2xl font-medium tracking-tight leading-snug text-cream">
-                  Want the numbers for a specific property in {area.name}?
+                  <T k="ag.wantNumbers" />
                 </p>
                 <TransitionLink href="/roi-calculator" className="btn btn-light mt-8 self-start">
-                  Open the ROI Calculator
+                  <T k="ag.openRoi" />
                 </TransitionLink>
               </div>
             </Reveal>
@@ -197,12 +198,12 @@ export default async function AreaGuidePage({
       <section className="container-x py-20 md:py-28">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Featured Properties"
+            eyebrow={<T k="ag.featured" />}
             title={`Currently curated in ${area.name}`}
           />
           <Reveal delay={0.15}>
             <TransitionLink href="/properties" className="btn">
-              View All Properties in {area.name}
+              <T k="ag.viewAllIn" />
             </TransitionLink>
           </Reveal>
         </div>
@@ -218,10 +219,10 @@ export default async function AreaGuidePage({
           <Reveal>
             <div className="mt-12 rounded-3xl border border-line bg-paper p-14 text-center">
               <p className="font-display text-2xl text-ink">
-                Our {area.name} listings are currently off-market.
+                <T k="ag.offMarketT" />
               </p>
               <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-                Contact us and we&apos;ll share what&apos;s available privately.
+                <T k="ag.offMarketB" />
               </p>
               <TransitionLink href="/contact" className="btn mt-8">
                 Contact Us

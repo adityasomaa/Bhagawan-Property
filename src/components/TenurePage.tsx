@@ -1,6 +1,7 @@
 import Reveal from "@/components/motion/Reveal";
 import PropertyCatalogue from "@/components/PropertyCatalogue";
 import { TransitionLink } from "@/components/motion/PageTransition";
+import { T } from "@/lib/i18n/provider";
 import { byTenure, type Tenure } from "@/data/properties";
 
 const copy: Record<
@@ -59,7 +60,7 @@ export default function TenurePage({ tenure }: { tenure: Tenure }) {
         <Reveal>
           <p className="eyebrow">Properties &middot; {tenure}</p>
           <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
-            {c.title}
+            <T k={tenure === "freehold" ? "tp.freeholdTitle" : "tp.leaseholdTitle"} />
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">{c.intro}</p>
         </Reveal>
@@ -73,9 +74,9 @@ export default function TenurePage({ tenure }: { tenure: Tenure }) {
             ))}
           </div>
           <p className="mt-5 text-sm text-muted">
-            New to Bali ownership structures?{" "}
+            <T k="tp.newTo" />{" "}
             <TransitionLink href={c.article} className="link-line text-ink">
-              Read our freehold vs leasehold guide
+              <T k="tp.readGuide" />
             </TransitionLink>
             .
           </p>

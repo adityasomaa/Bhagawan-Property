@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import ArticleCard from "@/components/ArticleCard";
+import { useT } from "@/lib/i18n/provider";
 import { categories, type Article } from "@/data/articles";
 
 export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
+  const t = useT();
   const [active, setActive] = useState<string>("All");
 
   const filtered = useMemo(
@@ -26,7 +28,7 @@ export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
                 : "border border-line bg-transparent text-muted hover:border-ink hover:text-ink"
             }`}
           >
-            {c}
+            {c === "All" ? t("kb.all") : t(`kb.cat.${c}`)}
           </button>
         ))}
       </div>
@@ -38,10 +40,8 @@ export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
         </div>
       ) : (
         <div className="mt-10 rounded-3xl border border-line bg-paper p-14 text-center">
-          <p className="font-display text-2xl text-ink">More {active.toLowerCase()} guides are on the way.</p>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-            We publish new guides regularly. In the meantime, ask us directly — advice is free.
-          </p>
+          <p className="font-display text-2xl text-ink">{t("kb.emptyT")}</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">{t("kb.emptyB")}</p>
         </div>
       )}
     </div>

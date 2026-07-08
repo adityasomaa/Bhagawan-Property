@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Reveal from "@/components/motion/Reveal";
+import { T } from "@/lib/i18n/provider";
 import KnowledgeFilter from "@/components/KnowledgeFilter";
 import { articles } from "@/data/articles";
 
@@ -15,13 +16,12 @@ export default function KnowledgeBasePage() {
     <>
       <section className="container-x pb-12 pt-36 md:pt-44">
         <Reveal>
-          <p className="eyebrow">Knowledge Base</p>
+          <p className="eyebrow"><T k="s.kb.eyebrow" /></p>
           <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
-            Learn Bali property the honest way
+            <T k="pg.kbTitle" />
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
-            Everything we explain across the table, written down: buying guides, legal structures,
-            taxes, visas, area deep-dives, and our regular market updates.
+            <T k="pg.kbDesc" />
           </p>
         </Reveal>
       </section>

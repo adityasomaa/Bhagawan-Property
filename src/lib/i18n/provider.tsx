@@ -2,6 +2,14 @@
 
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { dict, type Lang } from "./dict";
+import { dict2 } from "./dict2";
+
+const merged: Record<Lang, Record<string, string>> = {
+  en: { ...dict.en, ...dict2.en },
+  id: { ...dict.id, ...dict2.id },
+  zh: { ...dict.zh, ...dict2.zh },
+  ja: { ...dict.ja, ...dict2.ja },
+};
 
 export type Currency = "USD" | "AUD" | "IDR" | "GBP" | "EUR" | "JPY" | "CNY" | "SGD" | "MYR";
 
@@ -79,7 +87,7 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const t = useCallback(
-    (key: string) => dict[lang][key] ?? dict.en[key] ?? key,
+    (key: string) => merged[lang][key] ?? merged.en[key] ?? key,
     [lang]
   );
 

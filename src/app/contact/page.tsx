@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Reveal from "@/components/motion/Reveal";
 import SectionHeading from "@/components/SectionHeading";
 import ContactForm from "@/components/ContactForm";
+import { T } from "@/lib/i18n/provider";
 import { site, waLink } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -17,14 +18,14 @@ export default function ContactPage() {
       <div className="grid gap-16 lg:grid-cols-2">
         <div>
           <SectionHeading
-            eyebrow="Contact"
-            title="Let's find your right one"
-            description="Whether you're six months from buying or just curious what your budget means in Bali — the conversation is free and the advice is honest."
+            eyebrow={<T k="s.contact.eyebrow" />}
+            title={<T k="cp.title" />}
+            description={<T k="cp.desc" />}
           />
           <Reveal delay={0.1}>
             <dl className="mt-12 space-y-8">
               <div className="border-t border-line pt-6">
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted">WhatsApp</dt>
+                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted">{"WhatsApp"}</dt>
                 <dd className="mt-2">
                   <a
                     href={waLink("Hi Bhagawan Property, I'd like to enquire about property in Bali.")}
@@ -34,20 +35,20 @@ export default function ContactPage() {
                   >
                     {site.phone}
                   </a>
-                  <p className="mt-1 text-sm text-muted">Fastest — usually within business hours, Bali time (GMT+8).</p>
+                  <p className="mt-1 text-sm text-muted"><T k="cp.whatsappNote" /></p>
                 </dd>
               </div>
               <div className="border-t border-line pt-6">
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted">Email</dt>
+                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted"><T k="contact.email" /></dt>
                 <dd className="mt-2">
                   <a href={`mailto:${site.email}`} className="link-line font-display text-2xl text-ink">
                     {site.email}
                   </a>
-                  <p className="mt-1 text-sm text-muted">For detailed briefs and documents.</p>
+                  <p className="mt-1 text-sm text-muted"><T k="cp.emailNote" /></p>
                 </dd>
               </div>
               <div className="border-t border-line pt-6">
-                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted">Office</dt>
+                <dt className="text-[10px] tracking-[0.3em] uppercase text-muted"><T k="cp.office" /></dt>
                 <dd className="mt-2 text-base leading-relaxed text-ink-soft">{site.address}</dd>
               </div>
             </dl>

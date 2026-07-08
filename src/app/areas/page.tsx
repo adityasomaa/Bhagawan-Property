@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Reveal from "@/components/motion/Reveal";
+import { T } from "@/lib/i18n/provider";
 import AreaCard from "@/components/AreaCard";
 import { areas } from "@/data/areas";
 
@@ -15,13 +16,12 @@ export default function AreasPage() {
     <>
       <section className="container-x pb-16 pt-36 md:pt-44">
         <Reveal>
-          <p className="eyebrow">Bali Areas</p>
+          <p className="eyebrow"><T k="s.areas.eyebrow" /></p>
           <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
-            The island, neighbourhood by neighbourhood
+            <T k="pg.areasTitle" />
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
-            Bali rewards those who choose their address carefully. Each guide below is written from
-            years on the ground — the lifestyle, the investment case, and who each area truly suits.
+            <T k="pg.areasDesc" />
           </p>
         </Reveal>
       </section>

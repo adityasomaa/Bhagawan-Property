@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import LogoMark from "@/components/Logo";
-import LocaleControls from "@/components/LocaleControls";
 import { useT } from "@/lib/i18n/provider";
 import { nav, waLink } from "@/lib/site";
 import { gsap } from "@/lib/gsapClient";
@@ -197,8 +196,6 @@ export default function Header() {
               >
                 {t("nav.whatsapp")}
               </a>
-              <span className="h-4 w-px bg-current opacity-20" aria-hidden />
-              <LocaleControls />
             </nav>
 
             {/* Hamburger */}
@@ -279,9 +276,6 @@ export default function Header() {
             ))}
           </nav>
           <div className="m-link mt-10 border-t border-cream/15 pt-6 text-cream">
-            <div className="mb-6 flex justify-center">
-              <LocaleControls align="left" />
-            </div>
             <a
               href={waLink("Hi Bhagawan Property, I'd like to enquire about property in Bali.")}
               target="_blank"

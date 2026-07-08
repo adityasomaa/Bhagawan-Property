@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Reveal from "@/components/motion/Reveal";
+import { T } from "@/lib/i18n/provider";
 import RoiCalculator from "@/components/RoiCalculator";
 import { TransitionLink } from "@/components/motion/PageTransition";
 
@@ -16,14 +17,12 @@ export default function RoiCalculatorPage() {
     <>
       <section className="container-x pb-12 pt-36 md:pt-44">
         <Reveal>
-          <p className="eyebrow">Investment Tools</p>
+          <p className="eyebrow"><T k="roi.eyebrow" /></p>
           <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-ink md:text-6xl">
-            The ROI Calculator
+            <T k="roi.pageTitle" />
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted md:text-lg">
-            Run the numbers the way we run them — gross to net, taxes included, leasehold
-            amortisation acknowledged. If a property still looks good after honest math, it&apos;s
-            worth a conversation.
+            <T k="roi.pageDesc" />
           </p>
         </Reveal>
       </section>
@@ -38,14 +37,14 @@ export default function RoiCalculatorPage() {
         <Reveal>
           <div className="border border-line bg-paper p-8 text-center md:p-12">
             <p className="font-display text-2xl font-medium tracking-tight text-ink md:text-3xl">
-              Want these numbers for a real property, with real comparable data?
+              <T k="roi.ctaTitle" />
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <TransitionLink href="/properties" className="btn btn-solid">
-                Browse Properties
+                <T k="roi.browseProps" />
               </TransitionLink>
               <TransitionLink href="/contact" className="btn">
-                Ask Us Directly
+                <T k="roi.askUs" />
               </TransitionLink>
             </div>
           </div>
