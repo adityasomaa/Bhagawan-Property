@@ -85,7 +85,7 @@ export default function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             />
           </div>
         ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/55 to-ink/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/95 via-ink/70 to-ink/60" />
       </div>
 
       {/* Location chip + dots — bottom right */}

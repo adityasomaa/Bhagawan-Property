@@ -55,7 +55,7 @@ export default function AboutPage() {
             sizes="100vw"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/25 to-ink/35" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/60 to-ink/55" />
         </div>
         <div className="container-x relative pb-16 pt-48 md:pb-24">
           <Reveal>

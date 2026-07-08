@@ -7,10 +7,13 @@ import LogoMark from "@/components/Logo";
 import { nav, waLink } from "@/lib/site";
 import { gsap } from "@/lib/gsapClient";
 
+// Pages with a full-bleed dark hero behind the header — the nav uses its
+// light (white) treatment on these until the user scrolls. Every other page
+// (property detail, catalogues, knowledge base, legal, etc.) has a light
+// background at the top, so it keeps the dark, always-visible nav.
 const IMMERSIVE = [
   /^\/$/,
   /^\/areas\/[^/]+$/,
-  /^\/properties\/(?!freehold$|leasehold$)[^/]+$/,
   /^\/about$/,
   /^\/sell-with-us$/,
 ];
