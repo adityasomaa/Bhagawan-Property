@@ -131,7 +131,7 @@ export default function HomePage() {
               style={{ opacity: 0 }}
             >
               {[
-                ["14", "Curated listings"],
+                ["6", "Curated listings"],
                 ["6", "Bali areas covered"],
                 ["100%", "Buyer-first advice"],
               ].map(([n, label]) => (

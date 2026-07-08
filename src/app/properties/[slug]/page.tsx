@@ -6,7 +6,7 @@ import PropertyCard from "@/components/PropertyCard";
 import ContactForm from "@/components/ContactForm";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { byArea, getProperty, properties } from "@/data/properties";
-import { formatNumber, formatPrice } from "@/lib/format";
+import { formatNumber, formatIDR } from "@/lib/format";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -23,7 +23,7 @@ export async function generateMetadata({
   if (!property) return {};
   return {
     title: `${property.name} — ${property.areaName}, Bali (${property.tenure})`,
-    description: `${property.excerpt} ${formatPrice(property.price)} · ${
+    description: `${property.excerpt} ${formatIDR(property.price)} · ${
       property.bedrooms > 0 ? `${property.bedrooms} bedrooms · ` : ""
     }${property.landSize} m² land in ${property.areaName}, Bali.`,
     alternates: { canonical: `/properties/${slug}` },
@@ -55,7 +55,7 @@ export default async function PropertyDetailPage({
     offers: {
       "@type": "Offer",
       price: property.price,
-      priceCurrency: "USD",
+      priceCurrency: "IDR",
       availability: "https://schema.org/InStock",
       url: `${site.url}/properties/${property.slug}`,
       seller: { "@type": "RealEstateAgent", name: site.name, url: site.url },
@@ -70,7 +70,7 @@ export default async function PropertyDetailPage({
     ...(property.buildingSize ? [["Building size", `${formatNumber(property.buildingSize)} m²`] as [string, string]] : []),
     ...(property.bedrooms > 0 ? [["Bedrooms", String(property.bedrooms)] as [string, string]] : []),
     ...(property.bathrooms > 0 ? [["Bathrooms", String(property.bathrooms)] as [string, string]] : []),
-    ["Price", formatPrice(property.price)],
+    ["Price", formatIDR(property.price)],
   ];
 
   return (
@@ -104,7 +104,7 @@ export default async function PropertyDetailPage({
                   </h1>
                 </div>
                 <p className="font-display text-3xl font-medium text-ink md:text-4xl">
-                  {formatPrice(property.price)}
+                  {formatIDR(property.price)}
                 </p>
               </div>
             </Reveal>
@@ -180,7 +180,7 @@ export default async function PropertyDetailPage({
                 <div className="mt-8">
                   <h3 className="font-display text-xl text-ink">Enquire about {property.name}</h3>
                   <div className="mt-6">
-                    <ContactForm subject={`${property.name}, ${property.areaName} (${formatPrice(property.price)})`} />
+                    <ContactForm subject={`${property.name}, ${property.areaName} (${formatIDR(property.price)})`} />
                   </div>
                 </div>
               </div>

@@ -8,17 +8,17 @@ import { areas } from "@/data/areas";
 
 const priceBands = [
   { label: "Any price", min: 0, max: Infinity },
-  { label: "Under $400k", min: 0, max: 400000 },
-  { label: "$400k – $800k", min: 400000, max: 800000 },
-  { label: "$800k – $1.2m", min: 800000, max: 1200000 },
-  { label: "Over $1.2m", min: 1200000, max: Infinity },
+  { label: "Under IDR 3B", min: 0, max: 3_000_000_000 },
+  { label: "IDR 3B – 4B", min: 3_000_000_000, max: 4_000_000_000 },
+  { label: "IDR 4B – 5B", min: 4_000_000_000, max: 5_000_000_000 },
+  { label: "Over IDR 5B", min: 5_000_000_000, max: Infinity },
 ];
 
 const landBands = [
   { label: "Any land size", min: 0, max: Infinity },
-  { label: "Under 400 m²", min: 0, max: 400 },
-  { label: "400 – 800 m²", min: 400, max: 800 },
-  { label: "Over 800 m²", min: 800, max: Infinity },
+  { label: "Under 150 m²", min: 0, max: 150 },
+  { label: "150 – 250 m²", min: 150, max: 250 },
+  { label: "Over 250 m²", min: 250, max: Infinity },
 ];
 
 export default function PropertyCatalogue({ items }: { items: Property[] }) {

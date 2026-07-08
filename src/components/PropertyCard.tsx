@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import { formatNumber, formatPrice } from "@/lib/format";
+import { formatNumber, formatIDR } from "@/lib/format";
 import type { Property } from "@/data/properties";
 
 export default function PropertyCard({ property }: { property: Property }) {
@@ -25,7 +25,7 @@ export default function PropertyCard({ property }: { property: Property }) {
             : ""}
         </span>
         <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
-          {formatPrice(property.price)}
+          {formatIDR(property.price)}
         </span>
       </div>
       <div className="px-1 pt-5">
