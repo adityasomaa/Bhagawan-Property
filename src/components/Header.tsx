@@ -146,7 +146,7 @@ export default function Header() {
                       </svg>
                     </TransitionLink>
                     <div className="invisible absolute left-1/2 top-full -translate-x-1/2 pt-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                      <div className="glass-light flex min-w-48 flex-col rounded-2xl p-2 text-ink">
+                      <div className="flex min-w-48 flex-col rounded-2xl border border-line bg-paper p-2 text-ink shadow-[0_24px_60px_-24px_rgba(11,11,12,0.4)]">
                         {item.children.map((child) => (
                           <TransitionLink
                             key={child.href}
