@@ -6,6 +6,7 @@ import ArticleCard from "@/components/ArticleCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { T, AL } from "@/lib/i18n/provider";
 import { articleTr } from "@/data/tr/articles";
+import ArticleBody from "@/components/ArticleBody";
 import { articles, getArticle } from "@/data/articles";
 import { site } from "@/lib/site";
 
@@ -120,56 +121,28 @@ export default async function ArticlePage({
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="prose-editorial mx-auto mt-14 max-w-3xl">
-            {article.sections.map((s, i) => (
-              <section key={i}>
-                {s.heading && <h2>{s.heading}</h2>}
-                {s.paragraphs?.map((p, j) => <p key={j}>{p}</p>)}
-                {s.list && (
-                  <ul>
-                    {s.list.map((li, j) => (
-                      <li key={j}>{li}</li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-            ))}
-          </div>
+          <ArticleBody article={article} />
         </Reveal>
-
-        {article.faq && (
-          <Reveal>
-            <div className="mx-auto mt-16 max-w-3xl rounded-3xl border border-line bg-paper p-8 md:p-10">
-              <h2 className="font-display text-2xl text-ink">Frequently asked</h2>
-              <dl className="mt-6 space-y-6">
-                {article.faq.map((f) => (
-                  <div key={f.q} className="border-t border-line pt-5">
-                    <dt className="font-medium text-ink">{f.q}</dt>
-                    <dd className="mt-2 text-sm leading-relaxed text-muted">{f.a}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-          </Reveal>
-        )}
 
         <Reveal>
           <div className="mx-auto mt-16 max-w-3xl rounded-3xl border border-line bg-paper p-8 text-center md:p-10">
             <p className="font-display text-2xl font-medium tracking-tight text-ink">
-              Questions this guide didn&apos;t answer?
+              <T k="kb.ctaTitle" />
             </p>
             <p className="mt-3 text-sm leading-relaxed text-muted">
-              Ask us directly — honest advice costs nothing. {site.signature}
+              <T k="kb.ctaBody" /> {site.signature}
             </p>
             <TransitionLink href="/contact" className="btn btn-solid mt-7">
-              Talk to Us
+              <T k="c.talkToUs" />
             </TransitionLink>
           </div>
         </Reveal>
 
         <section className="mt-24 border-t border-line pt-16">
           <Reveal>
-            <h2 className="font-display text-3xl font-medium tracking-tight text-ink md:text-4xl">Keep reading</h2>
+            <h2 className="font-display text-3xl font-medium tracking-tight text-ink md:text-4xl">
+              <T k="kb.keepReading" />
+            </h2>
           </Reveal>
           <div className="mt-10 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((a, i) => (
