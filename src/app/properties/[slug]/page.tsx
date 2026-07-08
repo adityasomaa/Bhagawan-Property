@@ -4,6 +4,7 @@ import Reveal from "@/components/motion/Reveal";
 import Gallery from "@/components/Gallery";
 import PropertyCard from "@/components/PropertyCard";
 import ContactForm from "@/components/ContactForm";
+import PropertyProse from "@/components/PropertyProse";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { byArea, getProperty, properties } from "@/data/properties";
 import { formatNumber, formatIDR } from "@/lib/format";
@@ -120,36 +121,7 @@ export default async function PropertyDetailPage({
               </div>
             </Reveal>
 
-            <Reveal delay={0.1}>
-              <div className="mt-10 space-y-5 text-base leading-relaxed text-ink-soft md:text-lg">
-                {property.description.map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.highlights" /></h2>
-              <ul className="mt-6 grid gap-4 sm:grid-cols-2">
-                {property.highlights.map((h) => (
-                  <li key={h} className="flex gap-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
-                    <span className="mt-2 block h-px w-6 shrink-0 bg-ink" />
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-
-            <Reveal delay={0.1}>
-              <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.features" /></h2>
-              <ul className="mt-6 flex flex-wrap gap-3">
-                {property.features.map((f) => (
-                  <li key={f} className="rounded-full border border-line bg-paper px-4 py-2 text-xs tracking-wide text-ink-soft">
-                    {f}
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
+            <PropertyProse property={property} />
 
             <Reveal delay={0.1}>
               <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.location" /></h2>

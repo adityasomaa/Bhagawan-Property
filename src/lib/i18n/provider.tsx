@@ -122,3 +122,12 @@ export function Money({ idr }: { idr: number }) {
   const { money } = useLocale();
   return <>{money(idr)}</>;
 }
+
+/**
+ * Inline localised string: renders the active language's override, falling
+ * back to the English `en` value. Usable inside server components.
+ */
+export function AL({ en, tr }: { en: string; tr?: Partial<Record<Lang, string>> }) {
+  const { lang } = useLocale();
+  return <>{(lang !== "en" && tr?.[lang]) || en}</>;
+}

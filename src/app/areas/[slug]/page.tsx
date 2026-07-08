@@ -3,7 +3,8 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import SectionHeading from "@/components/SectionHeading";
-import { T } from "@/lib/i18n/provider";
+import { T, AL } from "@/lib/i18n/provider";
+import { areaTr } from "@/data/tr/areas";
 import PropertyCard from "@/components/PropertyCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { areas, getArea } from "@/data/areas";
@@ -40,6 +41,7 @@ export default async function AreaGuidePage({
   if (!area) notFound();
 
   const areaProperties = byArea(area.slug).slice(0, 6);
+  const aTr = areaTr[area.slug];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -50,12 +52,12 @@ export default async function AreaGuidePage({
     containedInPlace: { "@type": "Place", name: "Bali, Indonesia" },
   };
 
-  const investment = [
-    ["ag.marketOverview", area.investment.overview],
-    ["ag.typicalBuyer", area.investment.typicalBuyer],
-    ["ag.rentalDemand", area.investment.rentalDemand],
-    ["ag.capitalGrowth", area.investment.capitalGrowth],
-    ["ag.bestOpportunities", area.investment.opportunities],
+  const investment: [string, string, Record<string, string> | undefined][] = [
+    ["ag.marketOverview", area.investment.overview, aTr?.investment?.overview],
+    ["ag.typicalBuyer", area.investment.typicalBuyer, aTr?.investment?.typicalBuyer],
+    ["ag.rentalDemand", area.investment.rentalDemand, aTr?.investment?.rentalDemand],
+    ["ag.capitalGrowth", area.investment.capitalGrowth, aTr?.investment?.capitalGrowth],
+    ["ag.bestOpportunities", area.investment.opportunities, aTr?.investment?.opportunities],
   ];
 
   return (
@@ -84,7 +86,7 @@ export default async function AreaGuidePage({
               {area.name}
             </h1>
             <p className="mt-5 max-w-xl text-base leading-relaxed text-cream/80 md:text-lg">
-              {area.tagline}
+              <AL en={area.tagline} tr={aTr?.tagline} />
             </p>
           </Reveal>
         </div>
@@ -94,9 +96,9 @@ export default async function AreaGuidePage({
       <section className="container-x grid gap-12 py-20 md:py-28 lg:grid-cols-[1fr_2fr]">
         <Reveal>
           <div className="space-y-6 lg:sticky lg:top-28">
-            {area.stats.map((s) => (
+            {area.stats.map((s, i) => (
               <div key={s.label} className="border-t border-line pt-4">
-                <p className="text-[10px] tracking-[0.3em] uppercase text-muted">{s.label}</p>
+                <p className="text-[10px] tracking-[0.3em] uppercase text-muted"><AL en={s.label} tr={aTr?.statLabels?.[i]} /></p>
                 <p className="font-display mt-1 text-2xl font-medium text-ink">{s.value}</p>
               </div>
             ))}
@@ -107,7 +109,7 @@ export default async function AreaGuidePage({
             <div className="space-y-6 text-lg leading-relaxed text-ink-soft md:text-xl">
               {area.intro.map((p, i) => (
                 <p key={i} className={i === 0 ? "font-display font-medium tracking-tight text-ink" : "text-base md:text-lg"}>
-                  {p}
+                  <AL en={p} tr={aTr?.intro?.[i]} />
                 </p>
               ))}
             </div>
@@ -115,7 +117,7 @@ export default async function AreaGuidePage({
           <Reveal delay={0.1}>
             <div className="mt-10 rounded-3xl border border-line bg-paper p-6 md:p-8">
               <p className="eyebrow"><T k="ag.idealFor" /></p>
-              <p className="mt-3 text-base leading-relaxed text-ink-soft">{area.idealFor}</p>
+              <p className="mt-3 text-base leading-relaxed text-ink-soft"><AL en={area.idealFor} tr={aTr?.idealFor} /></p>
             </div>
           </Reveal>
         </div>
@@ -129,8 +131,8 @@ export default async function AreaGuidePage({
             {area.lifestyle.map((l, i) => (
               <Reveal key={l.title} delay={(i % 3) * 0.07}>
                 <div className="h-full rounded-3xl border border-line bg-paper p-7 md:p-9">
-                  <h3 className="font-display text-lg text-ink">{l.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-muted">{l.description}</p>
+                  <h3 className="font-display text-lg text-ink"><AL en={l.title} tr={aTr?.lifestyle?.[i]?.title} /></h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted"><AL en={l.description} tr={aTr?.lifestyle?.[i]?.description} /></p>
                 </div>
               </Reveal>
             ))}
@@ -153,7 +155,7 @@ export default async function AreaGuidePage({
                   <span className="font-display text-lg font-medium text-muted">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-base leading-relaxed text-ink-soft">{t}</span>
+                  <span className="text-base leading-relaxed text-ink-soft"><AL en={t} tr={aTr?.thingsToDo?.[i]} /></span>
                 </li>
               ))}
             </ol>
@@ -170,13 +172,13 @@ export default async function AreaGuidePage({
             light
           />
           <div className="mt-12 grid gap-10 md:grid-cols-2">
-            {investment.map(([title, body], i) => (
+            {investment.map(([title, body, bodyTr], i) => (
               <Reveal key={title} delay={(i % 2) * 0.08}>
                 <div className="glass h-full rounded-3xl p-7">
                   <h3 className="text-[11px] font-medium tracking-[0.3em] uppercase text-white/60">
                     <T k={title as string} />
                   </h3>
-                  <p className="mt-4 text-base leading-relaxed text-cream/70">{body}</p>
+                  <p className="mt-4 text-base leading-relaxed text-cream/70"><AL en={body} tr={bodyTr} /></p>
                 </div>
               </Reveal>
             ))}
