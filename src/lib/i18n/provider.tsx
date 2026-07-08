@@ -3,12 +3,13 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { dict, type Lang } from "./dict";
 import { dict2 } from "./dict2";
+import { dict3 } from "./dict3";
 
 const merged: Record<Lang, Record<string, string>> = {
-  en: { ...dict.en, ...dict2.en },
-  id: { ...dict.id, ...dict2.id },
-  zh: { ...dict.zh, ...dict2.zh },
-  ja: { ...dict.ja, ...dict2.ja },
+  en: { ...dict.en, ...dict2.en, ...dict3.en },
+  id: { ...dict.id, ...dict2.id, ...dict3.id },
+  zh: { ...dict.zh, ...dict2.zh, ...dict3.zh },
+  ja: { ...dict.ja, ...dict2.ja, ...dict3.ja },
 };
 
 export type Currency = "USD" | "AUD" | "IDR" | "GBP" | "EUR" | "JPY" | "CNY" | "SGD" | "MYR";

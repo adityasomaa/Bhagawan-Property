@@ -2,11 +2,15 @@
 
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import { useT } from "@/lib/i18n/provider";
+import { useLocale } from "@/lib/i18n/provider";
+import { articleTr } from "@/data/tr/articles";
 import type { Article } from "@/data/articles";
 
 export default function ArticleCard({ article }: { article: Article }) {
-  const t = useT();
+  const { t, lang } = useLocale();
+  const tr = articleTr[article.slug]?.[lang];
+  const title = tr?.title ?? article.title;
+  const excerpt = tr?.excerpt ?? article.excerpt;
   return (
     <TransitionLink href={`/knowledge-base/${article.slug}`} className="group block">
       <div className="img-frame relative aspect-[16/10] rounded-2xl">
@@ -26,9 +30,9 @@ export default function ArticleCard({ article }: { article: Article }) {
           {article.readTime}
         </p>
         <h3 className="font-display mt-2 text-lg leading-snug font-medium tracking-tight text-ink transition-colors duration-300 group-hover:text-muted md:text-xl">
-          {article.title}
+          {title}
         </h3>
-        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{article.excerpt}</p>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{excerpt}</p>
       </div>
     </TransitionLink>
   );

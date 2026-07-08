@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import ArticleCard from "@/components/ArticleCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
+import { T, AL } from "@/lib/i18n/provider";
+import { articleTr } from "@/data/tr/articles";
 import { articles, getArticle } from "@/data/articles";
 import { site } from "@/lib/site";
 
@@ -39,6 +41,9 @@ export default async function ArticlePage({
   const { slug } = await params;
   const article = getArticle(slug);
   if (!article) notFound();
+
+  const aTr = articleTr[article.slug];
+  const titleTr = { id: aTr?.id?.title, zh: aTr?.zh?.title, ja: aTr?.ja?.title };
 
   const related = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
@@ -79,13 +84,13 @@ export default async function ArticlePage({
               aria-label="Breadcrumb"
             >
               <TransitionLink href="/knowledge-base" className="link-line">
-                Knowledge Base
+                <T k="nav.kb" />
               </TransitionLink>
               <span>/</span>
-              <span className="text-ink">{article.category}</span>
+              <span className="text-ink"><T k={`kb.cat.${article.category}`} /></span>
             </nav>
             <h1 className="font-display mt-6 text-3xl leading-[1.15] font-medium tracking-tight text-ink md:text-5xl">
-              {article.title}
+              <AL en={article.title} tr={titleTr} />
             </h1>
             <div className="mt-6 flex items-center gap-4 text-[11px] tracking-[0.2em] uppercase text-muted">
               <span>

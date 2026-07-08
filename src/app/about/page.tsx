@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Reveal from "@/components/motion/Reveal";
 import SectionHeading from "@/components/SectionHeading";
+import { T } from "@/lib/i18n/provider";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { img } from "@/data/areas";
 import { site } from "@/lib/site";
@@ -13,33 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about" },
 };
 
-const values = [
-  {
-    title: "We put buyers first",
-    description:
-      "Most agencies answer to sellers. We built our entire model around the buyer's side of the table — your goals, your risks, your outcome.",
-  },
-  {
-    title: "We tell the truth",
-    description:
-      "About prices, about lease terms, about which lane floods in January. If a property has a problem, you'll hear it from us first.",
-  },
-  {
-    title: "We curate, ruthlessly",
-    description:
-      "Hundreds of properties cross our desk; a handful make our list. Every listing is inspected, verified, and priced against real evidence.",
-  },
-  {
-    title: "We know Bali inside out",
-    description:
-      "This island is our home. The zoning maps, the notaries, the village chiefs, the future road plans — local knowledge is our craft.",
-  },
-  {
-    title: "We build confidence",
-    description:
-      "The goal of every meeting is not a signature — it's that you understand your decision completely before you make it.",
-  },
-];
+const values = [1, 2, 3, 4, 5] as const;
 
 export default function AboutPage() {
   return (
@@ -60,10 +35,10 @@ export default function AboutPage() {
         <div className="container-x relative pb-16 pt-48 md:pb-24">
           <Reveal>
             <p className="text-[11px] font-medium tracking-[0.4em] uppercase text-cream/75">
-              About Bhagawan Property
+              <T k="s.about.eyebrow" />
             </p>
             <h1 className="font-display mt-4 max-w-3xl text-4xl leading-[1.08] font-medium tracking-tight text-cream md:text-6xl">
-              A trusted advisor, by design
+              <T k="ab.heroTitle" />
             </h1>
           </Reveal>
         </div>
@@ -72,32 +47,16 @@ export default function AboutPage() {
       {/* Story */}
       <section className="container-x grid gap-14 py-24 md:py-32 lg:grid-cols-2">
         <SectionHeading
-          eyebrow="Our Story"
-          title="Built from the buyer's side of the table"
+          eyebrow={<T k="ab.storyEyebrow" />}
+          title={<T k="ab.storyTitle" />}
         />
         <Reveal delay={0.1}>
           <div className="space-y-6 text-base leading-relaxed text-ink-soft md:text-lg">
-            <p>
-              <strong className="font-display font-medium text-ink">Bhagawan</strong> — from the Sanskrit for
-              &ldquo;the fortunate one, the revered&rdquo; — is a name that carries a
-              responsibility. In Bali, where the spiritual and the practical share every address,
-              we believe a property advisor should be worthy of the trust placed in them.
-            </p>
-            <p>
-              We founded Bhagawan Property after years of watching the same story repeat: buyers
-              arriving with dreams, meeting an industry built to close deals rather than serve
-              decisions. Overpriced leases, unverified titles, glossy renders hiding zoning
-              problems — not from malice, mostly, but from a market where nobody was paid to say
-              &ldquo;don&apos;t buy this one.&rdquo;
-            </p>
-            <p>
-              So that became our job. We represent the buyer. We verify before we list. We price
-              leases per remaining year and show the arithmetic. We introduce clients to the same
-              notaries and lawyers we use ourselves. And when the right answer is &ldquo;wait&rdquo;
-              or &ldquo;walk away,&rdquo; that is exactly what we say.
-            </p>
+            <p><T k="ab.story1" /></p>
+            <p><T k="ab.story2" /></p>
+            <p><T k="ab.story3" /></p>
             <p className="font-display text-xl font-medium text-ink">
-              {site.tagline}
+              <T k="ab.tagline" />
             </p>
           </div>
         </Reveal>
@@ -106,16 +65,16 @@ export default function AboutPage() {
       {/* Values */}
       <section data-tone="dark" className="bg-ink py-24 text-cream md:py-32">
         <div className="container-x">
-          <SectionHeading eyebrow="What We Stand For" title="Five promises, kept daily" light />
+          <SectionHeading eyebrow={<T k="ab.valEyebrow" />} title={<T k="ab.valTitle" />} light />
           <div className="mt-14">
             {values.map((v, i) => (
-              <Reveal key={v.title} delay={i * 0.04}>
+              <Reveal key={v} delay={i * 0.04}>
                 <div className="grid gap-4 border-t border-cream/15 py-8 md:grid-cols-[100px_1fr_2fr] md:gap-10">
                   <span className="font-display text-3xl text-white/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <h3 className="font-display text-xl text-cream">{v.title}</h3>
-                  <p className="text-base leading-relaxed text-cream/65">{v.description}</p>
+                  <h3 className="font-display text-xl text-cream"><T k={`ab.v${v}t`} /></h3>
+                  <p className="text-base leading-relaxed text-cream/65"><T k={`ab.v${v}d`} /></p>
                 </div>
               </Reveal>
             ))}
@@ -126,18 +85,17 @@ export default function AboutPage() {
       {/* Signature CTA */}
       <section className="container-x py-24 text-center md:py-32">
         <Reveal>
-          <p className="eyebrow">Our Signature</p>
+          <p className="eyebrow"><T k="ab.sigEyebrow" /></p>
           <p className="font-display mt-6 text-5xl font-medium tracking-tight text-ink md:text-7xl">#Here4U</p>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-            Before the purchase, during the process, and long after the keys — one message away,
-            whenever Bali calls.
+            <T k="ab.sigDesc" />
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <TransitionLink href="/properties" className="btn btn-solid">
-              Browse Properties
+              <T k="ab.browseProps" />
             </TransitionLink>
             <TransitionLink href="/contact" className="btn">
-              Meet Us
+              <T k="ab.meetUs" />
             </TransitionLink>
           </div>
         </Reveal>
