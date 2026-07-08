@@ -101,7 +101,7 @@ export default function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   {String(active + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
                 </span>
                 <span className="font-display text-sm font-medium tracking-tight">
-                  {current.caption}
+                  {current.name}
                 </span>
               </span>
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-colors group-hover:bg-white/25">
