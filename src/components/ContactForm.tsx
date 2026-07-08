@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/lib/i18n/provider";
 import { site, waLink } from "@/lib/site";
 
 export default function ContactForm({ subject }: { subject?: string }) {
+  const t = useT();
   const [sent, setSent] = useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -29,14 +31,12 @@ export default function ContactForm({ subject }: { subject?: string }) {
   if (sent) {
     return (
       <div className="rounded-3xl border border-line bg-paper p-10 text-center">
-        <p className="font-display text-2xl text-ink">Thank you.</p>
+        <p className="font-display text-2xl text-ink">{t("form.thanks")}</p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Your message has been prepared in WhatsApp — press send and we&apos;ll come back to you
-          within one working day. Prefer email? Write to{" "}
+          {t("form.thanksBody")}{" "}
           <a href={`mailto:${site.email}`} className="text-ink underline">
             {site.email}
           </a>
-          .
         </p>
         <p className="mt-4 text-[10px] tracking-[0.4em] uppercase text-muted">#Here4U</p>
       </div>
@@ -48,13 +48,13 @@ export default function ContactForm({ subject }: { subject?: string }) {
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
           <label htmlFor="cf-name" className="eyebrow">
-            Name
+            {t("form.name")}
           </label>
-          <input id="cf-name" name="name" required className="field mt-1" placeholder="Your full name" />
+          <input id="cf-name" name="name" required className="field mt-1" placeholder={t("form.namePh")} />
         </div>
         <div>
           <label htmlFor="cf-email" className="eyebrow">
-            Email
+            {t("form.email")}
           </label>
           <input
             id="cf-email"
@@ -68,13 +68,13 @@ export default function ContactForm({ subject }: { subject?: string }) {
       </div>
       <div>
         <label htmlFor="cf-phone" className="eyebrow">
-          Phone / WhatsApp <span className="normal-case text-muted">(optional)</span>
+          {t("form.phone")} <span className="normal-case text-muted">{t("form.optional")}</span>
         </label>
         <input id="cf-phone" name="phone" className="field mt-1" placeholder="+62 ..." />
       </div>
       <div>
         <label htmlFor="cf-message" className="eyebrow">
-          Message
+          {t("form.message")}
         </label>
         <textarea
           id="cf-message"
@@ -82,19 +82,12 @@ export default function ContactForm({ subject }: { subject?: string }) {
           required
           rows={5}
           className="field mt-1 resize-none"
-          placeholder="Tell us what you're looking for — area, budget, freehold or leasehold..."
+          placeholder={t("form.msgPh")}
         />
       </div>
       <button type="submit" className="btn btn-solid w-full sm:w-auto">
-        Send Enquiry
+        {t("form.send")}
       </button>
-      <p className="text-xs leading-relaxed text-muted">
-        Sends via WhatsApp — no account details stored. By submitting you agree to our{" "}
-        <a href="/privacy-policy" className="underline">
-          privacy policy
-        </a>
-        .
-      </p>
     </form>
   );
 }

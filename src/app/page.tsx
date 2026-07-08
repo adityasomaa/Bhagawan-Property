@@ -9,6 +9,7 @@ import PropertyCard from "@/components/PropertyCard";
 import AreaCard from "@/components/AreaCard";
 import ArticleCard from "@/components/ArticleCard";
 import ContactForm from "@/components/ContactForm";
+import { T } from "@/lib/i18n/provider";
 import { featuredProperties } from "@/data/properties";
 import { areas, img } from "@/data/areas";
 import { articles } from "@/data/articles";
@@ -37,42 +38,12 @@ export const metadata: Metadata = {
 };
 
 const whyUs = [
-  {
-    title: "Buyer-First Approach",
-    description:
-      "We represent your interests, not a seller's target. Every recommendation starts with what is right for you.",
-    icon: "M12 21c4.5-3.5 8-6.9 8-11a8 8 0 1 0-16 0c0 4.1 3.5 7.5 8 11Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z",
-  },
-  {
-    title: "Honest Advice",
-    description:
-      "If a deal has problems, we tell you — even when it costs us the sale. Transparency is our entire model.",
-    icon: "M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4Z M9 12l2 2 4-4",
-  },
-  {
-    title: "Curated Listings",
-    description:
-      "We list only properties we would buy ourselves — verified titles, honest pricing, genuine potential.",
-    icon: "M4 6h16 M4 12h16 M4 18h10 M19 16l2 2-4 4",
-  },
-  {
-    title: "Local Expertise",
-    description:
-      "Bali is our home. We know the lanes, the landlords, the zoning maps, and what streets flood in January.",
-    icon: "M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Z M12 11.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5Z",
-  },
-  {
-    title: "Investment Focus",
-    description:
-      "Yield modelling, growth corridors, exit strategy — we treat your purchase like the investment it is.",
-    icon: "M3 17l6-6 4 4 8-8 M15 7h6v6",
-  },
-  {
-    title: "Trusted Network",
-    description:
-      "Vetted notaries, lawyers, builders, and managers — the professional bench behind every safe purchase.",
-    icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
-  },
+  { k: "buyer", icon: "M12 21c4.5-3.5 8-6.9 8-11a8 8 0 1 0-16 0c0 4.1 3.5 7.5 8 11Z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" },
+  { k: "honest", icon: "M12 3l8 4v5c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V7l8-4Z M9 12l2 2 4-4" },
+  { k: "curated", icon: "M4 6h16 M4 12h16 M4 18h10 M19 16l2 2-4 4" },
+  { k: "local", icon: "M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7Z M12 11.5A2.5 2.5 0 1 0 12 6a2.5 2.5 0 0 0 0 5.5Z" },
+  { k: "invest", icon: "M3 17l6-6 4 4 8-8 M15 7h6v6" },
+  { k: "network", icon: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75" },
 ];
 
 export default function HomePage() {
@@ -87,7 +58,7 @@ export default function HomePage() {
             <div data-hero style={{ opacity: 0 }}>
               <span className="glass inline-flex items-center gap-2.5 rounded-full px-4 py-2 text-[10px] font-semibold tracking-[0.32em] uppercase text-white/90">
                 <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                Bali Property Advisory &middot; #Here4U
+                <T k="hero.eyebrow" />
               </span>
             </div>
             <h1
@@ -95,17 +66,14 @@ export default function HomePage() {
               className="font-display mt-7 max-w-4xl text-5xl leading-[1.02] font-medium tracking-tight text-white md:text-7xl lg:text-[5.5rem]"
               style={{ opacity: 0 }}
             >
-              Find Exceptional
-              <br />
-              Property in Bali
+              <T k="hero.title" />
             </h1>
             <p
               data-hero
               className="mt-7 max-w-xl text-base leading-relaxed text-white/75 md:text-lg"
               style={{ opacity: 0 }}
             >
-              Curated freehold and leasehold villas, land, and investment opportunities across
-              Bali — guided by honest, buyer-first advice.
+              <T k="hero.subtitle" />
             </p>
             <div
               data-hero
@@ -113,16 +81,16 @@ export default function HomePage() {
               style={{ opacity: 0 }}
             >
               <TransitionLink href="/properties/freehold" className="btn btn-light">
-                Browse Freehold
+                <T k="c.browseFreehold" />
               </TransitionLink>
               <TransitionLink href="/properties/leasehold" className="btn btn-light">
-                Browse Leasehold
+                <T k="c.browseLeasehold" />
               </TransitionLink>
               <TransitionLink
                 href="/contact"
                 className="link-line ml-0 text-[11px] font-medium tracking-[0.25em] uppercase text-white sm:ml-4"
               >
-                Contact Us
+                <T k="c.contactUs" />
               </TransitionLink>
             </div>
             <div
@@ -131,14 +99,14 @@ export default function HomePage() {
               style={{ opacity: 0 }}
             >
               {[
-                ["6", "Curated listings"],
-                ["6", "Bali areas covered"],
-                ["100%", "Buyer-first advice"],
-              ].map(([n, label]) => (
-                <div key={label} className="glass rounded-2xl px-4 py-4 md:px-6">
+                ["6", "hero.stat1"],
+                ["6", "hero.stat2"],
+                ["100%", "hero.stat3"],
+              ].map(([n, k]) => (
+                <div key={k} className="glass rounded-2xl px-4 py-4 md:px-6">
                   <p className="font-display text-2xl font-medium text-white md:text-3xl">{n}</p>
                   <p className="mt-1 text-[10px] tracking-[0.2em] uppercase text-white/60">
-                    {label}
+                    <T k={k} />
                   </p>
                 </div>
               ))}
@@ -152,10 +120,10 @@ export default function HomePage() {
         <div className="container-x py-16 md:py-20">
           <Reveal className="mx-auto max-w-3xl text-center">
             <p className="font-display text-2xl leading-snug font-medium tracking-tight text-ink md:text-[2.1rem]">
-              &ldquo;We don&apos;t just sell property — we help people buy the right one.&rdquo;
+              <T k="phil.quote" />
             </p>
             <p className="mt-5 text-[10px] font-medium tracking-[0.45em] uppercase text-muted">
-              Our Philosophy &middot; #Here4U
+              <T k="phil.label" />
             </p>
           </Reveal>
         </div>
@@ -165,13 +133,13 @@ export default function HomePage() {
       <section className="container-x py-24 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Featured Properties"
-            title="A curated selection, not a catalogue"
-            description="Six to eight properties we currently believe in — verified, fairly priced, and personally inspected."
+            eyebrow={<T k="s.featured.eyebrow" />}
+            title={<T k="s.featured.title" />}
+            description={<T k="s.featured.desc" />}
           />
           <Reveal delay={0.15}>
             <TransitionLink href="/properties" className="btn">
-              View All Properties
+              <T k="c.viewAllProperties" />
             </TransitionLink>
           </Reveal>
         </div>
@@ -188,9 +156,9 @@ export default function HomePage() {
       <section className="bg-sand/50 py-24 md:py-32">
         <div className="container-x">
           <SectionHeading
-            eyebrow="Bali Areas"
-            title="Where on the island belongs to you?"
-            description="Every corner of Bali has its own character. Explore our editorial guides to the island's most rewarding addresses."
+            eyebrow={<T k="s.areas.eyebrow" />}
+            title={<T k="s.areas.title" />}
+            description={<T k="s.areas.desc" />}
             align="center"
           />
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -206,13 +174,13 @@ export default function HomePage() {
       {/* ── Why Choose ───────────────────────────────────────── */}
       <section className="container-x py-24 md:py-32">
         <SectionHeading
-          eyebrow="Why Bhagawan Property"
-          title="A trusted advisor, not another agency"
-          description="Trust is not a slogan here — it is the operating principle behind every listing, meeting, and recommendation."
+          eyebrow={<T k="s.why.eyebrow" />}
+          title={<T k="s.why.title" />}
+          description={<T k="s.why.desc" />}
         />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {whyUs.map((item, i) => (
-            <Reveal key={item.title} delay={(i % 3) * 0.08}>
+            <Reveal key={item.k} delay={(i % 3) * 0.08}>
               <div className="group h-full rounded-3xl border border-line bg-paper p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_28px_60px_-36px_rgba(11,11,12,0.35)] md:p-10">
                 <svg
                   width="30"
@@ -230,8 +198,12 @@ export default function HomePage() {
                     <path key={j} d={j === 0 ? d : `M${d}`} />
                   ))}
                 </svg>
-                <h3 className="font-display mt-6 text-xl text-ink">{item.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">{item.description}</p>
+                <h3 className="font-display mt-6 text-xl text-ink">
+                  <T k={`why.${item.k}.t`} />
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted">
+                  <T k={`why.${item.k}.d`} />
+                </p>
               </div>
             </Reveal>
           ))}
@@ -254,8 +226,8 @@ export default function HomePage() {
           </Reveal>
           <div>
             <SectionHeading
-              eyebrow="About Bhagawan Property"
-              title="Guided by honesty. Grounded in Bali."
+              eyebrow={<T k="s.about.eyebrow" />}
+              title={<T k="s.about.title" />}
               light
             />
             <Reveal delay={0.15}>
@@ -274,18 +246,22 @@ export default function HomePage() {
               </div>
               <div className="mt-8 grid grid-cols-3 gap-6 border-t border-cream/15 pt-8">
                 {[
-                  ["Buyer", "Representation"],
-                  ["Full", "Transparency"],
-                  ["Local", "Expertise"],
+                  ["about.s1a", "about.s1b"],
+                  ["about.s2a", "about.s2b"],
+                  ["about.s3a", "about.s3b"],
                 ].map(([a, b]) => (
                   <div key={b}>
-                    <p className="font-display text-2xl font-medium text-white">{a}</p>
-                    <p className="mt-1 text-[10px] tracking-[0.3em] uppercase text-cream/50">{b}</p>
+                    <p className="font-display text-2xl font-medium text-white">
+                      <T k={a} />
+                    </p>
+                    <p className="mt-1 text-[10px] tracking-[0.3em] uppercase text-cream/50">
+                      <T k={b} />
+                    </p>
                   </div>
                 ))}
               </div>
               <TransitionLink href="/about" className="btn btn-light mt-10">
-                Our Story
+                <T k="c.ourStory" />
               </TransitionLink>
             </Reveal>
           </div>
@@ -296,13 +272,13 @@ export default function HomePage() {
       <section className="container-x py-24 md:py-32">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
-            eyebrow="Knowledge Base"
-            title="Learn before you buy"
-            description="Guides written the way we advise — clear, honest, and specific to Bali."
+            eyebrow={<T k="s.kb.eyebrow" />}
+            title={<T k="s.kb.title" />}
+            description={<T k="s.kb.desc" />}
           />
           <Reveal delay={0.15}>
             <TransitionLink href="/knowledge-base" className="btn">
-              View All Articles
+              <T k="c.viewAllArticles" />
             </TransitionLink>
           </Reveal>
         </div>
@@ -320,9 +296,9 @@ export default function HomePage() {
         <div className="container-x grid gap-14 lg:grid-cols-2">
           <div>
             <SectionHeading
-              eyebrow="Contact"
-              title="Start the conversation"
-              description="Tell us what you're dreaming of — an area, a budget, a feeling. We'll reply personally within one working day."
+              eyebrow={<T k="s.contact.eyebrow" />}
+              title={<T k="s.contact.title" />}
+              description={<T k="s.contact.desc" />}
             />
             <Reveal delay={0.15}>
               <div className="mt-10 space-y-6">

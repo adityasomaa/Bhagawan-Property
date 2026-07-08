@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import Preloader from "@/components/motion/Preloader";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import { TransitionProvider } from "@/components/motion/PageTransition";
+import { LocaleProvider } from "@/lib/i18n/provider";
 import { site } from "@/lib/site";
 
 const space = Space_Grotesk({
@@ -123,13 +124,15 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <SmoothScroll />
-        <TransitionProvider>
-          <Preloader />
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </TransitionProvider>
+        <LocaleProvider>
+          <SmoothScroll />
+          <TransitionProvider>
+            <Preloader />
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </TransitionProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

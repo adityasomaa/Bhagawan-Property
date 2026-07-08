@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import { formatNumber, formatIDR } from "@/lib/format";
+import { formatNumber } from "@/lib/format";
+import { useLocale } from "@/lib/i18n/provider";
 import type { Property } from "@/data/properties";
 
 export default function PropertyCard({ property }: { property: Property }) {
+  const { t, money } = useLocale();
+
   return (
     <TransitionLink
       href={`/properties/${property.slug}`}
@@ -19,13 +24,13 @@ export default function PropertyCard({ property }: { property: Property }) {
           className="object-cover"
         />
         <span className="glass-dark absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[9px] font-semibold tracking-[0.24em] uppercase text-white">
-          {property.tenure}
+          {property.tenure === "leasehold" ? t("card.leasehold") : t("card.freehold")}
           {property.tenure === "leasehold" && property.leaseholdYears
-            ? ` · ${property.leaseholdYears} yrs`
+            ? ` · ${property.leaseholdYears} ${t("card.yrs")}`
             : ""}
         </span>
         <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
-          {formatIDR(property.price)}
+          {money(property.price)}
         </span>
       </div>
       <div className="px-1 pt-5">
@@ -34,7 +39,7 @@ export default function PropertyCard({ property }: { property: Property }) {
             {property.name}
           </h3>
           <span className="link-line shrink-0 text-[10px] font-semibold tracking-[0.2em] uppercase text-ink">
-            View
+            {t("c.view")}
           </span>
         </div>
         <p className="mt-1 text-[11px] font-medium tracking-[0.25em] uppercase text-muted">
@@ -44,16 +49,20 @@ export default function PropertyCard({ property }: { property: Property }) {
           {property.bedrooms > 0 && (
             <>
               <span>
-                {property.bedrooms} bed{property.bedrooms > 1 ? "s" : ""}
+                {property.bedrooms} {property.bedrooms > 1 ? t("c.beds") : t("c.bed")}
               </span>
               <span className="h-1 w-1 rounded-full bg-line" />
             </>
           )}
-          <span>{formatNumber(property.landSize)} m² land</span>
+          <span>
+            {formatNumber(property.landSize)} {t("c.landSuffix")}
+          </span>
           {property.buildingSize && (
             <>
               <span className="h-1 w-1 rounded-full bg-line" />
-              <span>{formatNumber(property.buildingSize)} m² build</span>
+              <span>
+                {formatNumber(property.buildingSize)} {t("c.buildSuffix")}
+              </span>
             </>
           )}
         </div>

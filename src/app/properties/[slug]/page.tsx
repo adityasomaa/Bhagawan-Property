@@ -7,6 +7,7 @@ import ContactForm from "@/components/ContactForm";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { byArea, getProperty, properties } from "@/data/properties";
 import { formatNumber, formatIDR } from "@/lib/format";
+import { T, Money } from "@/lib/i18n/provider";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -62,15 +63,25 @@ export default async function PropertyDetailPage({
     },
   };
 
-  const specs: [string, string][] = [
-    ["Tenure", property.tenure === "leasehold" ? `Leasehold · ${property.leaseholdYears} years` : "Freehold"],
-    ["Type", property.type],
-    ["Location", `${property.areaName}, Bali`],
-    ["Land size", `${formatNumber(property.landSize)} m²`],
-    ...(property.buildingSize ? [["Building size", `${formatNumber(property.buildingSize)} m²`] as [string, string]] : []),
-    ...(property.bedrooms > 0 ? [["Bedrooms", String(property.bedrooms)] as [string, string]] : []),
-    ...(property.bathrooms > 0 ? [["Bathrooms", String(property.bathrooms)] as [string, string]] : []),
-    ["Price", formatIDR(property.price)],
+  const specs: { k: string; v: React.ReactNode }[] = [
+    {
+      k: "pd.tenure",
+      v:
+        property.tenure === "leasehold" ? (
+          <>
+            <T k="card.leasehold" /> · {property.leaseholdYears} <T k="card.yrs" />
+          </>
+        ) : (
+          <T k="card.freehold" />
+        ),
+    },
+    { k: "pd.type", v: property.type },
+    { k: "pd.locationLabel", v: `${property.areaName}, Bali` },
+    { k: "pd.landSize", v: `${formatNumber(property.landSize)} m²` },
+    ...(property.buildingSize ? [{ k: "pd.buildingSize", v: `${formatNumber(property.buildingSize)} m²` }] : []),
+    ...(property.bedrooms > 0 ? [{ k: "pd.bedrooms", v: String(property.bedrooms) }] : []),
+    ...(property.bathrooms > 0 ? [{ k: "pd.bathrooms", v: String(property.bathrooms) }] : []),
+    { k: "pd.price", v: <Money idr={property.price} /> },
   ];
 
   return (
@@ -80,10 +91,10 @@ export default async function PropertyDetailPage({
       <article className="container-x pb-24 pt-32 md:pb-32 md:pt-40">
         <Reveal>
           <nav className="mb-8 flex flex-wrap items-center gap-2 text-[10px] font-medium tracking-[0.25em] uppercase text-muted" aria-label="Breadcrumb">
-            <TransitionLink href="/properties" className="link-line">Properties</TransitionLink>
+            <TransitionLink href="/properties" className="link-line"><T k="nav.properties" /></TransitionLink>
             <span>/</span>
             <TransitionLink href={`/properties/${property.tenure}`} className="link-line">
-              {property.tenure}
+              <T k={property.tenure === "leasehold" ? "card.leasehold" : "card.freehold"} />
             </TransitionLink>
             <span>/</span>
             <span className="text-ink">{property.name}</span>
@@ -104,7 +115,7 @@ export default async function PropertyDetailPage({
                   </h1>
                 </div>
                 <p className="font-display text-3xl font-medium text-ink md:text-4xl">
-                  {formatIDR(property.price)}
+                  <Money idr={property.price} />
                 </p>
               </div>
             </Reveal>
@@ -118,7 +129,7 @@ export default async function PropertyDetailPage({
             </Reveal>
 
             <Reveal delay={0.1}>
-              <h2 className="font-display mt-14 text-2xl text-ink">Investment highlights</h2>
+              <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.highlights" /></h2>
               <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                 {property.highlights.map((h) => (
                   <li key={h} className="flex gap-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
@@ -130,7 +141,7 @@ export default async function PropertyDetailPage({
             </Reveal>
 
             <Reveal delay={0.1}>
-              <h2 className="font-display mt-14 text-2xl text-ink">Features</h2>
+              <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.features" /></h2>
               <ul className="mt-6 flex flex-wrap gap-3">
                 {property.features.map((f) => (
                   <li key={f} className="rounded-full border border-line bg-paper px-4 py-2 text-xs tracking-wide text-ink-soft">
@@ -141,7 +152,7 @@ export default async function PropertyDetailPage({
             </Reveal>
 
             <Reveal delay={0.1}>
-              <h2 className="font-display mt-14 text-2xl text-ink">Location</h2>
+              <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.location" /></h2>
               <p className="mt-3 text-sm text-muted">
                 Exact address shared after an introductory call — a courtesy we extend to every seller.
               </p>
@@ -160,11 +171,11 @@ export default async function PropertyDetailPage({
           <aside>
             <Reveal delay={0.15}>
               <div className="rounded-3xl border border-line bg-paper p-7 md:p-9 lg:sticky lg:top-28">
-                <h2 className="font-display text-xl text-ink">Specifications</h2>
+                <h2 className="font-display text-xl text-ink"><T k="pd.specifications" /></h2>
                 <dl className="mt-5">
-                  {specs.map(([k, v]) => (
+                  {specs.map(({ k, v }) => (
                     <div key={k} className="flex items-baseline justify-between gap-4 border-t border-line py-3 text-sm">
-                      <dt className="text-muted">{k}</dt>
+                      <dt className="text-muted"><T k={k} /></dt>
                       <dd className="text-right font-medium capitalize text-ink">{v}</dd>
                     </div>
                   ))}
@@ -192,7 +203,7 @@ export default async function PropertyDetailPage({
           <section className="mt-24 border-t border-line pt-16">
             <Reveal>
               <h2 className="font-display text-3xl font-medium tracking-tight text-ink md:text-4xl">
-                You may also love
+                <T k="pd.related" />
               </h2>
             </Reveal>
             <div className="mt-10 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">

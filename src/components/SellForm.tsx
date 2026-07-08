@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Select from "@/components/Select";
+import { useT } from "@/lib/i18n/provider";
 import { areas } from "@/data/areas";
 import { site, waLink } from "@/lib/site";
 
 export default function SellForm() {
+  const t = useT();
   const [sent, setSent] = useState(false);
   const [propertyType, setPropertyType] = useState("Villa");
   const [areaValue, setAreaValue] = useState("Canggu");
@@ -35,7 +37,7 @@ export default function SellForm() {
   if (sent) {
     return (
       <div className="rounded-3xl border border-line bg-cream p-10 text-center">
-        <p className="font-display text-2xl text-ink">Thank you — we&apos;re on it.</p>
+        <p className="font-display text-2xl text-ink">{t("form.thanks")}</p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
           Your listing details are ready in WhatsApp — press send (and attach photos there if you
           like). We&apos;ll review and come back within one working day. Prefer email? Reach us at{" "}
@@ -53,21 +55,21 @@ export default function SellForm() {
     <form onSubmit={handleSubmit} className="space-y-7">
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
-          <label htmlFor="sf-name" className="eyebrow">Name</label>
-          <input id="sf-name" name="name" required className="field mt-1" placeholder="Your full name" />
+          <label htmlFor="sf-name" className="eyebrow">{t("form.name")}</label>
+          <input id="sf-name" name="name" required className="field mt-1" placeholder={t("form.namePh")} />
         </div>
         <div>
-          <label htmlFor="sf-email" className="eyebrow">Email</label>
+          <label htmlFor="sf-email" className="eyebrow">{t("form.email")}</label>
           <input id="sf-email" name="email" type="email" required className="field mt-1" placeholder="you@example.com" />
         </div>
       </div>
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
-          <label htmlFor="sf-phone" className="eyebrow">Phone / WhatsApp</label>
+          <label htmlFor="sf-phone" className="eyebrow">{t("form.phone")}</label>
           <input id="sf-phone" name="phone" required className="field mt-1" placeholder="+62 ..." />
         </div>
         <Select
-          label="Property type"
+          label={t("form.propertyType")}
           name="type"
           value={propertyType}
           onChange={setPropertyType}
@@ -79,7 +81,7 @@ export default function SellForm() {
       </div>
       <div className="grid gap-7 sm:grid-cols-2">
         <Select
-          label="Area"
+          label={t("form.areaLabel")}
           name="area"
           value={areaValue}
           onChange={setAreaValue}
@@ -89,12 +91,12 @@ export default function SellForm() {
           ]}
         />
         <div>
-          <label htmlFor="sf-price" className="eyebrow">Asking price (USD or IDR)</label>
+          <label htmlFor="sf-price" className="eyebrow">{t("form.askingPrice")}</label>
           <input id="sf-price" name="price" required className="field mt-1" placeholder="e.g. $650,000" />
         </div>
       </div>
       <div>
-        <label htmlFor="sf-message" className="eyebrow">Tell us about the property</label>
+        <label htmlFor="sf-message" className="eyebrow">{t("form.tellUs")}</label>
         <textarea
           id="sf-message"
           name="message"
@@ -109,7 +111,7 @@ export default function SellForm() {
         photos directly in the WhatsApp conversation this form opens.
       </div>
       <button type="submit" className="btn btn-solid w-full sm:w-auto">
-        List My Property
+        {t("form.listProperty")}
       </button>
       <p className="text-xs leading-relaxed text-muted">
         By submitting you agree to our{" "}

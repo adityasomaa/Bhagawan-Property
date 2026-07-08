@@ -1,9 +1,10 @@
+import type { ReactNode } from "react";
 import Reveal from "@/components/motion/Reveal";
 
 interface SectionHeadingProps {
-  eyebrow: string;
-  title: string;
-  description?: string;
+  eyebrow: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
   align?: "left" | "center";
   light?: boolean;
 }

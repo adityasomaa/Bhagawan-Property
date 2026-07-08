@@ -4,8 +4,23 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import LogoMark from "@/components/Logo";
+import LocaleControls from "@/components/LocaleControls";
+import { useT } from "@/lib/i18n/provider";
 import { nav, waLink } from "@/lib/site";
 import { gsap } from "@/lib/gsapClient";
+
+// Map nav routes to translation keys.
+const NAV_KEY: Record<string, string> = {
+  "/": "nav.home",
+  "/properties": "nav.properties",
+  "/properties/freehold": "nav.freehold",
+  "/properties/leasehold": "nav.leasehold",
+  "/areas": "nav.areas",
+  "/sell-with-us": "nav.sell",
+  "/knowledge-base": "nav.kb",
+  "/about": "nav.about",
+  "/contact": "nav.contact",
+};
 
 // Pages with a full-bleed dark hero behind the header — the nav uses its
 // light (white) treatment on these until the user scrolls. Every other page
@@ -20,9 +35,12 @@ const IMMERSIVE = [
 
 export default function Header() {
   const pathname = usePathname();
+  const t = useT();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const label = (href: string, fallback: string) =>
+    NAV_KEY[href] ? t(NAV_KEY[href]) : fallback;
 
   const immersive = IMMERSIVE.some((re) => re.test(pathname));
   const light = immersive && !scrolled && !menuOpen;
@@ -133,7 +151,7 @@ export default function Header() {
                       className="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.2em] uppercase"
                       style={{ display: "inline-flex" }}
                     >
-                      <span className="link-line">{item.label}</span>
+                      <span className="link-line">{label(item.href, item.label)}</span>
                       <svg
                         width="9"
                         height="6"
@@ -153,7 +171,7 @@ export default function Header() {
                             href={child.href}
                             className="rounded-xl px-5 py-3 text-[11px] font-medium tracking-[0.2em] uppercase transition-colors hover:bg-ink/5"
                           >
-                            {child.label}
+                            {label(child.href, child.label)}
                           </TransitionLink>
                         ))}
                       </div>
@@ -167,7 +185,7 @@ export default function Header() {
                       pathname === item.href ? "active" : ""
                     }`}
                   >
-                    {item.label}
+                    {label(item.href, item.label)}
                   </TransitionLink>
                 )
               )}
@@ -177,8 +195,10 @@ export default function Header() {
                 rel="noopener noreferrer"
                 className={`btn !px-5 !py-2.5 !text-[10px] ${light ? "btn-light" : "btn-solid"}`}
               >
-                WhatsApp
+                {t("nav.whatsapp")}
               </a>
+              <span className="h-4 w-px bg-current opacity-20" aria-hidden />
+              <LocaleControls />
             </nav>
 
             {/* Hamburger */}
@@ -240,7 +260,7 @@ export default function Header() {
                   href={item.href}
                   className="font-display block py-2.5 text-3xl font-medium tracking-tight text-cream transition-colors hover:text-white/60 sm:text-4xl"
                 >
-                  {item.label}
+                  {label(item.href, item.label)}
                 </TransitionLink>
                 {"children" in item && item.children && (
                   <div className="mb-2 flex gap-6 pl-1">
@@ -250,7 +270,7 @@ export default function Header() {
                         href={child.href}
                         className="text-[11px] font-medium tracking-[0.3em] uppercase text-cream/60 transition-colors hover:text-white"
                       >
-                        {child.label}
+                        {label(child.href, child.label)}
                       </TransitionLink>
                     ))}
                   </div>
@@ -258,14 +278,17 @@ export default function Header() {
               </div>
             ))}
           </nav>
-          <div className="m-link mt-10 border-t border-cream/15 pt-6">
+          <div className="m-link mt-10 border-t border-cream/15 pt-6 text-cream">
+            <div className="mb-6 flex justify-center">
+              <LocaleControls align="left" />
+            </div>
             <a
               href={waLink("Hi Bhagawan Property, I'd like to enquire about property in Bali.")}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-light w-full"
             >
-              Chat on WhatsApp
+              {t("c.chatWhatsapp")}
             </a>
             <p className="mt-6 text-center text-[10px] tracking-[0.5em] uppercase text-cream/40">
               #Here4U

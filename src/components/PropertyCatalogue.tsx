@@ -3,25 +3,27 @@
 import { useMemo, useState } from "react";
 import PropertyCard from "@/components/PropertyCard";
 import Select from "@/components/Select";
+import { useLocale } from "@/lib/i18n/provider";
 import type { Property } from "@/data/properties";
 import { areas } from "@/data/areas";
 
 const priceBands = [
-  { label: "Any price", min: 0, max: Infinity },
-  { label: "Under IDR 3B", min: 0, max: 3_000_000_000 },
-  { label: "IDR 3B – 4B", min: 3_000_000_000, max: 4_000_000_000 },
-  { label: "IDR 4B – 5B", min: 4_000_000_000, max: 5_000_000_000 },
-  { label: "Over IDR 5B", min: 5_000_000_000, max: Infinity },
+  { min: 0, max: Infinity },
+  { min: 0, max: 3_000_000_000 },
+  { min: 3_000_000_000, max: 4_000_000_000 },
+  { min: 4_000_000_000, max: 5_000_000_000 },
+  { min: 5_000_000_000, max: Infinity },
 ];
 
 const landBands = [
-  { label: "Any land size", min: 0, max: Infinity },
-  { label: "Under 150 m²", min: 0, max: 150 },
-  { label: "150 – 250 m²", min: 150, max: 250 },
-  { label: "Over 250 m²", min: 250, max: Infinity },
+  { key: "f.anyLand", min: 0, max: Infinity },
+  { key: "< 150 m²", min: 0, max: 150 },
+  { key: "150 – 250 m²", min: 150, max: 250 },
+  { key: "> 250 m²", min: 250, max: Infinity },
 ];
 
 export default function PropertyCatalogue({ items }: { items: Property[] }) {
+  const { t, money } = useLocale();
   const [area, setArea] = useState("all");
   const [type, setType] = useState("all");
   const [price, setPrice] = useState(0);
@@ -47,37 +49,45 @@ export default function PropertyCatalogue({ items }: { items: Property[] }) {
     <div>
       <div className="grid gap-x-8 gap-y-5 border-y border-line py-6 sm:grid-cols-2 lg:grid-cols-5">
         <Select
-          label="Area"
+          label={t("f.area")}
           value={area}
           onChange={setArea}
           options={[
-            { value: "all", label: "All areas" },
+            { value: "all", label: t("f.allAreas") },
             ...areas.map((a) => ({ value: a.slug, label: a.name })),
           ]}
         />
         <Select
-          label="Property type"
+          label={t("f.type")}
           value={type}
           onChange={setType}
           options={[
-            { value: "all", label: "All types" },
-            { value: "villa", label: "Villa" },
-            { value: "townhouse", label: "Townhouse" },
-            { value: "land", label: "Land" },
+            { value: "all", label: t("f.allTypes") },
+            { value: "villa", label: t("f.villa") },
+            { value: "townhouse", label: t("f.townhouse") },
+            { value: "land", label: t("f.land") },
           ]}
         />
         <Select
-          label="Price"
+          label={t("f.price")}
           value={String(price)}
           onChange={(v) => setPrice(Number(v))}
-          options={priceBands.map((b, i) => ({ value: String(i), label: b.label }))}
+          options={priceBands.map((b, i) => ({
+            value: String(i),
+            label:
+              i === 0
+                ? t("f.anyPrice")
+                : b.max === Infinity
+                  ? `${money(b.min)}+`
+                  : `${money(b.min)} – ${money(b.max)}`,
+          }))}
         />
         <Select
-          label="Bedrooms"
+          label={t("f.bedrooms")}
           value={String(beds)}
           onChange={(v) => setBeds(Number(v))}
           options={[
-            { value: "0", label: "Any" },
+            { value: "0", label: t("f.any") },
             { value: "2", label: "2+" },
             { value: "3", label: "3+" },
             { value: "4", label: "4+" },
@@ -85,15 +95,18 @@ export default function PropertyCatalogue({ items }: { items: Property[] }) {
           ]}
         />
         <Select
-          label="Land size"
+          label={t("f.landSize")}
           value={String(land)}
           onChange={(v) => setLand(Number(v))}
-          options={landBands.map((b, i) => ({ value: String(i), label: b.label }))}
+          options={landBands.map((b, i) => ({
+            value: String(i),
+            label: i === 0 ? t("f.anyLand") : b.key,
+          }))}
         />
       </div>
 
       <p className="mt-6 text-[11px] font-medium tracking-[0.25em] uppercase text-muted">
-        {filtered.length} propert{filtered.length === 1 ? "y" : "ies"} found
+        {filtered.length} {filtered.length === 1 ? t("f.found1") : t("f.foundN")}
       </p>
 
       {filtered.length > 0 ? (
@@ -104,11 +117,8 @@ export default function PropertyCatalogue({ items }: { items: Property[] }) {
         </div>
       ) : (
         <div className="mt-8 rounded-3xl border border-line bg-paper p-14 text-center">
-          <p className="font-display text-2xl text-ink">Nothing matches those filters — yet.</p>
-          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-            Our best properties often sell before they reach the website. Tell us what you&apos;re
-            looking for and we&apos;ll search privately on your behalf.
-          </p>
+          <p className="font-display text-2xl text-ink">{t("f.emptyT")}</p>
+          <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">{t("f.emptyB")}</p>
         </div>
       )}
     </div>

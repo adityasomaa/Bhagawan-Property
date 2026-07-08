@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { formatPrice, formatPercent, formatNumber } from "@/lib/format";
+import { useT } from "@/lib/i18n/provider";
 
 function num(v: string | null, fallback: number, min: number, max: number) {
   const n = Number(v);
@@ -13,6 +14,7 @@ type Mode = "freehold" | "leasehold";
 
 export default function RoiCalculator() {
   const params = useSearchParams();
+  const t = useT();
 
   const [mode, setMode] = useState<Mode>(() =>
     num(params.get("years"), 0, 0, 50) > 0 ? "leasehold" : "freehold"
@@ -104,7 +106,7 @@ export default function RoiCalculator() {
       <div className="space-y-8 rounded-3xl border border-line bg-paper p-7 md:p-10">
         {/* Tenure tabs */}
         <div>
-          <p className="eyebrow">Tenure</p>
+          <p className="eyebrow">{t("roi.tenure")}</p>
           <div
             role="tablist"
             aria-label="Property tenure"
@@ -121,7 +123,7 @@ export default function RoiCalculator() {
                   mode === m ? "bg-ink text-cream" : "text-muted hover:text-ink"
                 }`}
               >
-                {m}
+                {m === "freehold" ? t("roi.freehold") : t("roi.leasehold")}
               </button>
             ))}
           </div>
@@ -133,22 +135,22 @@ export default function RoiCalculator() {
         </div>
 
         <div className="border-t border-line pt-8">
-          <p className="font-display text-xl text-ink">The property</p>
+          <p className="font-display text-xl text-ink">{t("roi.property")}</p>
           <div className="mt-6 space-y-7">
-            {slider("Purchase price", price, setPrice, 100000, 3000000, 10000, formatPrice(price))}
+            {slider(t("roi.purchasePrice"), price, setPrice, 100000, 3000000, 10000, formatPrice(price))}
             {isLease
               ? slider(
-                  "Remaining lease",
+                  t("roi.remainingLease"),
                   leaseYears,
                   setLeaseYears,
                   5,
                   50,
                   1,
-                  `${leaseYears} years`,
+                  `${leaseYears} ${t("roi.years")}`,
                   "Years left on the lease — extensions should be priced into the term."
                 )
               : slider(
-                  "Assumed appreciation",
+                  t("roi.appreciation"),
                   appreciation,
                   setAppreciation,
                   0,
@@ -158,22 +160,22 @@ export default function RoiCalculator() {
                   "Long-run land appreciation assumption for freehold."
                 )}
             {slider(
-              "Hold period",
+              t("roi.holdPeriod"),
               holdYears,
               setHoldYears,
               1,
               30,
               1,
-              `${isLease ? Math.min(holdYears, leaseYears) : holdYears} years`
+              `${isLease ? Math.min(holdYears, leaseYears) : holdYears} ${t("roi.years")}`
             )}
           </div>
         </div>
         <div className="border-t border-line pt-8">
-          <p className="font-display text-xl text-ink">The rental operation</p>
+          <p className="font-display text-xl text-ink">{t("roi.rental")}</p>
           <div className="mt-6 space-y-7">
-            {slider("Average nightly rate", nightly, setNightly, 80, 1500, 10, formatPrice(nightly))}
+            {slider(t("roi.nightlyRate"), nightly, setNightly, 80, 1500, 10, formatPrice(nightly))}
             {slider(
-              "Occupancy",
+              t("roi.occupancy"),
               occupancy,
               setOccupancy,
               30,
@@ -182,9 +184,9 @@ export default function RoiCalculator() {
               `${occupancy}%`,
               `≈ ${Math.round(365 * (occupancy / 100))} booked nights per year.`
             )}
-            {slider("Management fee", mgmtFee, setMgmtFee, 0, 35, 1, `${mgmtFee}% of revenue`)}
+            {slider(t("roi.mgmtFee"), mgmtFee, setMgmtFee, 0, 35, 1, `${mgmtFee}%`)}
             {slider(
-              "Running costs",
+              t("roi.runningCosts"),
               runningCosts,
               setRunningCosts,
               0,
@@ -194,7 +196,7 @@ export default function RoiCalculator() {
               "Utilities, maintenance, insurance, staff, pool & garden."
             )}
             {slider(
-              "Rental income tax",
+              t("roi.taxRate"),
               taxRate,
               setTaxRate,
               0,
@@ -211,33 +213,33 @@ export default function RoiCalculator() {
       <div className="lg:sticky lg:top-28 lg:self-start">
         <div className="rounded-3xl bg-ink p-7 text-cream md:p-10">
           <p className="text-[10px] font-medium tracking-[0.35em] uppercase text-white/60">
-            Projected returns
+            {t("roi.projected")}
           </p>
           <div className="mt-7 grid grid-cols-2 gap-x-6 gap-y-7">
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Gross yield</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.grossYield")}</p>
               <p className="font-display mt-1.5 text-3xl text-cream">{formatPercent(r.grossYield)}</p>
             </div>
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Net yield</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.netYield")}</p>
               <p className="font-display mt-1.5 text-3xl text-white">{formatPercent(r.netYield)}</p>
             </div>
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Gross revenue / yr</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.grossRev")}</p>
               <p className="font-display mt-1.5 text-2xl text-cream">{formatPrice(r.grossRevenue)}</p>
             </div>
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Net income / yr</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.netIncome")}</p>
               <p className="font-display mt-1.5 text-2xl text-cream">{formatPrice(r.netIncome)}</p>
             </div>
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Payback period</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.payback")}</p>
               <p className="font-display mt-1.5 text-2xl text-cream">
                 {Number.isFinite(r.paybackYears) ? `${r.paybackYears.toFixed(1)} yrs` : "—"}
               </p>
             </div>
             <div>
-              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">Booked nights / yr</p>
+              <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.bookedNights")}</p>
               <p className="font-display mt-1.5 text-2xl text-cream">{formatNumber(r.nightsBooked)}</p>
             </div>
           </div>
@@ -258,13 +260,13 @@ export default function RoiCalculator() {
                 <span className="font-medium">{formatPrice(r.endValue)}</span>
               </div>
               <div className="flex justify-between gap-4 border-t border-cream/15 pt-3 text-base">
-                <span className="text-cream/80">Total return</span>
+                <span className="text-cream/80">{t("roi.totalReturn")}</span>
                 <span className={`font-display text-xl ${r.totalReturn >= 0 ? "text-white" : "text-red-300"}`}>
                   {formatPrice(r.totalReturn)} ({formatPercent(r.totalReturnPct, 0)})
                 </span>
               </div>
               <div className="flex justify-between gap-4">
-                <span className="text-cream/60">Annualised ROI</span>
+                <span className="text-cream/60">{t("roi.annualised")}</span>
                 <span className="font-medium text-white">{formatPercent(r.annualisedRoi)} / yr</span>
               </div>
             </div>
