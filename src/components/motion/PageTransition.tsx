@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ScrollTrigger } from "@/lib/gsapClient";
-import LogoMark from "@/components/Logo";
+import Wordmark from "@/components/Wordmark";
 
 /**
  * Page transitions with a guaranteed sequence:
@@ -158,7 +158,7 @@ export function TransitionProvider({ children }: { children: ReactNode }) {
       {children}
       <div id="transition-curtain" aria-hidden="true">
         <div className="curtain-mark">
-          <LogoMark className="h-16 w-16 text-cream md:h-20 md:w-20" />
+          <Wordmark tone="white" className="h-16 w-auto md:h-20" />
         </div>
       </div>
     </TransitionContext.Provider>

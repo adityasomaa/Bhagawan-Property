@@ -4,10 +4,13 @@ import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { formatNumber } from "@/lib/format";
 import { useLocale } from "@/lib/i18n/provider";
+import { usePropertyView } from "@/lib/overrides";
+import PropertyTags from "@/components/PropertyTags";
 import type { Property } from "@/data/properties";
 
 export default function PropertyCard({ property }: { property: Property }) {
   const { t, money } = useLocale();
+  const { price } = usePropertyView(property);
 
   return (
     <TransitionLink
@@ -30,8 +33,9 @@ export default function PropertyCard({ property }: { property: Property }) {
             : ""}
         </span>
         <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
-          {money(property.price)}
+          {money(price)}
         </span>
+        <PropertyTags property={property} className="absolute right-4 top-4 max-w-[60%] justify-end" />
       </div>
       <div className="px-1 pt-5">
         <div className="flex items-baseline justify-between gap-4">

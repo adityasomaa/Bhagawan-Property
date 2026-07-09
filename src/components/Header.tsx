@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import LogoMark from "@/components/Logo";
+import Wordmark from "@/components/Wordmark";
 import { useT } from "@/lib/i18n/provider";
 import { nav, waLink } from "@/lib/site";
 import { gsap } from "@/lib/gsapClient";
@@ -123,21 +123,15 @@ export default function Header() {
             <TransitionLink
               href="/"
               aria-label={t("header.homeAria")}
-              className="flex items-center gap-3"
+              className="flex items-center"
             >
-              <LogoMark className="h-7 w-7 md:h-8 md:w-8" />
-              <span>
-                <span className="font-display block text-base leading-none font-semibold tracking-[0.18em] md:text-lg">
-                  BHAGAWAN
-                </span>
-                <span
-                  className={`mt-0.5 block text-[8px] font-medium tracking-[0.42em] uppercase ${
-                    light || menuOpen ? "opacity-60" : "text-muted"
-                  }`}
-                >
-                  Property &middot; Bali
-                </span>
-              </span>
+              <Wordmark
+                tone={menuOpen ? "white" : light ? "color" : "black"}
+                priority
+                className={`h-9 w-auto md:h-11 ${
+                  light ? "[filter:drop-shadow(0_1px_8px_rgba(0,0,0,0.55))]" : ""
+                }`}
+              />
             </TransitionLink>
 
             {/* Desktop nav */}
@@ -233,11 +227,8 @@ export default function Header() {
           data-lenis-prevent
         >
           <div className="m-link mb-8 flex items-center justify-between">
-            <TransitionLink href="/" className="flex items-center gap-3 text-cream">
-              <LogoMark className="h-8 w-8" />
-              <span className="font-display text-base font-semibold tracking-[0.18em]">
-                BHAGAWAN
-              </span>
+            <TransitionLink href="/" className="flex items-center text-cream">
+              <Wordmark tone="white" className="h-9 w-auto" />
             </TransitionLink>
             <button
               type="button"

@@ -5,6 +5,8 @@ export function img(id: string, w = 1600, q = 80) {
 export interface Area {
   slug: string;
   name: string;
+  /** Approximate area centre — used for map pins (never an exact address). */
+  coords: { lat: number; lng: number };
   tagline: string;
   heroImage: string;
   cardImage: string;
@@ -26,6 +28,7 @@ export const areas: Area[] = [
   {
     slug: "uluwatu",
     name: "Uluwatu",
+    coords: { lat: -8.829, lng: 115.087 },
     tagline: "Dramatic clifftops, world-class surf, and Bali's most breathtaking ocean views.",
     heroImage: img("1539367628448-4bc5c9d171c8", 2200),
     cardImage: img("1539367628448-4bc5c9d171c8", 1200),
@@ -71,6 +74,7 @@ export const areas: Area[] = [
   {
     slug: "canggu",
     name: "Canggu",
+    coords: { lat: -8.647, lng: 115.13 },
     tagline: "Bali's creative capital — rice fields, surf breaks, and a thriving global community.",
     heroImage: img("1565030276121-5a3325bec270", 2200),
     cardImage: img("1565030276121-5a3325bec270", 1200),
@@ -116,6 +120,7 @@ export const areas: Area[] = [
   {
     slug: "sanur",
     name: "Sanur",
+    coords: { lat: -8.688, lng: 115.262 },
     tagline: "Calm waters, golden mornings, and Bali's most graceful seaside living.",
     heroImage: img("1519046904884-53103b34b206", 2200),
     cardImage: img("1519046904884-53103b34b206", 1200),
@@ -160,6 +165,7 @@ export const areas: Area[] = [
   {
     slug: "seminyak",
     name: "Seminyak",
+    coords: { lat: -8.691, lng: 115.168 },
     tagline: "Polished beach resort living with Bali's finest dining and boutiques.",
     heroImage: img("1616484093834-e9aa39f160f9", 2200),
     cardImage: img("1616484093834-e9aa39f160f9", 1200),
@@ -204,6 +210,7 @@ export const areas: Area[] = [
   {
     slug: "ubud",
     name: "Ubud",
+    coords: { lat: -8.507, lng: 115.263 },
     tagline: "Jungle serenity, artistic soul, and Bali's spiritual heartland.",
     heroImage: img("1559628233-100c798642d4", 2200),
     cardImage: img("1559628233-100c798642d4", 1200),
@@ -249,6 +256,7 @@ export const areas: Area[] = [
   {
     slug: "pererenan",
     name: "Pererenan",
+    coords: { lat: -8.645, lng: 115.114 },
     tagline: "Canggu's stylish quiet neighbour — rice fields meeting a black-sand surf beach.",
     heroImage: img("1564221549673-b43c122d1c29", 2200),
     cardImage: img("1564221549673-b43c122d1c29", 1200),

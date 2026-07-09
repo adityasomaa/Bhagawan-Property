@@ -5,10 +5,12 @@ import Gallery from "@/components/Gallery";
 import PropertyCard from "@/components/PropertyCard";
 import ContactForm from "@/components/ContactForm";
 import PropertyProse from "@/components/PropertyProse";
+import PropertyTags from "@/components/PropertyTags";
+import PropertyPrice from "@/components/PropertyPrice";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { byArea, getProperty, properties } from "@/data/properties";
 import { formatNumber, formatIDR } from "@/lib/format";
-import { T, Tx, Money } from "@/lib/i18n/provider";
+import { T, Tx } from "@/lib/i18n/provider";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -82,7 +84,7 @@ export default async function PropertyDetailPage({
     ...(property.buildingSize ? [{ k: "pd.buildingSize", v: `${formatNumber(property.buildingSize)} m²` }] : []),
     ...(property.bedrooms > 0 ? [{ k: "pd.bedrooms", v: String(property.bedrooms) }] : []),
     ...(property.bathrooms > 0 ? [{ k: "pd.bathrooms", v: String(property.bathrooms) }] : []),
-    { k: "pd.price", v: <Money idr={property.price} /> },
+    { k: "pd.price", v: <PropertyPrice property={property} /> },
   ];
 
   return (
@@ -108,6 +110,7 @@ export default async function PropertyDetailPage({
             <Reveal>
               <div className="flex flex-wrap items-start justify-between gap-6">
                 <div>
+                  <PropertyTags property={property} className="mb-3" />
                   <p className="eyebrow">
                     {property.areaName}, Bali &middot;{" "}
                     <T k={property.tenure === "leasehold" ? "card.leasehold" : "card.freehold"} />
@@ -117,7 +120,7 @@ export default async function PropertyDetailPage({
                   </h1>
                 </div>
                 <p className="font-display text-3xl font-medium text-ink md:text-4xl">
-                  <Money idr={property.price} />
+                  <PropertyPrice property={property} />
                 </p>
               </div>
             </Reveal>

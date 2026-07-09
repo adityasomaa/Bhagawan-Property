@@ -1,6 +1,10 @@
 export type Tenure = "freehold" | "leasehold";
 export type PropertyType = "villa" | "land" | "townhouse";
 
+/** Marketing status labels shown as badges and managed from /admin. */
+export type PropertyTag = "offplan" | "new-listing" | "price-drop" | "sold";
+export const PROPERTY_TAGS: PropertyTag[] = ["offplan", "new-listing", "price-drop", "sold"];
+
 export interface Property {
   slug: string;
   name: string;
@@ -23,6 +27,7 @@ export interface Property {
   mapQuery: string;
   nightlyRate?: number;
   occupancy?: number;
+  tags?: PropertyTag[];
 }
 
 /** Photos sourced from the Bhagawan Property Drive, hosted under /public/listings. */
@@ -34,6 +39,7 @@ export const properties: Property[] = [
   {
     slug: "kayu-tulang-canggu",
     name: "Modern 3-Storey Villa, Kayu Tulang",
+    tags: ["new-listing"],
     area: "canggu",
     areaName: "Canggu",
     tenure: "freehold",
@@ -73,6 +79,7 @@ export const properties: Property[] = [
   {
     slug: "pecatu-uluwatu",
     name: "Tropical Pool Villas, Pecatu",
+    tags: ["price-drop"],
     area: "uluwatu",
     areaName: "Uluwatu",
     tenure: "leasehold",
@@ -115,6 +122,7 @@ export const properties: Property[] = [
   {
     slug: "villa-ungasan-oceanview",
     name: "Villa Ungasan Oceanview",
+    tags: ["offplan"],
     area: "uluwatu",
     areaName: "Uluwatu",
     tenure: "freehold",
@@ -203,6 +211,7 @@ export const properties: Property[] = [
   {
     slug: "sansa-villa",
     name: "Sansa Villa",
+    tags: ["sold"],
     area: "uluwatu",
     areaName: "Uluwatu",
     tenure: "leasehold",

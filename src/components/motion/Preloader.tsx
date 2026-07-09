@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsapClient";
-import LogoMark from "@/components/Logo";
+import Wordmark from "@/components/Wordmark";
 
 /**
  * First-visit preloader — logo + counting percentage. An inline <head>
@@ -100,8 +100,8 @@ export default function Preloader() {
   return (
     <div id="preloader" aria-hidden="true">
       <div className="flex flex-col items-center">
-        <div className="pl-logo text-ink">
-          <LogoMark className="h-16 w-16 md:h-20 md:w-20" />
+        <div className="pl-logo">
+          <Wordmark tone="color" priority className="h-20 w-auto md:h-24" />
         </div>
         <div className="mt-8 flex flex-col items-center gap-3">
           <span className="font-display text-sm font-medium tabular-nums tracking-[0.35em] text-ink">

@@ -1,7 +1,7 @@
 "use client";
 
 import { TransitionLink } from "@/components/motion/PageTransition";
-import LogoMark from "@/components/Logo";
+import Wordmark from "@/components/Wordmark";
 import { useT } from "@/lib/i18n/provider";
 import { areas } from "@/data/areas";
 import { site, waLink } from "@/lib/site";
@@ -29,16 +29,8 @@ export default function Footer() {
       <div className="container-x pb-10 pt-20 md:pt-28">
         <div className="grid gap-14 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
           <div>
-            <TransitionLink href="/" className="inline-flex items-center gap-4">
-              <LogoMark className="h-10 w-10 text-cream" />
-              <span>
-                <span className="font-display block text-2xl font-semibold tracking-[0.16em]">
-                  BHAGAWAN
-                </span>
-                <span className="mt-1 block text-[10px] font-medium tracking-[0.5em] uppercase text-cream/50">
-                  Property &middot; Bali
-                </span>
-              </span>
+            <TransitionLink href="/" className="inline-flex items-center">
+              <Wordmark tone="white" className="h-14 w-auto" />
             </TransitionLink>
             <p className="mt-6 max-w-sm text-sm leading-relaxed text-cream/60">{t("foot.tagline")}</p>
             <p className="mt-6 text-[10px] tracking-[0.5em] uppercase text-cream/40">#Here4U</p>

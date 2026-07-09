@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Reveal from "@/components/motion/Reveal";
 import PropertyCatalogue from "@/components/PropertyCatalogue";
+import PropertyMap from "@/components/PropertyMap";
+import SectionHeading from "@/components/SectionHeading";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { T } from "@/lib/i18n/provider";
 import { properties } from "@/data/properties";
@@ -38,6 +40,13 @@ export default function PropertiesPage() {
       <section className="container-x pb-24 md:pb-32">
         <Reveal delay={0.1}>
           <PropertyCatalogue items={[...properties]} />
+        </Reveal>
+      </section>
+
+      <section className="container-x pb-24 md:pb-32">
+        <SectionHeading eyebrow={<T k="map.eyebrow" />} title={<T k="map.title" />} description={<T k="map.desc" />} />
+        <Reveal delay={0.1}>
+          <PropertyMap className="mt-10" />
         </Reveal>
       </section>
     </>

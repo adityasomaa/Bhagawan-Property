@@ -7,7 +7,10 @@ import Footer from "@/components/Footer";
 import Preloader from "@/components/motion/Preloader";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import { TransitionProvider } from "@/components/motion/PageTransition";
+import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/provider";
+import { OverridesProvider } from "@/lib/overrides";
+import { ACCESS_COOKIE, ACCESS_TOKEN } from "@/lib/auth";
 import FloatingUI from "@/components/FloatingUI";
 import { site } from "@/lib/site";
 
@@ -106,9 +109,14 @@ const websiteJsonLd = {
   url: site.url,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Pre-launch gate: without preview access, the middleware rewrites every
+  // route to the standalone under-construction page — so we drop the marketing
+  // chrome (header/footer/preloader/floating controls) entirely in that state.
+  const authed = (await cookies()).get(ACCESS_COOKIE)?.value === ACCESS_TOKEN;
+
   return (
     <html lang="en" className={`${space.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
@@ -126,14 +134,22 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <LocaleProvider>
-          <SmoothScroll />
-          <TransitionProvider>
-            <Preloader />
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <FloatingUI />
-          </TransitionProvider>
+          <OverridesProvider>
+            {authed ? (
+              <>
+                <SmoothScroll />
+                <TransitionProvider>
+                  <Preloader />
+                  <Header />
+                  <main>{children}</main>
+                  <Footer />
+                  <FloatingUI />
+                </TransitionProvider>
+              </>
+            ) : (
+              <main>{children}</main>
+            )}
+          </OverridesProvider>
         </LocaleProvider>
       </body>
     </html>
