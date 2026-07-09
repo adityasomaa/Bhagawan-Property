@@ -11,6 +11,7 @@ import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/provider";
 import { OverridesProvider } from "@/lib/overrides";
 import { ACCESS_COOKIE, ACCESS_TOKEN } from "@/lib/auth";
+import UnderConstruction from "@/components/UnderConstruction";
 import FloatingUI from "@/components/FloatingUI";
 import { site } from "@/lib/site";
 
@@ -109,6 +110,9 @@ const websiteJsonLd = {
   url: site.url,
 };
 
+// The access cookie must be read per request while the pre-launch gate is on.
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -147,7 +151,9 @@ export default async function RootLayout({
                 </TransitionProvider>
               </>
             ) : (
-              <main>{children}</main>
+              // Bulletproof gate: render the lock screen for every route when
+              // locked, independent of the middleware matcher.
+              <UnderConstruction />
             )}
           </OverridesProvider>
         </LocaleProvider>
