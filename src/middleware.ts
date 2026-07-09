@@ -30,5 +30,7 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\.).*)"],
+  // The catch-all negative-lookahead pattern does not match the exact root
+  // path, so "/" is listed explicitly.
+  matcher: ["/", "/((?!api|_next|.*\\.).*)"],
 };
