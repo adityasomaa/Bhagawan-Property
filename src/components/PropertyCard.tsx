@@ -13,7 +13,7 @@ export default function PropertyCard({ property }: { property: Property }) {
     <TransitionLink
       href={`/properties/${property.slug}`}
       className="group block"
-      aria-label={`View ${property.name} in ${property.areaName}`}
+      aria-label={t("card.viewAria").replace("{name}", property.name).replace("{area}", property.areaName)}
     >
       <div className="img-frame relative aspect-[4/3] rounded-3xl">
         <Image

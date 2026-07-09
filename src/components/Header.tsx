@@ -122,7 +122,7 @@ export default function Header() {
           >
             <TransitionLink
               href="/"
-              aria-label="Bhagawan Property — home"
+              aria-label={t("header.homeAria")}
               className="flex items-center gap-3"
             >
               <LogoMark className="h-7 w-7 md:h-8 md:w-8" />
@@ -201,7 +201,7 @@ export default function Header() {
             {/* Hamburger */}
             <button
               type="button"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-label={menuOpen ? t("header.closeMenu") : t("header.openMenu")}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((v) => !v)}
               className="relative z-[70] flex h-11 w-11 flex-col items-center justify-center gap-[7px] text-current lg:hidden"
@@ -242,7 +242,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
+              aria-label={t("header.closeMenu")}
               className="glass flex h-11 w-11 items-center justify-center rounded-full text-cream transition-colors hover:bg-white/20"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>

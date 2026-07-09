@@ -62,7 +62,7 @@ export default function ContactForm({ subject }: { subject?: string }) {
             type="email"
             required
             className="field mt-1"
-            placeholder="you@example.com"
+            placeholder={t("form.emailPh")}
           />
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function ContactForm({ subject }: { subject?: string }) {
         <label htmlFor="cf-phone" className="eyebrow">
           {t("form.phone")} <span className="normal-case text-muted">{t("form.optional")}</span>
         </label>
-        <input id="cf-phone" name="phone" className="field mt-1" placeholder="+62 ..." />
+        <input id="cf-phone" name="phone" className="field mt-1" placeholder={t("form.phonePh")} />
       </div>
       <div>
         <label htmlFor="cf-message" className="eyebrow">

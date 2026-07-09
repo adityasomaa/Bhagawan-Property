@@ -4,12 +4,13 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { dict, type Lang } from "./dict";
 import { dict2 } from "./dict2";
 import { dict3 } from "./dict3";
+import { dict4 } from "./dict4";
 
 const merged: Record<Lang, Record<string, string>> = {
-  en: { ...dict.en, ...dict2.en, ...dict3.en },
-  id: { ...dict.id, ...dict2.id, ...dict3.id },
-  zh: { ...dict.zh, ...dict2.zh, ...dict3.zh },
-  ja: { ...dict.ja, ...dict2.ja, ...dict3.ja },
+  en: { ...dict.en, ...dict2.en, ...dict3.en, ...dict4.en },
+  id: { ...dict.id, ...dict2.id, ...dict3.id, ...dict4.id },
+  zh: { ...dict.zh, ...dict2.zh, ...dict3.zh, ...dict4.zh },
+  ja: { ...dict.ja, ...dict2.ja, ...dict3.ja, ...dict4.ja },
 };
 
 export type Currency = "USD" | "AUD" | "IDR" | "GBP" | "EUR" | "JPY" | "CNY" | "SGD" | "MYR";
@@ -116,6 +117,27 @@ export function useT() {
 export function T({ k }: { k: string }) {
   const { t } = useLocale();
   return <>{t(k)}</>;
+}
+
+/**
+ * Inline translated text with {placeholder} interpolation — usable inside
+ * server components. E.g. <Tx k="ag.livingIn" vars={{ name: "Uluwatu" }} />.
+ */
+export function Tx({ k, vars }: { k: string; vars?: Record<string, string | number> }) {
+  const { t } = useLocale();
+  let s = t(k);
+  if (vars) for (const [key, val] of Object.entries(vars)) s = s.split(`{${key}}`).join(String(val));
+  return <>{s}</>;
+}
+
+/** Interpolating translator for attribute strings (aria-label, alt, etc.). */
+export function useTx() {
+  const { t } = useLocale();
+  return (k: string, vars?: Record<string, string | number>) => {
+    let s = t(k);
+    if (vars) for (const [key, val] of Object.entries(vars)) s = s.split(`{${key}}`).join(String(val));
+    return s;
+  };
 }
 
 /** Inline converted price — usable inside server components. */

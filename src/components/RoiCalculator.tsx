@@ -128,9 +128,7 @@ export default function RoiCalculator() {
             ))}
           </div>
           <p className="mt-3 text-xs leading-relaxed text-muted">
-            {isLease
-              ? "Leasehold amortises toward zero over the remaining lease — the model reflects that."
-              : "Freehold retains land value — the model applies your assumed appreciation."}
+            {isLease ? t("roi.leaseHint") : t("roi.freeHint")}
           </p>
         </div>
 
@@ -147,7 +145,7 @@ export default function RoiCalculator() {
                   50,
                   1,
                   `${leaseYears} ${t("roi.years")}`,
-                  "Years left on the lease — extensions should be priced into the term."
+                  t("roi.remainingLeaseHint")
                 )
               : slider(
                   t("roi.appreciation"),
@@ -157,7 +155,7 @@ export default function RoiCalculator() {
                   15,
                   0.5,
                   `${appreciation}% / yr`,
-                  "Long-run land appreciation assumption for freehold."
+                  t("roi.appreciationHint")
                 )}
             {slider(
               t("roi.holdPeriod"),
@@ -182,7 +180,7 @@ export default function RoiCalculator() {
               95,
               1,
               `${occupancy}%`,
-              `≈ ${Math.round(365 * (occupancy / 100))} booked nights per year.`
+              t("roi.bookedNote").replace("{n}", String(Math.round(365 * (occupancy / 100))))
             )}
             {slider(t("roi.mgmtFee"), mgmtFee, setMgmtFee, 0, 35, 1, `${mgmtFee}%`)}
             {slider(
@@ -193,7 +191,7 @@ export default function RoiCalculator() {
               60000,
               500,
               `${formatPrice(runningCosts)} / yr`,
-              "Utilities, maintenance, insurance, staff, pool & garden."
+              t("roi.runningHint")
             )}
             {slider(
               t("roi.taxRate"),
@@ -203,7 +201,7 @@ export default function RoiCalculator() {
               20,
               1,
               `${taxRate}%`,
-              "10% final tax for residents with NPWP; 20% for non-residents."
+              t("roi.taxHint")
             )}
           </div>
         </div>
@@ -235,7 +233,7 @@ export default function RoiCalculator() {
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.payback")}</p>
               <p className="font-display mt-1.5 text-2xl text-cream">
-                {Number.isFinite(r.paybackYears) ? `${r.paybackYears.toFixed(1)} yrs` : "—"}
+                {Number.isFinite(r.paybackYears) ? `${r.paybackYears.toFixed(1)} ${t("roi.yrs")}` : "—"}
               </p>
             </div>
             <div>
@@ -246,16 +244,16 @@ export default function RoiCalculator() {
 
           <div className="mt-9 border-t border-cream/15 pt-7">
             <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">
-              Over a {r.effectiveHold}-year hold
+              {t("roi.overHold").replace("{n}", String(r.effectiveHold))}
             </p>
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <span className="text-cream/60">Total net rental income</span>
+                <span className="text-cream/60">{t("roi.totalNetIncome")}</span>
                 <span className="font-medium">{formatPrice(r.totalIncome)}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/60">
-                  {isLease ? "Remaining lease value (straight-line)" : "Projected property value"}
+                  {isLease ? t("roi.remainingLeaseValue") : t("roi.projectedValue")}
                 </span>
                 <span className="font-medium">{formatPrice(r.endValue)}</span>
               </div>
@@ -272,12 +270,7 @@ export default function RoiCalculator() {
             </div>
           </div>
         </div>
-        <p className="mt-5 text-xs leading-relaxed text-muted">
-          Illustrative modelling only — not financial advice. Assumptions are deliberately
-          conservative: flat nightly rates, straight-line leasehold amortisation, and no financing.
-          We&apos;ll gladly build a property-specific model with real comparable data for any
-          listing you&apos;re considering.
-        </p>
+        <p className="mt-5 text-xs leading-relaxed text-muted">{t("roi.disclaimer")}</p>
       </div>
     </div>
   );

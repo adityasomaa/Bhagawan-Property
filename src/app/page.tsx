@@ -232,17 +232,8 @@ export default function HomePage() {
             />
             <Reveal delay={0.15}>
               <div className="mt-6 space-y-5 text-base leading-relaxed text-cream/70">
-                <p>
-                  Bhagawan Property was founded on a simple observation: Bali&apos;s property market
-                  had plenty of sellers, but very few true advisors. We built the firm we wished
-                  existed — one that represents buyers, tells the truth about every listing, and
-                  measures success in right decisions rather than closed deals.
-                </p>
-                <p>
-                  From verified titles and honest yield modelling to the notaries and builders we
-                  trust with our own projects, everything we do is designed to let you buy with
-                  confidence.
-                </p>
+                <p><T k="home.aboutP1" /></p>
+                <p><T k="home.aboutP2" /></p>
               </div>
               <div className="mt-8 grid grid-cols-3 gap-6 border-t border-cream/15 pt-8">
                 {[
@@ -337,7 +328,7 @@ export default function HomePage() {
                   </span>
                   <span>
                     <span className="block text-[10px] tracking-[0.3em] uppercase text-muted">
-                      Email
+                      <T k="contact.email" />
                     </span>
                     <span className="link-line text-ink">{site.email}</span>
                   </span>

@@ -8,7 +8,7 @@ import PropertyProse from "@/components/PropertyProse";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { byArea, getProperty, properties } from "@/data/properties";
 import { formatNumber, formatIDR } from "@/lib/format";
-import { T, Money } from "@/lib/i18n/provider";
+import { T, Tx, Money } from "@/lib/i18n/provider";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -76,7 +76,7 @@ export default async function PropertyDetailPage({
           <T k="card.freehold" />
         ),
     },
-    { k: "pd.type", v: property.type },
+    { k: "pd.type", v: <T k={`val.type.${property.type}`} /> },
     { k: "pd.locationLabel", v: `${property.areaName}, Bali` },
     { k: "pd.landSize", v: `${formatNumber(property.landSize)} m²` },
     ...(property.buildingSize ? [{ k: "pd.buildingSize", v: `${formatNumber(property.buildingSize)} m²` }] : []),
@@ -109,7 +109,8 @@ export default async function PropertyDetailPage({
               <div className="flex flex-wrap items-start justify-between gap-6">
                 <div>
                   <p className="eyebrow">
-                    {property.areaName}, Bali &middot; {property.tenure}
+                    {property.areaName}, Bali &middot;{" "}
+                    <T k={property.tenure === "leasehold" ? "card.leasehold" : "card.freehold"} />
                   </p>
                   <h1 className="font-display mt-3 text-4xl font-medium tracking-tight text-ink md:text-5xl">
                     {property.name}
@@ -126,7 +127,7 @@ export default async function PropertyDetailPage({
             <Reveal delay={0.1}>
               <h2 className="font-display mt-14 text-2xl text-ink"><T k="pd.location" /></h2>
               <p className="mt-3 text-sm text-muted">
-                Exact address shared after an introductory call — a courtesy we extend to every seller.
+                <T k="pd.addressNote" />
               </p>
               <div className="img-frame mt-6 aspect-[16/9]">
                 <iframe
@@ -157,11 +158,13 @@ export default async function PropertyDetailPage({
                     href={`/roi-calculator?price=${property.price}&nightly=${property.nightlyRate}&occupancy=${property.occupancy ?? 70}${property.leaseholdYears ? `&years=${property.leaseholdYears}` : ""}`}
                     className="mt-5 block rounded-full border border-ink/20 bg-cream p-4 text-center text-[10px] font-semibold tracking-[0.25em] uppercase text-ink transition-colors hover:border-ink"
                   >
-                    Run the ROI numbers →
+                    <T k="pd.runRoi" />
                   </TransitionLink>
                 )}
                 <div className="mt-8">
-                  <h3 className="font-display text-xl text-ink">Enquire about {property.name}</h3>
+                  <h3 className="font-display text-xl text-ink">
+                    <Tx k="pd.enquireAbout" vars={{ name: property.name }} />
+                  </h3>
                   <div className="mt-6">
                     <ContactForm subject={`${property.name}, ${property.areaName} (${formatIDR(property.price)})`} />
                   </div>

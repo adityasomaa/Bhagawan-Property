@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
+import { useT } from "@/lib/i18n/provider";
 
 export interface HeroSlide {
   name: string;
@@ -19,6 +20,7 @@ const INTERVAL = 5000;
  * chip that links to that area's guide. Pauses on tab blur / reduced motion.
  */
 export default function HeroSlider({ slides }: { slides: HeroSlide[] }) {
+  const t = useT();
   const [active, setActive] = useState(0);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -116,7 +118,7 @@ export default function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   key={s.slug}
                   type="button"
                   onClick={() => go(i)}
-                  aria-label={`Show ${s.name}`}
+                  aria-label={t("hero.show").replace("{name}", s.name)}
                   className="group h-2.5 py-1"
                 >
                   <span

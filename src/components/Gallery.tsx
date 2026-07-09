@@ -2,16 +2,30 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import { useT } from "@/lib/i18n/provider";
 
 /**
- * Property image gallery with a scrollable lightbox popup. While the popup
- * is open, Lenis is stopped and the popup opts out via data-lenis-prevent so
- * the mousewheel scrolls the popup natively.
+ * Property image gallery. The trigger grid opens a full-screen lightbox that
+ * shows one image at a time with prev/next navigation (buttons, keyboard
+ * arrows, and a thumbnail strip). While open, Lenis is stopped and body scroll
+ * is locked so nothing behind the overlay moves.
  */
 export default function Gallery({ images, name }: { images: string[]; name: string }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const total = images.length;
 
+  const openAt = useCallback((i: number) => {
+    setIndex(i);
+    setOpen(true);
+  }, []);
   const close = useCallback(() => setOpen(false), []);
+  const prev = useCallback(
+    () => setIndex((i) => (i - 1 + total) % total),
+    [total]
+  );
+  const next = useCallback(() => setIndex((i) => (i + 1) % total), [total]);
 
   useEffect(() => {
     if (open) {
@@ -29,19 +43,23 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+      else if (e.key === "ArrowLeft") prev();
+      else if (e.key === "ArrowRight") next();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, close]);
+  }, [open, close, prev, next]);
 
   return (
     <>
       <div className="grid grid-cols-4 gap-2 md:gap-3">
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => openAt(0)}
           className="img-frame relative col-span-4 aspect-[16/9] cursor-zoom-in md:col-span-3 md:aspect-[16/10]"
-          aria-label={`Open photo gallery of ${name}`}
+          aria-label={`${t("gallery.open")} — ${name}`}
         >
           <Image
             src={images[0]}
@@ -57,9 +75,9 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
             <button
               key={src + i}
               type="button"
-              onClick={() => setOpen(true)}
+              onClick={() => openAt(i + 1)}
               className="img-frame relative aspect-[4/3] cursor-zoom-in md:aspect-[16/10.2]"
-              aria-label={`Open photo ${i + 2} of ${name}`}
+              aria-label={`${t("gallery.photo")} ${i + 2} — ${name}`}
             >
               <Image
                 src={src}
@@ -68,9 +86,14 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
                 sizes="(max-width: 768px) 33vw, 25vw"
                 className="object-cover"
               />
-              {i === 2 && (
+              {i === 2 && total > 4 && (
                 <span className="absolute inset-0 flex items-center justify-center bg-ink/45 text-[10px] font-medium tracking-[0.3em] uppercase text-cream">
-                  All Photos
+                  +{total - 4}
+                </span>
+              )}
+              {i === 2 && total <= 4 && (
+                <span className="absolute inset-0 flex items-center justify-center bg-ink/30 text-[10px] font-medium tracking-[0.3em] uppercase text-cream opacity-0 transition-opacity hover:opacity-100">
+                  {t("gallery.all")}
                 </span>
               )}
             </button>
@@ -80,36 +103,91 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
 
       {open && (
         <div
-          className="fixed inset-0 z-[80] bg-ink/97"
+          className="fixed inset-0 z-[80] flex flex-col bg-ink/97"
           role="dialog"
           aria-modal="true"
-          aria-label={`Photo gallery of ${name}`}
+          aria-label={`${t("gallery.open")} — ${name}`}
+          data-lenis-prevent
         >
-          <button
-            type="button"
-            onClick={close}
-            className="glass fixed right-6 top-6 z-10 flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors hover:bg-white/20"
-            aria-label="Close gallery"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.2" />
-            </svg>
-          </button>
-          <div className="h-full overflow-y-auto px-4 py-20 md:px-10" data-lenis-prevent>
-            <div className="mx-auto max-w-5xl space-y-4">
-              <p className="text-center text-[10px] tracking-[0.4em] uppercase text-cream/50">
-                {name} &middot; {images.length} photos
-              </p>
+          {/* top bar: counter + close */}
+          <div className="flex items-center justify-between px-5 py-5 md:px-8">
+            <p className="text-[11px] tracking-[0.35em] uppercase text-cream/60">
+              {index + 1} / {total}
+            </p>
+            <button
+              type="button"
+              onClick={close}
+              className="glass flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/20"
+              aria-label={t("gallery.close")}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.2" />
+              </svg>
+            </button>
+          </div>
+
+          {/* main stage */}
+          <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 md:px-20">
+            <div className="relative h-full max-h-[72vh] w-full max-w-5xl">
+              <Image
+                key={index}
+                src={images[index]}
+                alt={`${name} — ${t("gallery.photo")} ${index + 1}`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="animate-[fadeIn_.3s_ease] object-contain"
+              />
+            </div>
+
+            {total > 1 && (
+              <>
+                <button
+                  type="button"
+                  onClick={prev}
+                  className="glass absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-white transition-colors hover:bg-white/20 md:left-6"
+                  aria-label={t("gallery.prev")}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+                    <path d="M11 3L5 9l6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={next}
+                  className="glass absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full text-white transition-colors hover:bg-white/20 md:right-6"
+                  aria-label={t("gallery.next")}
+                >
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+                    <path d="M7 3l6 6-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* thumbnail strip */}
+          <div className="shrink-0 overflow-x-auto px-4 py-5 md:px-8" data-lenis-prevent>
+            <div className="mx-auto flex w-max gap-2 md:gap-2.5">
               {images.map((src, i) => (
-                <div key={src + i} className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
+                <button
+                  key={src + i}
+                  type="button"
+                  onClick={() => setIndex(i)}
+                  className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg transition-opacity md:h-16 md:w-24 ${
+                    i === index ? "opacity-100 ring-2 ring-cream" : "opacity-45 hover:opacity-80"
+                  }`}
+                  aria-label={`${t("gallery.photo")} ${i + 1}`}
+                  aria-current={i === index}
+                >
                   <Image
                     src={src}
-                    alt={`${name} — photo ${i + 1}`}
+                    alt=""
                     fill
-                    sizes="(max-width: 1024px) 100vw, 1024px"
+                    sizes="96px"
                     className="object-cover"
                   />
-                </div>
+                </button>
               ))}
             </div>
           </div>

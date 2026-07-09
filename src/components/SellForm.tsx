@@ -39,8 +39,7 @@ export default function SellForm() {
       <div className="rounded-3xl border border-line bg-cream p-10 text-center">
         <p className="font-display text-2xl text-ink">{t("form.thanks")}</p>
         <p className="mt-3 text-sm leading-relaxed text-muted">
-          Your listing details are ready in WhatsApp — press send (and attach photos there if you
-          like). We&apos;ll review and come back within one working day. Prefer email? Reach us at{" "}
+          {t("form.sellThanksBody")}{" "}
           <a href={`mailto:${site.email}`} className="text-ink underline">
             {site.email}
           </a>
@@ -60,13 +59,13 @@ export default function SellForm() {
         </div>
         <div>
           <label htmlFor="sf-email" className="eyebrow">{t("form.email")}</label>
-          <input id="sf-email" name="email" type="email" required className="field mt-1" placeholder="you@example.com" />
+          <input id="sf-email" name="email" type="email" required className="field mt-1" placeholder={t("form.emailPh")} />
         </div>
       </div>
       <div className="grid gap-7 sm:grid-cols-2">
         <div>
           <label htmlFor="sf-phone" className="eyebrow">{t("form.phone")}</label>
-          <input id="sf-phone" name="phone" required className="field mt-1" placeholder="+62 ..." />
+          <input id="sf-phone" name="phone" required className="field mt-1" placeholder={t("form.phonePh")} />
         </div>
         <Select
           label={t("form.propertyType")}
@@ -75,7 +74,7 @@ export default function SellForm() {
           onChange={setPropertyType}
           options={["Villa", "Land", "Townhouse", "Commercial", "Other"].map((v) => ({
             value: v,
-            label: v,
+            label: t(`val.type.${v.toLowerCase()}`),
           }))}
         />
       </div>
@@ -87,12 +86,12 @@ export default function SellForm() {
           onChange={setAreaValue}
           options={[
             ...areas.map((a) => ({ value: a.name, label: a.name })),
-            { value: "Other", label: "Other" },
+            { value: "Other", label: t("form.optionOther") },
           ]}
         />
         <div>
           <label htmlFor="sf-price" className="eyebrow">{t("form.askingPrice")}</label>
-          <input id="sf-price" name="price" required className="field mt-1" placeholder="e.g. $650,000" />
+          <input id="sf-price" name="price" required className="field mt-1" placeholder={t("form.askingPricePh")} />
         </div>
       </div>
       <div>
@@ -103,20 +102,19 @@ export default function SellForm() {
           required
           rows={5}
           className="field mt-1 resize-none"
-          placeholder="Bedrooms, land size, tenure (freehold / leasehold + years), current rental income, anything special..."
+          placeholder={t("form.tellUsPh")}
         />
       </div>
       <div className="rounded-2xl border border-dashed border-line bg-cream/60 p-5 text-sm leading-relaxed text-muted">
-        <strong className="text-ink">Photos (optional):</strong> after submitting, you can attach
-        photos directly in the WhatsApp conversation this form opens.
+        <strong className="text-ink">{t("form.photosStrong")}</strong>{t("form.photosNote")}
       </div>
       <button type="submit" className="btn btn-solid w-full sm:w-auto">
         {t("form.listProperty")}
       </button>
       <p className="text-xs leading-relaxed text-muted">
-        By submitting you agree to our{" "}
-        <a href="/privacy-policy" className="underline">privacy policy</a>. We never publish your
-        property without a signed agreement.
+        {t("form.agreePre")}
+        <a href="/privacy-policy" className="underline">{t("form.agreePrivacy")}</a>
+        {t("form.agreePost")}
       </p>
     </form>
   );

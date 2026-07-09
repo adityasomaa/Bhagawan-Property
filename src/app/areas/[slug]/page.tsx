@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import SectionHeading from "@/components/SectionHeading";
-import { T, AL } from "@/lib/i18n/provider";
+import { T, AL, Tx } from "@/lib/i18n/provider";
 import { areaTr } from "@/data/tr/areas";
 import PropertyCard from "@/components/PropertyCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
@@ -126,7 +126,7 @@ export default async function AreaGuidePage({
       {/* Lifestyle */}
       <section className="bg-sand/50 py-20 md:py-28">
         <div className="container-x">
-          <SectionHeading eyebrow={<T k="ag.lifestyle" />} title={`Living in ${area.name}`} />
+          <SectionHeading eyebrow={<T k="ag.lifestyle" />} title={<Tx k="ag.livingIn" vars={{ name: area.name }} />} />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {area.lifestyle.map((l, i) => (
               <Reveal key={l.title} delay={(i % 3) * 0.07}>
@@ -145,8 +145,8 @@ export default async function AreaGuidePage({
         <div className="grid gap-12 lg:grid-cols-2">
           <SectionHeading
             eyebrow={<T k="ag.thingsToDo" />}
-            title={`Days well spent in ${area.name}`}
-            description="The experiences we send our own friends and clients to first."
+            title={<Tx k="ag.thingsTitle" vars={{ name: area.name }} />}
+            description={<T k="ag.thingsDesc" />}
           />
           <Reveal delay={0.1}>
             <ol className="space-y-0">
@@ -168,7 +168,7 @@ export default async function AreaGuidePage({
         <div className="container-x">
           <SectionHeading
             eyebrow={<T k="ag.investment" />}
-            title={`The ${area.name} investment case`}
+            title={<Tx k="ag.investCase" vars={{ name: area.name }} />}
             light
           />
           <div className="mt-12 grid gap-10 md:grid-cols-2">
@@ -201,7 +201,7 @@ export default async function AreaGuidePage({
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
             eyebrow={<T k="ag.featured" />}
-            title={`Currently curated in ${area.name}`}
+            title={<Tx k="ag.curatedIn" vars={{ name: area.name }} />}
           />
           <Reveal delay={0.15}>
             <TransitionLink href="/properties" className="btn">
@@ -227,7 +227,7 @@ export default async function AreaGuidePage({
                 <T k="ag.offMarketB" />
               </p>
               <TransitionLink href="/contact" className="btn mt-8">
-                Contact Us
+                <T k="c.contactUs" />
               </TransitionLink>
             </div>
           </Reveal>

@@ -3,6 +3,13 @@ import type { Lang } from "./dict";
 
 export const dict2: Record<Lang, Record<string, string>> = {
   en: {
+    // gallery lightbox
+    "gallery.open": "Open photo gallery",
+    "gallery.all": "All Photos",
+    "gallery.close": "Close gallery",
+    "gallery.prev": "Previous photo",
+    "gallery.next": "Next photo",
+    "gallery.photo": "Photo",
     // properties index
     "pg.propEyebrow": "The Collection",
     "pg.propTitle": "Every property we currently believe in",
@@ -74,6 +81,12 @@ export const dict2: Record<Lang, Record<string, string>> = {
   },
 
   id: {
+    "gallery.open": "Buka galeri foto",
+    "gallery.all": "Semua Foto",
+    "gallery.close": "Tutup galeri",
+    "gallery.prev": "Foto sebelumnya",
+    "gallery.next": "Foto berikutnya",
+    "gallery.photo": "Foto",
     "pg.propEyebrow": "Koleksi Kami",
     "pg.propTitle": "Setiap properti yang kami yakini saat ini",
     "pg.propDesc":
@@ -136,6 +149,12 @@ export const dict2: Record<Lang, Record<string, string>> = {
   },
 
   zh: {
+    "gallery.open": "打开照片图库",
+    "gallery.all": "全部照片",
+    "gallery.close": "关闭图库",
+    "gallery.prev": "上一张",
+    "gallery.next": "下一张",
+    "gallery.photo": "照片",
     "pg.propEyebrow": "臻选系列",
     "pg.propTitle": "我们目前真正看好的每一处房产",
     "pg.propDesc": "一份刻意精简的清单。这里的每处房产都经过实地考察、核验，并对照真实市场行情定价。",
@@ -193,6 +212,12 @@ export const dict2: Record<Lang, Record<string, string>> = {
   },
 
   ja: {
+    "gallery.open": "写真ギャラリーを開く",
+    "gallery.all": "すべての写真",
+    "gallery.close": "ギャラリーを閉じる",
+    "gallery.prev": "前の写真",
+    "gallery.next": "次の写真",
+    "gallery.photo": "写真",
     "pg.propEyebrow": "コレクション",
     "pg.propTitle": "いま私たちが本当に自信を持てる物件",
     "pg.propDesc":
