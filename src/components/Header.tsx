@@ -126,10 +126,10 @@ export default function Header() {
               className="flex items-center"
             >
               <Wordmark
-                tone={menuOpen ? "white" : light ? "color" : "black"}
+                tone={light || menuOpen ? "white" : "color"}
                 priority
                 className={`h-9 w-auto md:h-11 ${
-                  light ? "[filter:drop-shadow(0_1px_8px_rgba(0,0,0,0.55))]" : ""
+                  light ? "[filter:drop-shadow(0_1px_10px_rgba(0,0,0,0.45))]" : ""
                 }`}
               />
             </TransitionLink>

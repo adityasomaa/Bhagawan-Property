@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* Monochrome palette (token names kept for compatibility) */
-  --cream: #f4f4f5; /* page background */
+  /* Brand palette — warm white (light) + brown (dark), keyed to the logo
+     copper #834c25. Token names kept for compatibility. */
+  --cream: #fbf8f3; /* page background (light / "white") */
   --paper: #ffffff; /* raised surfaces */
-  --sand: #e9e9eb; /* alt section background */
-  --ink: #0b0b0c; /* near-black */
-  --ink-soft: #3f3f46;
-  --muted: #71717a;
-  --line: #e4e4e7;
-  --bronze: #52525b; /* accent-mid (labels) */
-  --bronze-deep: #18181b; /* accent-strong */
+  --sand: #f1e9dd; /* alt section background (warm beige) */
+  --ink: #382312; /* dark = deep espresso brown */
+  --ink-soft: #574230;
+  --muted: #7d6547; /* warm taupe (labels / secondary) */
+  --line: #e8dfd0; /* warm hairline borders */
+  --bronze: #834c25; /* accent-mid = logo copper */
+  --bronze-deep: #5c3417; /* accent-strong */
 }
 
 @theme inline {
