@@ -3,15 +3,23 @@
 import { useMemo, useState } from "react";
 import ArticleCard from "@/components/ArticleCard";
 import { useT } from "@/lib/i18n/provider";
+import { useBlogs } from "@/lib/overrides";
 import { categories, type Article } from "@/data/articles";
 
 export default function KnowledgeFilter({ articles }: { articles: Article[] }) {
   const t = useT();
+  const blogs = useBlogs();
   const [active, setActive] = useState<string>("All");
 
+  // Admin-authored posts merge with the static articles, newest first.
+  const all = useMemo(
+    () => [...blogs, ...articles].sort((a, b) => b.date.localeCompare(a.date)),
+    [blogs, articles]
+  );
+
   const filtered = useMemo(
-    () => (active === "All" ? articles : articles.filter((a) => a.category === active)),
-    [articles, active]
+    () => (active === "All" ? all : all.filter((a) => a.category === active)),
+    [all, active]
   );
 
   return (

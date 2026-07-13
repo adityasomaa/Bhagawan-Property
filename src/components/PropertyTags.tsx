@@ -23,7 +23,7 @@ export default function PropertyTags({
   className?: string;
 }) {
   const t = useT();
-  const { tags } = usePropertyView(property);
+  const tags = usePropertyView(property).tags ?? [];
   if (!tags.length) return null;
 
   return (

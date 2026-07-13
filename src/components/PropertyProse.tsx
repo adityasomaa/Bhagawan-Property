@@ -2,17 +2,22 @@
 
 import Reveal from "@/components/motion/Reveal";
 import { useLocale } from "@/lib/i18n/provider";
+import { useOverrides } from "@/lib/overrides";
 import { propertyTr } from "@/data/tr/properties";
 import type { Property } from "@/data/properties";
 
 /** Localised description / highlights / features for a property detail page. */
 export default function PropertyProse({ property }: { property: Property }) {
   const { lang, t } = useLocale();
+  const { overrides } = useOverrides();
+  const o = overrides[property.slug];
   const tr = propertyTr[property.slug]?.[lang];
 
-  const description = tr?.description ?? property.description;
-  const highlights = tr?.highlights ?? property.highlights;
-  const features = tr?.features ?? property.features;
+  // Admin edits win in every language (a stale translation of replaced copy
+  // would be wrong); otherwise translation, then the base English.
+  const description = o?.description ?? tr?.description ?? property.description;
+  const highlights = o?.highlights ?? tr?.highlights ?? property.highlights;
+  const features = o?.features ?? tr?.features ?? property.features;
 
   return (
     <>

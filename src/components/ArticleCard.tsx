@@ -20,6 +20,9 @@ export default function ArticleCard({ article }: { article: Article }) {
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
           className="object-cover"
+          // Admin-authored posts carry arbitrary image URLs that aren't in
+          // next.config's remotePatterns — skip the optimizer for those.
+          unoptimized={"custom" in article}
         />
         <span className="glass-dark absolute left-3.5 top-3.5 rounded-full px-3 py-1.5 text-[9px] font-semibold tracking-[0.22em] uppercase text-white">
           {t(`kb.cat.${article.category}`)}

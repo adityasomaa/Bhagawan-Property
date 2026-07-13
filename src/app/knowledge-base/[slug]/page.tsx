@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import ArticleCard from "@/components/ArticleCard";
+import CustomArticle from "@/components/CustomArticle";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { T, AL } from "@/lib/i18n/provider";
 import { articleTr } from "@/data/tr/articles";
@@ -41,7 +41,9 @@ export default async function ArticlePage({
 }) {
   const { slug } = await params;
   const article = getArticle(slug);
-  if (!article) notFound();
+  // Slugs outside the static set may be admin-authored blog posts, which only
+  // exist client-side — render the same template from the blog store.
+  if (!article) return <CustomArticle slug={slug} />;
 
   const aTr = articleTr[article.slug];
   const titleTr = { id: aTr?.id?.title, zh: aTr?.zh?.title, ja: aTr?.ja?.title };
