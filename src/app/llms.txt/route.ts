@@ -1,4 +1,4 @@
-import { properties } from "@/data/properties";
+import { getAllProperties } from "@/lib/cms";
 import { areas } from "@/data/areas";
 import { articles } from "@/data/articles";
 import { site } from "@/lib/site";
@@ -10,7 +10,8 @@ export const dynamic = "force-static";
  * llms.txt — a structured summary of this site for AI / answer engines (GEO).
  * Spec: https://llmstxt.org
  */
-export function GET() {
+export async function GET() {
+  const properties = await getAllProperties();
   const body = `# ${site.name}
 
 > ${site.description}

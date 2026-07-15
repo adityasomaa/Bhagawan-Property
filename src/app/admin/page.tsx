@@ -14,6 +14,7 @@ import {
   type Tenure,
 } from "@/data/properties";
 import { articles, categories, getArticle } from "@/data/articles";
+import { areas } from "@/data/areas";
 import { formatIDR } from "@/lib/format";
 
 /* ── form primitives ────────────────────────────────────── */
@@ -216,9 +217,9 @@ function diff(p: Property, d: Draft): Override {
   return Object.fromEntries(Object.entries(out).filter(([, v]) => v !== undefined)) as Override;
 }
 
-function PropertyEditor({ property }: { property: Property }) {
+function PropertyEditor({ property, custom }: { property: Property; custom: boolean }) {
   const t = useT();
-  const { overrides, patchProperty, resetOne, saving } = useOverrides();
+  const { overrides, patchProperty, resetOne, deleteProperty, saving } = useOverrides();
   const o = overrides[property.slug];
   const edited = !!o && Object.keys(o).length > 0;
   const [open, setOpen] = useState(false);
@@ -244,6 +245,7 @@ function PropertyEditor({ property }: { property: Property }) {
           </TransitionLink>
           <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
             {property.areaName} · {o?.tenure ?? property.tenure}
+            {custom && <span className="ml-2 text-bronze">· added by you</span>}
             {edited && <span className="ml-2 text-bronze">· edited</span>}
           </p>
         </div>
@@ -270,6 +272,19 @@ function PropertyEditor({ property }: { property: Property }) {
             className={btnSolid}
           >
             {open ? "Close" : "Edit"}
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => {
+              const msg = custom
+                ? `Delete "${o?.name ?? property.name}" permanently? This cannot be undone.`
+                : `Remove "${o?.name ?? property.name}" from the site? You can restore it later.`;
+              if (window.confirm(msg)) deleteProperty(property.slug);
+            }}
+            className={`${btnGhost} hover:border-red-500 hover:text-red-600`}
+          >
+            Delete
           </button>
         </div>
       </div>
@@ -378,6 +393,226 @@ function PropertyEditor({ property }: { property: Property }) {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ── new property ───────────────────────────────────────── */
+
+function slugifyName(s: string) {
+  return s.toLowerCase().replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 80);
+}
+
+function NewProperty({ onDone }: { onDone: () => void }) {
+  const t = useT();
+  const { createProperty, saving } = useOverrides();
+  const [f, setF] = useState({
+    name: "",
+    slug: "",
+    area: areas[0].slug,
+    tenure: "freehold" as Tenure,
+    leaseholdYears: "",
+    type: "villa" as PropertyType,
+    price: "",
+    bedrooms: "",
+    bathrooms: "",
+    landSize: "",
+    buildingSize: "",
+    nightlyRate: "",
+    occupancy: "",
+    excerpt: "",
+    description: "",
+    highlights: "",
+    features: "",
+    featured: true,
+  });
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [tags, setTags] = useState<PropertyTag[]>(["new-listing"]);
+  const [images, setImages] = useState<string[]>([]);
+  const [err, setErr] = useState("");
+  const set = (patch: Partial<typeof f>) => setF({ ...f, ...patch });
+
+  const submit = async () => {
+    const slug = slugifyName(f.slug || f.name);
+    const area = areas.find((a) => a.slug === f.area)!;
+    if (!f.name.trim() || !slug) return setErr("Name is required.");
+    if (!Number(f.price)) return setErr("Price is required.");
+    if (images.length === 0) return setErr("Add at least one photo.");
+
+    const num = (s: string) => (s.trim() === "" ? undefined : Number(s));
+    try {
+      await createProperty({
+        slug,
+        name: f.name.trim(),
+        area: area.slug,
+        areaName: area.name,
+        tenure: f.tenure,
+        leaseholdYears: f.tenure === "leasehold" ? num(f.leaseholdYears) : undefined,
+        type: f.type,
+        price: Number(f.price),
+        bedrooms: Number(f.bedrooms) || 0,
+        bathrooms: Number(f.bathrooms) || 0,
+        landSize: Number(f.landSize) || 0,
+        buildingSize: num(f.buildingSize),
+        images,
+        excerpt: f.excerpt.trim(),
+        description: toParas(f.description),
+        highlights: toLines(f.highlights),
+        features: toLines(f.features),
+        featured: f.featured,
+        mapQuery: `${area.name}, Bali`,
+        nightlyRate: num(f.nightlyRate),
+        occupancy: num(f.occupancy),
+        tags,
+      });
+      onDone();
+    } catch (e) {
+      setErr((e as Error).message);
+    }
+  };
+
+  return (
+    <div className="space-y-5 rounded-2xl border border-bronze/40 bg-bronze/5 p-5 md:p-6">
+      <p className="font-display text-lg text-ink">New listing</p>
+
+      <Field label="Photos (first = cover)">
+        <ImageUploader urls={images} onChange={setImages} prefix={slugifyName(f.slug || f.name) || "new"} />
+      </Field>
+
+      <Field label="Name">
+        <input
+          className={inputCls}
+          value={f.name}
+          onChange={(e) => {
+            set({ name: e.target.value, ...(slugTouched ? {} : { slug: slugifyName(e.target.value) }) });
+          }}
+          placeholder="e.g. Villa Sunset, Pererenan"
+        />
+      </Field>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Slug (URL)">
+          <input
+            className={inputCls}
+            value={f.slug}
+            onChange={(e) => {
+              set({ slug: e.target.value });
+              setSlugTouched(true);
+            }}
+          />
+        </Field>
+        <Field label="Area">
+          <select className={inputCls} value={f.area} onChange={(e) => set({ area: e.target.value })}>
+            {areas.map((a) => (
+              <option key={a.slug} value={a.slug}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field label="Tenure">
+          <select className={inputCls} value={f.tenure} onChange={(e) => set({ tenure: e.target.value as Tenure })}>
+            <option value="freehold">Freehold</option>
+            <option value="leasehold">Leasehold</option>
+          </select>
+        </Field>
+        <Field label="Lease years">
+          <input
+            type="number"
+            className={inputCls}
+            value={f.leaseholdYears}
+            disabled={f.tenure !== "leasehold"}
+            onChange={(e) => set({ leaseholdYears: e.target.value })}
+          />
+        </Field>
+        <Field label="Type">
+          <select className={inputCls} value={f.type} onChange={(e) => set({ type: e.target.value as PropertyType })}>
+            <option value="villa">Villa</option>
+            <option value="land">Land</option>
+            <option value="townhouse">Townhouse</option>
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Price (IDR)">
+          <input type="number" step={100_000_000} className={inputCls} value={f.price} onChange={(e) => set({ price: e.target.value })} />
+        </Field>
+        <div className="flex items-end pb-2 text-sm font-medium text-ink">
+          {f.price ? formatIDR(Number(f.price)) : ""}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <Field label="Bedrooms">
+          <input type="number" className={inputCls} value={f.bedrooms} onChange={(e) => set({ bedrooms: e.target.value })} />
+        </Field>
+        <Field label="Bathrooms">
+          <input type="number" className={inputCls} value={f.bathrooms} onChange={(e) => set({ bathrooms: e.target.value })} />
+        </Field>
+        <Field label="Land (m²)">
+          <input type="number" className={inputCls} value={f.landSize} onChange={(e) => set({ landSize: e.target.value })} />
+        </Field>
+        <Field label="Building (m²)">
+          <input type="number" className={inputCls} value={f.buildingSize} onChange={(e) => set({ buildingSize: e.target.value })} />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Nightly rate (USD)">
+          <input type="number" className={inputCls} value={f.nightlyRate} onChange={(e) => set({ nightlyRate: e.target.value })} />
+        </Field>
+        <Field label="Occupancy (%)">
+          <input type="number" className={inputCls} value={f.occupancy} onChange={(e) => set({ occupancy: e.target.value })} />
+        </Field>
+      </div>
+
+      <Field label="Tags">
+        <div className="flex flex-wrap gap-2">
+          {PROPERTY_TAGS.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => setTags(tags.includes(tag) ? tags.filter((x) => x !== tag) : [...tags, tag])}
+              className={chip(tags.includes(tag))}
+            >
+              {t(`tag.${tag}`)}
+            </button>
+          ))}
+        </div>
+      </Field>
+
+      <label className="flex items-center gap-2 text-xs text-muted">
+        <input type="checkbox" checked={f.featured} onChange={(e) => set({ featured: e.target.checked })} />
+        Show in Featured on the homepage
+      </label>
+
+      <Field label="Excerpt (card summary)">
+        <textarea rows={2} className={inputCls} value={f.excerpt} onChange={(e) => set({ excerpt: e.target.value })} />
+      </Field>
+      <Field label="Description (blank line = new paragraph)">
+        <textarea rows={5} className={inputCls} value={f.description} onChange={(e) => set({ description: e.target.value })} />
+      </Field>
+      <Field label="Highlights (one per line)">
+        <textarea rows={3} className={inputCls} value={f.highlights} onChange={(e) => set({ highlights: e.target.value })} />
+      </Field>
+      <Field label="Features (one per line)">
+        <textarea rows={3} className={inputCls} value={f.features} onChange={(e) => set({ features: e.target.value })} />
+      </Field>
+
+      {err && <p className="text-xs text-red-600">{err}</p>}
+
+      <div className="flex items-center gap-3 border-t border-line pt-5">
+        <button type="button" onClick={submit} disabled={saving} className={btnSolid}>
+          {saving ? "Publishing…" : "Publish listing"}
+        </button>
+        <button type="button" onClick={onDone} className={btnGhost}>
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
@@ -681,11 +916,14 @@ function BlogTab() {
                   type="button"
                   disabled={saving}
                   onClick={() => {
-                    if (window.confirm(`Remove "${post.title}" from the site?`)) deleteBlog(post.slug);
+                    const msg = builtIn
+                      ? `Remove "${post.title}" from the site? You can restore it later.`
+                      : `Delete "${post.title}" permanently? This cannot be undone.`;
+                    if (window.confirm(msg)) deleteBlog(post.slug);
                   }}
                   className={`${btnGhost} hover:border-red-500 hover:text-red-600`}
                 >
-                  {builtIn ? "Hide" : "Delete"}
+                  Delete
                 </button>
               </>
             )}
@@ -696,12 +934,66 @@ function BlogTab() {
   );
 }
 
+/* ── properties tab ─────────────────────────────────────── */
+
+function PropertiesTab() {
+  const { customProperties, hiddenProperties, restoreProperty, saving } = useOverrides();
+  const [creating, setCreating] = useState(false);
+
+  if (creating) return <NewProperty onDone={() => setCreating(false)} />;
+
+  const customSlugs = new Set(customProperties.map((p) => p.slug));
+  const live = [
+    ...customProperties.map((p) => ({ p, custom: true })),
+    ...properties
+      .filter((p) => !hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug))
+      .map((p) => ({ p, custom: false })),
+  ];
+  const removed = properties.filter((p) => hiddenProperties.includes(p.slug));
+
+  return (
+    <div className="space-y-4">
+      <button type="button" onClick={() => setCreating(true)} className={btnSolid}>
+        + New property
+      </button>
+
+      {live.map(({ p, custom }) => (
+        <PropertyEditor key={p.slug} property={p} custom={custom} />
+      ))}
+
+      {removed.length > 0 && (
+        <div className="pt-4">
+          <p className={labelCls}>Removed from the site</p>
+          <div className="mt-2 space-y-2">
+            {removed.map((p) => (
+              <div
+                key={p.slug}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-cream/50 p-4 opacity-70"
+              >
+                <div>
+                  <p className="font-display text-base text-ink">{p.name}</p>
+                  <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
+                    {p.areaName} · <span className="text-red-600">removed</span>
+                  </p>
+                </div>
+                <button type="button" disabled={saving} onClick={() => restoreProperty(p.slug)} className={btnSolid}>
+                  Restore
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── page ───────────────────────────────────────────────── */
 
 export default function AdminPage() {
-  const { overrides, blogs, resetAll, saving } = useOverrides();
+  const { overrides, blogs, customProperties, resetAll, saving } = useOverrides();
   const [tab, setTab] = useState<"properties" | "blog">("properties");
-  const count = Object.keys(overrides).length;
+  const count = Object.keys(overrides).length + customProperties.length;
 
   const logout = async () => {
     await fetch("/api/logout", { method: "POST" });
@@ -749,31 +1041,22 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
-          {tab === "properties" && count > 0 && (
+          {tab === "properties" && Object.keys(overrides).length > 0 && (
             <button
               type="button"
               onClick={() => {
-                if (window.confirm("Reset every property back to its original data?")) resetAll();
+                if (window.confirm("Reset the built-in listings back to their original data? Listings you added are kept."))
+                  resetAll();
               }}
               disabled={saving}
               className={btnGhost}
             >
-              Reset all
+              Reset edits
             </button>
           )}
         </div>
 
-        <div className="mt-6">
-          {tab === "properties" ? (
-            <div className="space-y-4">
-              {properties.map((p) => (
-                <PropertyEditor key={p.slug} property={p} />
-              ))}
-            </div>
-          ) : (
-            <BlogTab />
-          )}
-        </div>
+        <div className="mt-6">{tab === "properties" ? <PropertiesTab /> : <BlogTab />}</div>
       </div>
     </section>
   );

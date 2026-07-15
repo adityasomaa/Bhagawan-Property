@@ -8,7 +8,7 @@ import { areaTr } from "@/data/tr/areas";
 import PropertyCard from "@/components/PropertyCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { areas, getArea } from "@/data/areas";
-import { byArea } from "@/data/properties";
+import { getAllProperties } from "@/lib/cms";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -40,7 +40,9 @@ export default async function AreaGuidePage({
   const area = getArea(slug);
   if (!area) notFound();
 
-  const areaProperties = byArea(area.slug).slice(0, 6);
+  const areaProperties = (await getAllProperties())
+    .filter((p) => p.area === area.slug)
+    .slice(0, 6);
   const aTr = areaTr[area.slug];
 
   const jsonLd = {

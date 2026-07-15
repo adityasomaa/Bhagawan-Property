@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { properties } from "@/data/properties";
+import { getAllProperties } from "@/lib/cms";
 import { areas } from "@/data/areas";
 import { articles } from "@/data/articles";
 import { site } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const properties = await getAllProperties();
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [

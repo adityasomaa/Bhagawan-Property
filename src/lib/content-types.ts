@@ -1,4 +1,4 @@
-import type { PropertyTag, PropertyType, Tenure } from "@/data/properties";
+import type { Property, PropertyTag, PropertyType, Tenure } from "@/data/properties";
 import type { Article } from "@/data/articles";
 
 /** Per-property field overrides authored in /admin. Only changed fields are stored. */
@@ -28,6 +28,10 @@ export type BlogPost = Article;
 
 export interface Content {
   overrides: Record<string, Override>;
+  /** Listings created in /admin (full records, not overrides). */
+  customProperties: Property[];
+  /** Slugs of built-in listings the admin removed. */
+  hiddenProperties: string[];
   blogs: BlogPost[];
   /** Slugs of built-in articles the admin removed. */
   hiddenArticles: string[];

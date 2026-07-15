@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
-import type { Override, BlogPost } from "@/lib/content-types";
+import { properties as baseProperties, type Property } from "@/data/properties";
+import type { Override, BlogPost, Content } from "@/lib/content-types";
 
 /**
  * Server-side CMS layer backed by Supabase.
@@ -25,20 +26,22 @@ export const MEDIA_BUCKET = "bhagawan-media";
 const OVERRIDES_TABLE = "bhagawan_property_overrides";
 const BLOGS_TABLE = "bhagawan_blogs";
 
-export interface CmsContent {
-  overrides: Record<string, Override>;
-  blogs: BlogPost[];
-  hiddenArticles: string[];
-}
+export type CmsContent = Content;
 
-export const EMPTY_CONTENT: CmsContent = { overrides: {}, blogs: [], hiddenArticles: [] };
+export const EMPTY_CONTENT: CmsContent = {
+  overrides: {},
+  customProperties: [],
+  hiddenProperties: [],
+  blogs: [],
+  hiddenArticles: [],
+};
 
 /** Read the whole CMS payload. Never throws — falls back to base data. */
 export async function readContent(): Promise<CmsContent> {
   if (!supabase) return EMPTY_CONTENT;
   try {
     const [ov, bl] = await Promise.all([
-      supabase.from(OVERRIDES_TABLE).select("slug, data"),
+      supabase.from(OVERRIDES_TABLE).select("slug, data, hidden, custom"),
       supabase.from(BLOGS_TABLE).select("slug, data, hidden"),
     ]);
     if (ov.error || bl.error) {
@@ -47,7 +50,13 @@ export async function readContent(): Promise<CmsContent> {
     }
 
     const overrides: Record<string, Override> = {};
-    for (const row of ov.data ?? []) overrides[row.slug] = (row.data ?? {}) as Override;
+    const customProperties: Property[] = [];
+    const hiddenProperties: string[] = [];
+    for (const row of ov.data ?? []) {
+      if (row.custom) customProperties.push({ ...(row.data as Property), slug: row.slug });
+      else if (row.hidden) hiddenProperties.push(row.slug);
+      else overrides[row.slug] = (row.data ?? {}) as Override;
+    }
 
     const blogs: BlogPost[] = [];
     const hiddenArticles: string[] = [];
@@ -57,19 +66,81 @@ export async function readContent(): Promise<CmsContent> {
     }
     blogs.sort((a, b) => b.date.localeCompare(a.date));
 
-    return { overrides, blogs, hiddenArticles };
+    return { overrides, customProperties, hiddenProperties, blogs, hiddenArticles };
   } catch (e) {
     console.error("CMS read threw", e);
     return EMPTY_CONTENT;
   }
 }
 
+/**
+ * Every listing for display: admin-created ones first, then the built-ins
+ * that haven't been removed. Field overrides are applied by the client
+ * (usePropertyView) so the admin sees edits instantly.
+ */
+export async function getAllProperties(content?: CmsContent): Promise<Property[]> {
+  const c = content ?? (await readContent());
+  const customSlugs = new Set(c.customProperties.map((p) => p.slug));
+  const base = baseProperties.filter(
+    (p) => !c.hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug)
+  );
+  return [...c.customProperties, ...base];
+}
+
 export async function writeOverride(slug: string, data: Override) {
   if (!supabase) throw new Error("CMS not configured");
+
+  // Editing an admin-created listing patches the stored record itself.
+  const { data: existing } = await supabase
+    .from(OVERRIDES_TABLE)
+    .select("data, custom")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (existing?.custom) {
+    const merged = { ...(existing.data as Property), ...data, slug };
+    const { error } = await supabase
+      .from(OVERRIDES_TABLE)
+      .update({ data: merged, updated_at: new Date().toISOString() })
+      .eq("slug", slug);
+    if (error) throw new Error(error.message);
+    return;
+  }
+
   if (Object.keys(data).length === 0) return deleteOverride(slug);
   const { error } = await supabase
     .from(OVERRIDES_TABLE)
-    .upsert({ slug, data, updated_at: new Date().toISOString() });
+    .upsert({ slug, data, custom: false, hidden: false, updated_at: new Date().toISOString() });
+  if (error) throw new Error(error.message);
+}
+
+/** Insert a brand-new listing authored in /admin. */
+export async function createProperty(property: Property) {
+  if (!supabase) throw new Error("CMS not configured");
+  const { error } = await supabase.from(OVERRIDES_TABLE).insert({
+    slug: property.slug,
+    data: property,
+    custom: true,
+    hidden: false,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Remove a listing. Admin-created ones are deleted outright; built-ins are
+ * tombstoned (they live in code, so a plain delete would resurrect them).
+ */
+export async function removeProperty(slug: string, isBuiltIn: boolean) {
+  if (!supabase) throw new Error("CMS not configured");
+  if (!isBuiltIn) return deleteOverride(slug);
+  const { error } = await supabase.from(OVERRIDES_TABLE).upsert({
+    slug,
+    data: {},
+    hidden: true,
+    custom: false,
+    updated_at: new Date().toISOString(),
+  });
   if (error) throw new Error(error.message);
 }
 
@@ -79,9 +150,10 @@ export async function deleteOverride(slug: string) {
   if (error) throw new Error(error.message);
 }
 
+/** Reset built-in listings to their original data. Custom ones are kept. */
 export async function deleteAllOverrides() {
   if (!supabase) throw new Error("CMS not configured");
-  const { error } = await supabase.from(OVERRIDES_TABLE).delete().neq("slug", "");
+  const { error } = await supabase.from(OVERRIDES_TABLE).delete().eq("custom", false);
   if (error) throw new Error(error.message);
 }
 

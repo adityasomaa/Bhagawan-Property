@@ -3,8 +3,9 @@
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import "leaflet/dist/leaflet.css";
-import { properties } from "@/data/properties";
+import type { Property } from "@/data/properties";
 import { areas } from "@/data/areas";
+import { useProperties } from "@/lib/overrides";
 import { formatIDR } from "@/lib/format";
 
 /**
@@ -20,8 +21,8 @@ const PIN_SVG = `
   <circle cx="12" cy="11.6" r="4.4" fill="#F5F0E8"/>
 </svg>`;
 
-function pins() {
-  const byArea = new Map<string, typeof properties>();
+function pins(properties: Property[]) {
+  const byArea = new Map<string, Property[]>();
   for (const p of properties) {
     const list = byArea.get(p.area) ?? [];
     list.push(p);
@@ -49,6 +50,7 @@ function pins() {
 export default function PropertyMap({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const properties = useProperties();
 
   useEffect(() => {
     const el = ref.current;
@@ -60,7 +62,7 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
       const L = (await import("leaflet")).default;
       if (cancelled || !el) return;
 
-      const data = pins();
+      const data = pins(properties);
       map = L.map(el, { scrollWheelZoom: false, attributionControl: true }).setView([-8.71, 115.17], 11);
 
       L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
@@ -98,7 +100,7 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
       cancelled = true;
       map?.remove();
     };
-  }, [router]);
+  }, [router, properties]);
 
   return <div ref={ref} className={`bp-map ${className}`} aria-label="Map of our properties across Bali" />;
 }

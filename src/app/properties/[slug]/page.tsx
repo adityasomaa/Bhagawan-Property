@@ -7,7 +7,8 @@ import PropertyProse from "@/components/PropertyProse";
 import PropertyHeader from "@/components/PropertyHeader";
 import PropertyAside from "@/components/PropertyAside";
 import { TransitionLink } from "@/components/motion/PageTransition";
-import { byArea, getProperty, properties } from "@/data/properties";
+import { getProperty, properties } from "@/data/properties";
+import { getAllProperties, readContent } from "@/lib/cms";
 import { formatIDR } from "@/lib/format";
 import { T } from "@/lib/i18n/provider";
 import { site } from "@/lib/site";
@@ -22,7 +23,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const property = getProperty(slug);
+  const property = (await getAllProperties()).find((p) => p.slug === slug);
   if (!property) return {};
   return {
     title: `${property.name} — ${property.areaName}, Bali (${property.tenure})`,
@@ -40,12 +41,14 @@ export default async function PropertyDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const property = getProperty(slug);
+  // Includes admin-created listings and excludes removed ones.
+  const all = await getAllProperties();
+  const property = all.find((p) => p.slug === slug);
   if (!property) notFound();
 
-  const related = byArea(property.area)
-    .filter((p) => p.slug !== property.slug)
-    .concat(properties.filter((p) => p.area !== property.area && p.tenure === property.tenure))
+  const related = all
+    .filter((p) => p.slug !== property.slug && p.area === property.area)
+    .concat(all.filter((p) => p.area !== property.area && p.tenure === property.tenure))
     .slice(0, 3);
 
   const jsonLd = {

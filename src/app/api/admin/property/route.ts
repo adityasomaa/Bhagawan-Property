@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/adminGuard";
-import { cmsConfigured, writeOverride, deleteOverride, deleteAllOverrides } from "@/lib/cms";
+import {
+  cmsConfigured,
+  writeOverride,
+  deleteOverride,
+  deleteAllOverrides,
+  createProperty,
+  removeProperty,
+  readContent,
+} from "@/lib/cms";
+import { getProperty } from "@/data/properties";
 
 export async function POST(req: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,10 +23,31 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
+    // Create a new listing.
+    if (body.create) {
+      const p = body.property;
+      if (!p?.slug || !p?.name) {
+        return NextResponse.json({ error: "slug and name are required" }, { status: 400 });
+      }
+      const { customProperties } = await readContent();
+      if (getProperty(p.slug) || customProperties.some((c) => c.slug === p.slug)) {
+        return NextResponse.json({ error: "That URL slug is already taken" }, { status: 409 });
+      }
+      await createProperty(p);
+      return NextResponse.json({ ok: true });
+    }
+
     const slug = String(body.slug ?? "");
     if (!slug) return NextResponse.json({ error: "slug required" }, { status: 400 });
 
-    if (body.reset) {
+    // Delete (custom) / remove from the site (built-in).
+    if (body.remove) {
+      await removeProperty(slug, Boolean(getProperty(slug)));
+      return NextResponse.json({ ok: true });
+    }
+
+    // Restore a removed built-in, or clear edits.
+    if (body.reset || body.restore) {
       await deleteOverride(slug);
       return NextResponse.json({ ok: true });
     }

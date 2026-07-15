@@ -5,7 +5,7 @@ import PropertyMap from "@/components/PropertyMap";
 import SectionHeading from "@/components/SectionHeading";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { T } from "@/lib/i18n/provider";
-import { properties } from "@/data/properties";
+import { getAllProperties } from "@/lib/cms";
 
 export const metadata: Metadata = {
   title: "Properties for Sale in Bali — Freehold & Leasehold",
@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/properties" },
 };
 
-export default function PropertiesPage() {
+export default async function PropertiesPage() {
+  const all = await getAllProperties();
   return (
     <>
       <section className="container-x pb-16 pt-36 md:pt-44">
@@ -39,7 +40,7 @@ export default function PropertiesPage() {
 
       <section className="container-x pb-24 md:pb-32">
         <Reveal delay={0.1}>
-          <PropertyCatalogue items={[...properties]} />
+          <PropertyCatalogue items={all} />
         </Reveal>
       </section>
 

@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import type { Property } from "@/data/properties";
+import { properties as baseProperties, type Property } from "@/data/properties";
 import { articles, type Article } from "@/data/articles";
 import type { Content, Override, BlogPost } from "@/lib/content-types";
 
@@ -18,6 +18,9 @@ import type { Content, Override, BlogPost } from "@/lib/content-types";
 interface ContentState extends Content {
   saving: boolean;
   patchProperty: (slug: string, patch: Override) => Promise<void>;
+  createProperty: (property: Property) => Promise<void>;
+  deleteProperty: (slug: string) => Promise<void>;
+  restoreProperty: (slug: string) => Promise<void>;
   resetOne: (slug: string) => Promise<void>;
   resetAll: () => Promise<void>;
   saveBlog: (post: BlogPost) => Promise<void>;
@@ -95,6 +98,22 @@ export function OverridesProvider({
     [run, data]
   );
 
+  const createProperty = useCallback(
+    (property: Property) =>
+      run(async () => void (await post("/api/admin/property", { create: true, property }))),
+    [run]
+  );
+
+  const deleteProperty = useCallback(
+    (slug: string) => run(async () => void (await post("/api/admin/property", { slug, remove: true }))),
+    [run]
+  );
+
+  const restoreProperty = useCallback(
+    (slug: string) => run(async () => void (await post("/api/admin/property", { slug, restore: true }))),
+    [run]
+  );
+
   const saveBlog = useCallback(
     (postData: BlogPost) => run(async () => void (await post("/api/admin/blog", { post: postData }))),
     [run]
@@ -125,6 +144,9 @@ export function OverridesProvider({
       ...data,
       saving,
       patchProperty,
+      createProperty,
+      deleteProperty,
+      restoreProperty,
       resetOne,
       resetAll,
       saveBlog,
@@ -132,7 +154,20 @@ export function OverridesProvider({
       restoreBlog,
       uploadMedia,
     }),
-    [data, saving, patchProperty, resetOne, resetAll, saveBlog, deleteBlog, restoreBlog, uploadMedia]
+    [
+      data,
+      saving,
+      patchProperty,
+      createProperty,
+      deleteProperty,
+      restoreProperty,
+      resetOne,
+      resetAll,
+      saveBlog,
+      deleteBlog,
+      restoreBlog,
+      uploadMedia,
+    ]
   );
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
@@ -150,6 +185,22 @@ export function usePropertyView(property: Property): Property {
   const o = overrides[property.slug];
   if (!o) return property;
   return { ...property, ...o, tags: o.tags ?? property.tags };
+}
+
+/**
+ * Every listing for display: admin-created ones first, then built-ins that
+ * haven't been removed. Field overrides are applied per card via
+ * usePropertyView, so this returns the base records.
+ */
+export function useProperties(): Property[] {
+  const { customProperties, hiddenProperties } = useOverrides();
+  return useMemo(() => {
+    const customSlugs = new Set(customProperties.map((p) => p.slug));
+    const base = baseProperties.filter(
+      (p) => !hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug)
+    );
+    return [...customProperties, ...base];
+  }, [customProperties, hiddenProperties]);
 }
 
 /**

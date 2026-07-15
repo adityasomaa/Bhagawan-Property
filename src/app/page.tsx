@@ -5,12 +5,11 @@ import Reveal from "@/components/motion/Reveal";
 import HeroEntrance from "@/components/motion/HeroEntrance";
 import HeroSlider, { type HeroSlide } from "@/components/HeroSlider";
 import SectionHeading from "@/components/SectionHeading";
-import PropertyCard from "@/components/PropertyCard";
+import PropertyGrid from "@/components/PropertyGrid";
 import AreaCard from "@/components/AreaCard";
 import ArticleGrid from "@/components/ArticleGrid";
 import ContactForm from "@/components/ContactForm";
 import { T } from "@/lib/i18n/provider";
-import { featuredProperties } from "@/data/properties";
 import { areas, img } from "@/data/areas";
 import { site, waLink } from "@/lib/site";
 
@@ -142,13 +141,7 @@ export default function HomePage() {
             </TransitionLink>
           </Reveal>
         </div>
-        <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredProperties.slice(0, 8).map((p, i) => (
-            <Reveal key={p.slug} delay={(i % 3) * 0.1}>
-              <PropertyCard property={p} />
-            </Reveal>
-          ))}
-        </div>
+        <PropertyGrid featured limit={8} />
       </section>
 
       {/* ── Bali Areas ───────────────────────────────────────── */}

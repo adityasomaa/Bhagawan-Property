@@ -2,7 +2,8 @@ import Reveal from "@/components/motion/Reveal";
 import PropertyCatalogue from "@/components/PropertyCatalogue";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { T } from "@/lib/i18n/provider";
-import { byTenure, type Tenure } from "@/data/properties";
+import { getAllProperties } from "@/lib/cms";
+import { type Tenure } from "@/data/properties";
 
 const POINTS: Record<Tenure, [string, string][]> = {
   freehold: [
@@ -19,8 +20,8 @@ const POINTS: Record<Tenure, [string, string][]> = {
 
 const ARTICLE = "/knowledge-base/freehold-vs-leasehold-bali";
 
-export default function TenurePage({ tenure }: { tenure: Tenure }) {
-  const items = byTenure(tenure);
+export default async function TenurePage({ tenure }: { tenure: Tenure }) {
+  const items = (await getAllProperties()).filter((p) => p.tenure === tenure);
   const isFreehold = tenure === "freehold";
 
   return (
