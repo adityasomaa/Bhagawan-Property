@@ -76,6 +76,8 @@ function ImageUploader({
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
 
   const pick = async (files: FileList | null) => {
     if (!files?.length) return;
@@ -91,6 +93,8 @@ function ImageUploader({
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  /** Swap with the neighbour — the arrows are the touch/keyboard fallback,
+      since HTML5 drag events never fire on touch devices. */
   const move = (i: number, dir: -1 | 1) => {
     const j = i + dir;
     if (j < 0 || j >= urls.length) return;
@@ -99,13 +103,59 @@ function ImageUploader({
     onChange(next);
   };
 
+  /** Pull the dragged photo out and re-insert it at the drop position. */
+  const reorder = (from: number, to: number) => {
+    if (from === to || from < 0 || to < 0) return;
+    const next = [...urls];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    onChange(next);
+  };
+
+  const endDrag = () => {
+    setDragIndex(null);
+    setOverIndex(null);
+  };
+
   return (
     <div>
       {urls.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {urls.map((u, i) => (
-            <div key={u + i} className="group relative h-20 w-28 overflow-hidden rounded-lg border border-line">
-              <Image src={u} alt="" fill sizes="112px" className="object-cover" />
+            <div
+              key={u + i}
+              draggable={multiple}
+              onDragStart={(e) => {
+                setDragIndex(i);
+                e.dataTransfer.effectAllowed = "move";
+                // Firefox only starts a drag when data is set.
+                e.dataTransfer.setData("text/plain", String(i));
+              }}
+              onDragOver={(e) => {
+                if (!multiple || dragIndex === null) return;
+                e.preventDefault(); // required to allow a drop
+                e.dataTransfer.dropEffect = "move";
+                setOverIndex(i);
+              }}
+              onDragLeave={() => setOverIndex((o) => (o === i ? null : o))}
+              onDrop={(e) => {
+                if (!multiple) return;
+                e.preventDefault();
+                const from = dragIndex ?? Number(e.dataTransfer.getData("text/plain"));
+                reorder(from, i);
+                endDrag();
+              }}
+              onDragEnd={endDrag}
+              className={`group relative h-20 w-28 overflow-hidden rounded-lg border transition-all ${
+                multiple ? "cursor-grab active:cursor-grabbing" : ""
+              } ${dragIndex === i ? "scale-95 opacity-40" : ""} ${
+                overIndex === i && dragIndex !== i
+                  ? "border-bronze ring-2 ring-bronze"
+                  : "border-line"
+              }`}
+            >
+              {/* draggable={false} so the browser drags the tile, not the image */}
+              <Image src={u} alt="" fill sizes="112px" draggable={false} className="object-cover" />
               {multiple && i === 0 && (
                 <span className="absolute left-1 top-1 rounded bg-ink/80 px-1.5 py-0.5 text-[8px] font-semibold uppercase text-cream">
                   Cover
@@ -141,6 +191,12 @@ function ImageUploader({
             </div>
           ))}
         </div>
+      )}
+      {multiple && urls.length > 1 && (
+        <p className="mb-3 text-[11px] text-muted">
+          Drag photos to reorder — the first one is the cover. (On a touch screen, use the ‹ ›
+          arrows.)
+        </p>
       )}
       <input
         ref={fileRef}
