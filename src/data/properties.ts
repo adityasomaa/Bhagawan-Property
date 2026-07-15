@@ -2,15 +2,31 @@ export type Tenure = "freehold" | "leasehold";
 export type PropertyType = "villa" | "land" | "townhouse";
 
 /** Marketing status labels shown as badges and managed from /admin. */
-export type PropertyTag = "offplan" | "new-listing" | "price-drop" | "sold";
-export const PROPERTY_TAGS: PropertyTag[] = ["offplan", "new-listing", "price-drop", "sold"];
+export type PropertyTag =
+  | "offplan"
+  | "new-listing"
+  | "price-drop"
+  | "great-value"
+  | "turnkey"
+  | "sold";
+export const PROPERTY_TAGS: PropertyTag[] = [
+  "offplan",
+  "new-listing",
+  "price-drop",
+  "great-value",
+  "turnkey",
+  "sold",
+];
+
+export const TENURES: Tenure[] = ["freehold", "leasehold"];
 
 export interface Property {
   slug: string;
   name: string;
   area: string; // area slug
   areaName: string;
-  tenure: Tenure;
+  /** A listing can be offered as both — e.g. freehold or leasehold. */
+  tenures: Tenure[];
   leaseholdYears?: number;
   type: PropertyType;
   price: number; // IDR
@@ -42,7 +58,7 @@ export const properties: Property[] = [
     tags: ["new-listing"],
     area: "canggu",
     areaName: "Canggu",
-    tenure: "freehold",
+    tenures: ["freehold"],
     type: "villa",
     price: 5_200_000_000,
     bedrooms: 2,
@@ -82,7 +98,7 @@ export const properties: Property[] = [
     tags: ["price-drop"],
     area: "uluwatu",
     areaName: "Uluwatu",
-    tenure: "leasehold",
+    tenures: ["leasehold"],
     leaseholdYears: 30,
     type: "villa",
     price: 3_500_000_000,
@@ -125,7 +141,7 @@ export const properties: Property[] = [
     tags: ["offplan"],
     area: "uluwatu",
     areaName: "Uluwatu",
-    tenure: "freehold",
+    tenures: ["freehold"],
     type: "villa",
     price: 6_000_000_000,
     bedrooms: 4,
@@ -154,7 +170,7 @@ export const properties: Property[] = [
     name: "Casa Mirea 2",
     area: "pererenan",
     areaName: "Pererenan",
-    tenure: "freehold",
+    tenures: ["freehold"],
     type: "villa",
     price: 3_800_000_000,
     bedrooms: 3,
@@ -183,7 +199,7 @@ export const properties: Property[] = [
     name: "Villa Iris & Stone",
     area: "seminyak",
     areaName: "Seminyak",
-    tenure: "leasehold",
+    tenures: ["leasehold"],
     leaseholdYears: 28,
     type: "villa",
     price: 4_500_000_000,
@@ -214,7 +230,7 @@ export const properties: Property[] = [
     tags: ["sold"],
     area: "uluwatu",
     areaName: "Uluwatu",
-    tenure: "leasehold",
+    tenures: ["leasehold"],
     leaseholdYears: 25,
     type: "villa",
     price: 2_500_000_000,
@@ -245,8 +261,13 @@ export function getProperty(slug: string) {
   return properties.find((p) => p.slug === slug);
 }
 
+/** True when the listing is offered under this tenure. */
+export function hasTenure(p: Property, tenure: Tenure) {
+  return p.tenures.includes(tenure);
+}
+
 export function byTenure(tenure: Tenure) {
-  return properties.filter((p) => p.tenure === tenure);
+  return properties.filter((p) => hasTenure(p, tenure));
 }
 
 export function byArea(areaSlug: string) {

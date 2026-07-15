@@ -420,10 +420,19 @@ input[type="range"]::-moz-range-thumb {
   font-family: inherit;
   background: #e9e5dd;
 }
-.bp-map .bp-pin {
-  background: transparent;
-  border: 0;
+.bp-map .bp-area {
   cursor: pointer;
+  transition: fill-opacity 0.25s;
+}
+/* Detail-page variant: shorter, squarer corners to sit in the article flow. */
+.bp-map--flat {
+  height: 340px;
+  border-radius: 1.5rem;
+}
+@media (min-width: 768px) {
+  .bp-map--flat {
+    height: 420px;
+  }
 }
 .bp-map .leaflet-tooltip {
   background: var(--ink);

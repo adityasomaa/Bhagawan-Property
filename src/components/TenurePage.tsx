@@ -21,7 +21,7 @@ const POINTS: Record<Tenure, [string, string][]> = {
 const ARTICLE = "/knowledge-base/freehold-vs-leasehold-bali";
 
 export default async function TenurePage({ tenure }: { tenure: Tenure }) {
-  const items = (await getAllProperties()).filter((p) => p.tenure === tenure);
+  const items = (await getAllProperties()).filter((p) => p.tenures.includes(tenure));
   const isFreehold = tenure === "freehold";
 
   return (

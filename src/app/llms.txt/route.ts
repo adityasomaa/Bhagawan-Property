@@ -30,7 +30,7 @@ Contact: ${site.email} · WhatsApp ${site.phone} · ${site.address}
 - [Leasehold properties](${site.url}/properties/leasehold): Long-term registered leases (25–35 years) curated for lease length and rental performance.
 
 Current listings:
-${properties.map((p) => `- [${p.name}](${site.url}/properties/${p.slug}): ${p.tenure}${p.leaseholdYears ? ` (${p.leaseholdYears} yrs)` : ""} ${p.type} in ${p.areaName} — ${formatIDR(p.price)}. ${p.excerpt}`).join("\n")}
+${properties.map((p) => `- [${p.name}](${site.url}/properties/${p.slug}): ${p.tenures.join(" / ")}${p.leaseholdYears ? ` (${p.leaseholdYears} yrs)` : ""} ${p.type} in ${p.areaName} — ${formatIDR(p.price)}. ${p.excerpt}`).join("\n")}
 
 ## Bali Area Guides
 

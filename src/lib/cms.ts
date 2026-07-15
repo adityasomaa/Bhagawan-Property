@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import { properties as baseProperties, type Property } from "@/data/properties";
-import type { Override, BlogPost, Content } from "@/lib/content-types";
+import { applyOverride, type Override, type BlogPost, type Content } from "@/lib/content-types";
 
 /**
  * Server-side CMS layer backed by Supabase.
@@ -74,16 +74,16 @@ export async function readContent(): Promise<CmsContent> {
 }
 
 /**
- * Every listing for display: admin-created ones first, then the built-ins
- * that haven't been removed. Field overrides are applied by the client
- * (usePropertyView) so the admin sees edits instantly.
+ * Every listing for display: admin-created ones first, then the built-ins that
+ * haven't been removed — with field overrides applied, so tenure/area filters
+ * and metadata all read the edited values.
  */
 export async function getAllProperties(content?: CmsContent): Promise<Property[]> {
   const c = content ?? (await readContent());
   const customSlugs = new Set(c.customProperties.map((p) => p.slug));
-  const base = baseProperties.filter(
-    (p) => !c.hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug)
-  );
+  const base = baseProperties
+    .filter((p) => !c.hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug))
+    .map((p) => applyOverride(p, c.overrides[p.slug]));
   return [...c.customProperties, ...base];
 }
 

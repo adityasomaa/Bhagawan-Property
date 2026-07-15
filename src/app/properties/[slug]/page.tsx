@@ -6,6 +6,7 @@ import PropertyCard from "@/components/PropertyCard";
 import PropertyProse from "@/components/PropertyProse";
 import PropertyHeader from "@/components/PropertyHeader";
 import PropertyAside from "@/components/PropertyAside";
+import PropertyAreaMap from "@/components/PropertyAreaMap";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { getProperty, properties } from "@/data/properties";
 import { getAllProperties, readContent } from "@/lib/cms";
@@ -26,7 +27,7 @@ export async function generateMetadata({
   const property = (await getAllProperties()).find((p) => p.slug === slug);
   if (!property) return {};
   return {
-    title: `${property.name} — ${property.areaName}, Bali (${property.tenure})`,
+    title: `${property.name} — ${property.areaName}, Bali (${property.tenures.join(" / ")})`,
     description: `${property.excerpt} ${formatIDR(property.price)} · ${
       property.bedrooms > 0 ? `${property.bedrooms} bedrooms · ` : ""
     }${property.landSize} m² land in ${property.areaName}, Bali.`,
@@ -48,7 +49,7 @@ export default async function PropertyDetailPage({
 
   const related = all
     .filter((p) => p.slug !== property.slug && p.area === property.area)
-    .concat(all.filter((p) => p.area !== property.area && p.tenure === property.tenure))
+    .concat(all.filter((p) => p.area !== property.area && p.tenures.some((x) => property.tenures.includes(x))))
     .slice(0, 3);
 
   const jsonLd = {
@@ -77,9 +78,11 @@ export default async function PropertyDetailPage({
           <nav className="mb-8 flex flex-wrap items-center gap-2 text-[10px] font-medium tracking-[0.25em] uppercase text-muted" aria-label="Breadcrumb">
             <TransitionLink href="/properties" className="link-line"><T k="nav.properties" /></TransitionLink>
             <span>/</span>
-            <TransitionLink href={`/properties/${property.tenure}`} className="link-line">
-              <T k={property.tenure === "leasehold" ? "card.leasehold" : "card.freehold"} />
-            </TransitionLink>
+            {property.tenures.map((tn) => (
+              <TransitionLink key={tn} href={`/properties/${tn}`} className="link-line">
+                <T k={tn === "leasehold" ? "card.leasehold" : "card.freehold"} />
+              </TransitionLink>
+            ))}
             <span>/</span>
             <span className="text-ink">{property.name}</span>
           </nav>
@@ -99,14 +102,8 @@ export default async function PropertyDetailPage({
               <p className="mt-3 text-sm text-muted">
                 <T k="pd.addressNote" />
               </p>
-              <div className="img-frame mt-6 aspect-[16/9]">
-                <iframe
-                  title={`Map of ${property.areaName}, Bali`}
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(property.mapQuery)}&z=13&output=embed`}
-                  className="h-full w-full border-0 grayscale-[0.4]"
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+              <div className="mt-6">
+                <PropertyAreaMap property={property} />
               </div>
             </Reveal>
           </div>

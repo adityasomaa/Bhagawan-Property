@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { useRouter } from "next/navigation";
 import { properties as baseProperties, type Property } from "@/data/properties";
 import { articles, type Article } from "@/data/articles";
-import type { Content, Override, BlogPost } from "@/lib/content-types";
+import { applyOverride, type Content, type Override, type BlogPost } from "@/lib/content-types";
 
 /**
  * Content store shared by the site and /admin.
@@ -182,9 +182,7 @@ export function useOverrides() {
 /** A property with any admin overrides applied — the canonical display view. */
 export function usePropertyView(property: Property): Property {
   const { overrides } = useOverrides();
-  const o = overrides[property.slug];
-  if (!o) return property;
-  return { ...property, ...o, tags: o.tags ?? property.tags };
+  return applyOverride(property, overrides[property.slug]);
 }
 
 /**
@@ -193,14 +191,14 @@ export function usePropertyView(property: Property): Property {
  * usePropertyView, so this returns the base records.
  */
 export function useProperties(): Property[] {
-  const { customProperties, hiddenProperties } = useOverrides();
+  const { customProperties, hiddenProperties, overrides } = useOverrides();
   return useMemo(() => {
     const customSlugs = new Set(customProperties.map((p) => p.slug));
-    const base = baseProperties.filter(
-      (p) => !hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug)
-    );
+    const base = baseProperties
+      .filter((p) => !hiddenProperties.includes(p.slug) && !customSlugs.has(p.slug))
+      .map((p) => applyOverride(p, overrides[p.slug]));
     return [...customProperties, ...base];
-  }, [customProperties, hiddenProperties]);
+  }, [customProperties, hiddenProperties, overrides]);
 }
 
 /**

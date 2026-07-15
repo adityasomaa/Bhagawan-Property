@@ -9,17 +9,15 @@ import { useProperties } from "@/lib/overrides";
 import { formatIDR } from "@/lib/format";
 
 /**
- * Interactive Bali map with one pin per property. Pins sit at the property's
- * AREA centre (plus a small deterministic spread so listings in the same area
- * don't overlap) — never an exact address. Clicking a pin opens that property.
- * Leaflet is imported lazily inside the effect so it never runs during SSR.
+ * Interactive Bali map showing each property as an approximate AREA — a radius
+ * circle centred on the property's area (plus a small deterministic spread so
+ * listings in the same area don't sit on top of each other), never an exact
+ * address. Clicking a circle opens that property. Leaflet is imported lazily
+ * inside the effect so it never runs during SSR.
  */
 
-const PIN_SVG = `
-<svg width="30" height="38" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))">
-  <path d="M12 0C5.4 0 0 5.3 0 11.9 0 20 12 32 12 32s12-12 12-20.1C24 5.3 18.6 0 12 0z" fill="#834c25"/>
-  <circle cx="12" cy="11.6" r="4.4" fill="#F5F0E8"/>
-</svg>`;
+/** Roughly the size of a neighbourhood — deliberately imprecise. */
+export const AREA_RADIUS_M = 700;
 
 function pins(properties: Property[]) {
   const byArea = new Map<string, Property[]>();
@@ -70,28 +68,31 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
         attribution: '&copy; OpenStreetMap &copy; CARTO',
       }).addTo(map);
 
-      const icon = L.divIcon({
-        className: "bp-pin",
-        html: PIN_SVG,
-        iconSize: [30, 38],
-        iconAnchor: [15, 38],
-        tooltipAnchor: [0, -34],
-      });
-
-      const group: import("leaflet").Marker[] = [];
+      // A radius circle per listing — the area it sits in, not a exact point.
+      const group: import("leaflet").Circle[] = [];
       for (const d of data) {
-        const m = L.marker([d.lat, d.lng], { icon, title: d.name })
+        const c = L.circle([d.lat, d.lng], {
+          radius: AREA_RADIUS_M,
+          color: "#834c25",
+          weight: 1.5,
+          opacity: 0.9,
+          fillColor: "#834c25",
+          fillOpacity: 0.16,
+          className: "bp-area",
+        })
           .addTo(map)
           .bindTooltip(
             `<strong>${d.name}</strong><br>${d.areaName} · ${formatIDR(d.price)}`,
-            { direction: "top", opacity: 1 }
+            { direction: "top", opacity: 1, sticky: true }
           )
-          .on("click", () => router.push(`/properties/${d.slug}`));
-        group.push(m);
+          .on("click", () => router.push(`/properties/${d.slug}`))
+          .on("mouseover", () => c.setStyle({ fillOpacity: 0.3 }))
+          .on("mouseout", () => c.setStyle({ fillOpacity: 0.16 }));
+        group.push(c);
       }
 
       if (data.length > 1) {
-        map.fitBounds(L.featureGroup(group).getBounds().pad(0.25));
+        map.fitBounds(L.featureGroup(group).getBounds().pad(0.15));
       }
       setTimeout(() => map?.invalidateSize(), 200);
     })();

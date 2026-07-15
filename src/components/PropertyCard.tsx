@@ -27,8 +27,8 @@ export default function PropertyCard({ property }: { property: Property }) {
           className="object-cover"
         />
         <span className="glass-dark absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[9px] font-semibold tracking-[0.24em] uppercase text-white">
-          {p.tenure === "leasehold" ? t("card.leasehold") : t("card.freehold")}
-          {p.tenure === "leasehold" && p.leaseholdYears ? ` · ${p.leaseholdYears} ${t("card.yrs")}` : ""}
+          {p.tenures.map((x) => (x === "leasehold" ? t("card.leasehold") : t("card.freehold"))).join(" / ")}
+          {p.tenures.includes("leasehold") && p.leaseholdYears ? ` · ${p.leaseholdYears} ${t("card.yrs")}` : ""}
         </span>
         <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
           {money(p.price)}

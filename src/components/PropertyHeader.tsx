@@ -16,7 +16,7 @@ export default function PropertyHeader({ property }: { property: Property }) {
         <PropertyTags property={property} className="mb-3" />
         <p className="eyebrow">
           {p.areaName}, Bali &middot;{" "}
-          {p.tenure === "leasehold" ? t("card.leasehold") : t("card.freehold")}
+          {p.tenures.map((x) => (x === "leasehold" ? t("card.leasehold") : t("card.freehold"))).join(" / ")}
         </p>
         <h1 className="font-display mt-3 text-4xl font-medium tracking-tight text-ink md:text-5xl">
           {p.name}

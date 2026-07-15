@@ -12,14 +12,16 @@ export default function PropertyAside({ property }: { property: Property }) {
   const { t, money } = useLocale();
   const p = usePropertyView(property);
 
+  const tenureLabel = p.tenures
+    .map((x) =>
+      x === "leasehold"
+        ? `${t("card.leasehold")}${p.leaseholdYears ? ` · ${p.leaseholdYears} ${t("card.yrs")}` : ""}`
+        : t("card.freehold")
+    )
+    .join(" / ");
+
   const specs: { k: string; v: React.ReactNode }[] = [
-    {
-      k: "pd.tenure",
-      v:
-        p.tenure === "leasehold"
-          ? `${t("card.leasehold")} · ${p.leaseholdYears ?? "—"} ${t("card.yrs")}`
-          : t("card.freehold"),
-    },
+    { k: "pd.tenure", v: tenureLabel },
     { k: "pd.type", v: t(`val.type.${p.type}`) },
     { k: "pd.locationLabel", v: `${p.areaName}, Bali` },
     { k: "pd.landSize", v: `${formatNumber(p.landSize)} m²` },
@@ -42,7 +44,7 @@ export default function PropertyAside({ property }: { property: Property }) {
       </dl>
       {p.nightlyRate && (
         <TransitionLink
-          href={`/roi-calculator?price=${p.price}&nightly=${p.nightlyRate}&occupancy=${p.occupancy ?? 70}${p.tenure === "leasehold" && p.leaseholdYears ? `&years=${p.leaseholdYears}` : ""}`}
+          href={`/roi-calculator?price=${p.price}&nightly=${p.nightlyRate}&occupancy=${p.occupancy ?? 70}${p.tenures.includes("leasehold") && p.leaseholdYears ? `&years=${p.leaseholdYears}` : ""}`}
           className="mt-5 block rounded-full border border-ink/20 bg-cream p-4 text-center text-[10px] font-semibold tracking-[0.25em] uppercase text-ink transition-colors hover:border-ink"
         >
           {t("pd.runRoi")}

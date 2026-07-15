@@ -4,11 +4,13 @@ import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import Select from "@/components/Select";
+import DateField from "@/components/DateField";
 import { useT } from "@/lib/i18n/provider";
 import { useOverrides, type Override, type BlogPost } from "@/lib/overrides";
 import {
   properties,
   PROPERTY_TAGS,
+  TENURES,
   type Property,
   type PropertyTag,
   type PropertyType,
@@ -44,10 +46,6 @@ const btnSolid =
 const btnGhost =
   "rounded-full border border-line px-4 py-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-muted hover:border-ink hover:text-ink disabled:opacity-40";
 
-const TENURE_OPTIONS = [
-  { value: "freehold", label: "Freehold" },
-  { value: "leasehold", label: "Leasehold" },
-];
 const TYPE_OPTIONS = [
   { value: "villa", label: "Villa" },
   { value: "land", label: "Land" },
@@ -58,6 +56,35 @@ const CATEGORY_OPTIONS = categories.map((c) => ({ value: c, label: c }));
 
 const toLines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 const toParas = (s: string) => s.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+
+/**
+ * Tenure is multi-select: a listing can be offered as freehold, leasehold, or
+ * both. At least one must stay selected.
+ */
+function TenurePicker({ value, onChange }: { value: Tenure[]; onChange: (v: Tenure[]) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {TENURES.map((tn) => {
+        const on = value.includes(tn);
+        return (
+          <button
+            key={tn}
+            type="button"
+            aria-pressed={on}
+            onClick={() => {
+              const next = on ? value.filter((x) => x !== tn) : [...value, tn];
+              if (next.length === 0) return; // never leave a listing tenure-less
+              onChange(TENURES.filter((x) => next.includes(x)));
+            }}
+            className={chip(on)}
+          >
+            {tn === "freehold" ? "Freehold" : "Leasehold"}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 /* ── image uploader ─────────────────────────────────────── */
 
@@ -216,7 +243,8 @@ function ImageUploader({
 
 interface Draft {
   name: string;
-  tenure: Tenure;
+  area: string;
+  tenures: Tenure[];
   leaseholdYears: string;
   type: PropertyType;
   price: string;
@@ -238,7 +266,8 @@ function draftFrom(p: Property, o: Override | undefined): Draft {
   const v = { ...p, ...o };
   return {
     name: v.name,
-    tenure: v.tenure,
+    area: v.area,
+    tenures: v.tenures,
     leaseholdYears: String(v.leaseholdYears ?? ""),
     type: v.type,
     price: String(v.price),
@@ -265,7 +294,9 @@ function diff(p: Property, d: Draft): Override {
 
   const out: Override = {
     name: pick(d.name.trim(), p.name),
-    tenure: pick(d.tenure, p.tenure),
+    area: pick(d.area, p.area),
+    areaName: pick(areas.find((a) => a.slug === d.area)?.name ?? p.areaName, p.areaName),
+    tenures: pick(d.tenures, p.tenures),
     leaseholdYears: pick(num(d.leaseholdYears), p.leaseholdYears),
     type: pick(d.type, p.type),
     price: pick(num(d.price) ?? p.price, p.price),
@@ -288,9 +319,8 @@ function diff(p: Property, d: Draft): Override {
 
 function PropertyEditor({ property, custom }: { property: Property; custom: boolean }) {
   const t = useT();
-  const { overrides, patchProperty, resetOne, deleteProperty, saving } = useOverrides();
+  const { overrides, patchProperty, deleteProperty, saving } = useOverrides();
   const o = overrides[property.slug];
-  const edited = !!o && Object.keys(o).length > 0;
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saved, setSaved] = useState(false);
@@ -306,32 +336,18 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
   };
 
   return (
-    <div className={`rounded-2xl border p-5 md:p-6 ${edited ? "border-bronze/50 bg-bronze/5" : "border-line bg-paper"}`}>
+    <div className="rounded-2xl border border-line bg-paper p-5 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <TransitionLink href={`/properties/${property.slug}`} className="font-display text-lg text-ink hover:text-muted">
             {o?.name ?? property.name}
           </TransitionLink>
           <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
-            {property.areaName} · {o?.tenure ?? property.tenure}
+            {o?.areaName ?? property.areaName} · {(o?.tenures ?? property.tenures).join(" / ")}
             {custom && <span className="ml-2 text-bronze">· added by you</span>}
-            {edited && <span className="ml-2 text-bronze">· edited</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {edited && (
-            <button
-              type="button"
-              disabled={saving}
-              onClick={async () => {
-                await resetOne(property.slug);
-                setDraft(null);
-              }}
-              className={btnGhost}
-            >
-              Reset
-            </button>
-          )}
           <button
             type="button"
             onClick={() => {
@@ -368,23 +384,14 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
             <input className={inputCls} value={d.name} onChange={(e) => set({ name: e.target.value })} />
           </Field>
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field label="Tenure">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Area (location)">
               <Select
-                ariaLabel="Tenure"
-                value={d.tenure}
-                onChange={(v) => set({ tenure: v as Tenure })}
-                options={TENURE_OPTIONS}
+                ariaLabel="Area"
+                value={d.area}
+                onChange={(v) => set({ area: v })}
+                options={AREA_OPTIONS}
                 triggerClassName={inputCls}
-              />
-            </Field>
-            <Field label="Lease years">
-              <input
-                type="number"
-                className={inputCls}
-                value={d.leaseholdYears}
-                disabled={d.tenure !== "leasehold"}
-                onChange={(e) => set({ leaseholdYears: e.target.value })}
               />
             </Field>
             <Field label="Type">
@@ -394,6 +401,21 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
                 onChange={(v) => set({ type: v as PropertyType })}
                 options={TYPE_OPTIONS}
                 triggerClassName={inputCls}
+              />
+            </Field>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Tenure (pick one or both)">
+              <TenurePicker value={d.tenures} onChange={(tenures) => set({ tenures })} />
+            </Field>
+            <Field label="Lease years">
+              <input
+                type="number"
+                className={inputCls}
+                value={d.leaseholdYears}
+                disabled={!d.tenures.includes("leasehold")}
+                onChange={(e) => set({ leaseholdYears: e.target.value })}
               />
             </Field>
           </div>
@@ -484,7 +506,7 @@ function NewProperty({ onDone }: { onDone: () => void }) {
     name: "",
     slug: "",
     area: areas[0].slug,
-    tenure: "freehold" as Tenure,
+    tenures: ["freehold"] as Tenure[],
     leaseholdYears: "",
     type: "villa" as PropertyType,
     price: "",
@@ -520,8 +542,8 @@ function NewProperty({ onDone }: { onDone: () => void }) {
         name: f.name.trim(),
         area: area.slug,
         areaName: area.name,
-        tenure: f.tenure,
-        leaseholdYears: f.tenure === "leasehold" ? num(f.leaseholdYears) : undefined,
+        tenures: f.tenures,
+        leaseholdYears: f.tenures.includes("leasehold") ? num(f.leaseholdYears) : undefined,
         type: f.type,
         price: Number(f.price),
         bedrooms: Number(f.bedrooms) || 0,
@@ -587,21 +609,15 @@ function NewProperty({ onDone }: { onDone: () => void }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="Tenure">
-          <Select
-            ariaLabel="Tenure"
-            value={f.tenure}
-            onChange={(v) => set({ tenure: v as Tenure })}
-            options={TENURE_OPTIONS}
-            triggerClassName={inputCls}
-          />
+        <Field label="Tenure (pick one or both)">
+          <TenurePicker value={f.tenures} onChange={(tenures) => set({ tenures })} />
         </Field>
         <Field label="Lease years">
           <input
             type="number"
             className={inputCls}
             value={f.leaseholdYears}
-            disabled={f.tenure !== "leasehold"}
+            disabled={!f.tenures.includes("leasehold")}
             onChange={(e) => set({ leaseholdYears: e.target.value })}
           />
         </Field>
@@ -804,7 +820,7 @@ function BlogEditor({ initial, onDone }: { initial?: BlogPost; onDone: () => voi
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Date">
-          <input type="date" className={inputCls} value={date} onChange={(e) => setDate(e.target.value)} />
+          <DateField ariaLabel="Date" value={date} onChange={setDate} triggerClassName={inputCls} />
         </Field>
         <Field label="Read time">
           <input className={inputCls} value={readTime} onChange={(e) => setReadTime(e.target.value)} />
@@ -1070,7 +1086,7 @@ function PropertiesTab() {
 /* ── page ───────────────────────────────────────────────── */
 
 export default function AdminPage() {
-  const { overrides, blogs, customProperties, resetAll, saving } = useOverrides();
+  const { overrides, blogs, customProperties } = useOverrides();
   const [tab, setTab] = useState<"properties" | "blog">("properties");
   const count = Object.keys(overrides).length + customProperties.length;
 
@@ -1120,19 +1136,6 @@ export default function AdminPage() {
               </button>
             ))}
           </div>
-          {tab === "properties" && Object.keys(overrides).length > 0 && (
-            <button
-              type="button"
-              onClick={() => {
-                if (window.confirm("Reset the built-in listings back to their original data? Listings you added are kept."))
-                  resetAll();
-              }}
-              disabled={saving}
-              className={btnGhost}
-            >
-              Reset edits
-            </button>
-          )}
         </div>
 
         <div className="mt-6">{tab === "properties" ? <PropertiesTab /> : <BlogTab />}</div>

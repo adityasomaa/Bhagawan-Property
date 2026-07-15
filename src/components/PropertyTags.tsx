@@ -8,6 +8,8 @@ const STYLE: Record<PropertyTag, string> = {
   offplan: "bg-[#834c25] text-cream",
   "new-listing": "bg-emerald-600 text-white",
   "price-drop": "bg-amber-500 text-ink",
+  "great-value": "bg-teal-700 text-white",
+  turnkey: "bg-[#5c3417] text-cream",
   sold: "bg-ink text-cream",
 };
 

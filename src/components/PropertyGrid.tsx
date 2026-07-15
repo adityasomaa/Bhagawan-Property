@@ -25,7 +25,7 @@ export default function PropertyGrid({
 }) {
   let list = useProperties();
   if (featured) list = list.filter((p) => p.featured);
-  if (tenure) list = list.filter((p) => p.tenure === tenure);
+  if (tenure) list = list.filter((p) => p.tenures.includes(tenure));
   if (area) list = list.filter((p) => p.area === area);
   if (limit) list = list.slice(0, limit);
 
