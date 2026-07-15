@@ -6,7 +6,7 @@ import { TransitionLink } from "@/components/motion/PageTransition";
 import Select from "@/components/Select";
 import DateField from "@/components/DateField";
 import { useT } from "@/lib/i18n/provider";
-import { useOverrides, type Override, type BlogPost } from "@/lib/overrides";
+import { useOverrides, useProperties, useArticles, type Override, type BlogPost } from "@/lib/overrides";
 import {
   properties,
   PROPERTY_TAGS,
@@ -244,6 +244,7 @@ function ImageUploader({
 interface Draft {
   name: string;
   area: string;
+  mapQuery: string;
   tenures: Tenure[];
   leaseholdYears: string;
   type: PropertyType;
@@ -267,6 +268,7 @@ function draftFrom(p: Property, o: Override | undefined): Draft {
   return {
     name: v.name,
     area: v.area,
+    mapQuery: v.mapQuery,
     tenures: v.tenures,
     leaseholdYears: String(v.leaseholdYears ?? ""),
     type: v.type,
@@ -295,6 +297,7 @@ function diff(p: Property, d: Draft): Override {
   const out: Override = {
     name: pick(d.name.trim(), p.name),
     area: pick(d.area, p.area),
+    mapQuery: pick(d.mapQuery.trim(), p.mapQuery),
     areaName: pick(areas.find((a) => a.slug === d.area)?.name ?? p.areaName, p.areaName),
     tenures: pick(d.tenures, p.tenures),
     leaseholdYears: pick(num(d.leaseholdYears), p.leaseholdYears),
@@ -405,6 +408,18 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
             </Field>
           </div>
 
+          <Field label="Address (used to place the map)">
+            <input
+              className={inputCls}
+              value={d.mapQuery}
+              onChange={(e) => set({ mapQuery: e.target.value })}
+              placeholder="e.g. Jalan Pantai Berawa, Canggu, Bali"
+            />
+            <p className="mt-1.5 text-[11px] text-muted">
+              We look this up and draw a 2 km circle around it — the exact address is never shown.
+            </p>
+          </Field>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Tenure (pick one or both)">
               <TenurePicker value={d.tenures} onChange={(tenures) => set({ tenures })} />
@@ -506,6 +521,7 @@ function NewProperty({ onDone }: { onDone: () => void }) {
     name: "",
     slug: "",
     area: areas[0].slug,
+    mapQuery: "",
     tenures: ["freehold"] as Tenure[],
     leaseholdYears: "",
     type: "villa" as PropertyType,
@@ -556,7 +572,7 @@ function NewProperty({ onDone }: { onDone: () => void }) {
         highlights: toLines(f.highlights),
         features: toLines(f.features),
         featured: f.featured,
-        mapQuery: `${area.name}, Bali`,
+        mapQuery: f.mapQuery.trim() || `${area.name}, Bali`,
         nightlyRate: num(f.nightlyRate),
         occupancy: num(f.occupancy),
         tags,
@@ -607,6 +623,19 @@ function NewProperty({ onDone }: { onDone: () => void }) {
           />
         </Field>
       </div>
+
+      <Field label="Address (used to place the map)">
+        <input
+          className={inputCls}
+          value={f.mapQuery}
+          onChange={(e) => set({ mapQuery: e.target.value })}
+          placeholder="e.g. Jalan Pantai Berawa, Canggu, Bali"
+        />
+        <p className="mt-1.5 text-[11px] text-muted">
+          We look this up and draw a 2 km circle around it — the exact address is never shown.
+          Leave blank to use the area centre.
+        </p>
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Tenure (pick one or both)">
@@ -1086,9 +1115,10 @@ function PropertiesTab() {
 /* ── page ───────────────────────────────────────────────── */
 
 export default function AdminPage() {
-  const { overrides, blogs, customProperties } = useOverrides();
   const [tab, setTab] = useState<"properties" | "blog">("properties");
-  const count = Object.keys(overrides).length + customProperties.length;
+  // Totals actually published on the site — not the number of edits.
+  const propertyCount = useProperties().length;
+  const articleCount = useArticles().length;
 
   const logout = async () => {
     await fetch("/api/logout", { method: "POST" });
@@ -1132,7 +1162,7 @@ export default function AdminPage() {
                   tab === v ? "bg-ink text-cream" : "text-muted hover:text-ink"
                 }`}
               >
-                {v === "properties" ? `Properties${count ? ` (${count})` : ""}` : `Blog${blogs.length ? ` (${blogs.length})` : ""}`}
+                {v === "properties" ? `Properties (${propertyCount})` : `Blog (${articleCount})`}
               </button>
             ))}
           </div>

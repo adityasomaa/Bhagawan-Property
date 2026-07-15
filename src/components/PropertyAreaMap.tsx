@@ -15,9 +15,10 @@ import type { Property } from "@/data/properties";
 export default function PropertyAreaMap({ property }: { property: Property }) {
   const p = usePropertyView(property);
   const ref = useRef<HTMLDivElement>(null);
-  const area = areas.find((a) => a.slug === p.area);
-  const lat = area?.coords.lat ?? -8.71;
-  const lng = area?.coords.lng ?? 115.17;
+  // The geocoded address when we have one, else the area centre.
+  const fallback = areas.find((a) => a.slug === p.area)?.coords;
+  const lat = p.coords?.lat ?? fallback?.lat ?? -8.71;
+  const lng = p.coords?.lng ?? fallback?.lng ?? 115.17;
 
   useEffect(() => {
     const el = ref.current;

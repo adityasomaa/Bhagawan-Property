@@ -40,7 +40,11 @@ export interface Property {
   highlights: string[];
   features: string[];
   featured: boolean;
+  /** Street address / place used to geocode `coords`. */
   mapQuery: string;
+  /** Precise point from geocoding the address; the map only ever draws an
+      approximate radius around it, never a pin. Falls back to the area centre. */
+  coords?: { lat: number; lng: number };
   nightlyRate?: number;
   occupancy?: number;
   tags?: PropertyTag[];
@@ -132,6 +136,7 @@ export const properties: Property[] = [
     ],
     featured: true,
     mapQuery: "Pecatu, Uluwatu, Bali",
+    coords: { lat: -8.84641, lng: 115.14065 },
   },
 
   // ── Placeholder specs (photos real; details to be confirmed) ──────────
@@ -164,6 +169,7 @@ export const properties: Property[] = [
     features: ["Rooftop terrace", "Private pool", "Ocean view", "Fully finished", "Parking"],
     featured: true,
     mapQuery: "Ungasan, Uluwatu, Bali",
+    coords: { lat: -8.81616, lng: 115.15564 },
   },
   {
     slug: "casa-mirea-2",
@@ -193,6 +199,7 @@ export const properties: Property[] = [
     features: ["Private pool", "Multi-level living", "Modern kitchen", "Parking", "Fully finished"],
     featured: true,
     mapQuery: "Pererenan, Bali",
+    coords: { lat: -8.64099, lng: 115.13279 },
   },
   {
     slug: "villa-iris-n-stone",
@@ -223,6 +230,7 @@ export const properties: Property[] = [
     features: ["Private pool", "Stone detailing", "Tropical garden", "Parking", "Fully finished"],
     featured: true,
     mapQuery: "Seminyak, Bali",
+    coords: { lat: -8.68986, lng: 115.16678 },
   },
   {
     slug: "sansa-villa",
@@ -254,6 +262,7 @@ export const properties: Property[] = [
     features: ["Private pool", "Open-plan living", "Thatched accents", "Furnished", "Parking"],
     featured: true,
     mapQuery: "Uluwatu, Pecatu, Bali",
+    coords: { lat: -8.8352, lng: 115.09679 },
   },
 ];
 

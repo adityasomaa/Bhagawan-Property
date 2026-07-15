@@ -16,22 +16,40 @@ import { formatIDR } from "@/lib/format";
  * inside the effect so it never runs during SSR.
  */
 
-/** Roughly the size of a neighbourhood — deliberately imprecise. */
-export const AREA_RADIUS_M = 700;
+/** The circle drawn around a listing's precise point, so the map communicates
+    a neighbourhood rather than an address. */
+export const AREA_RADIUS_M = 2000;
 
 function pins(properties: Property[]) {
-  const byArea = new Map<string, Property[]>();
+  // Listings without a geocoded point fall back to their area centre, spread
+  // slightly so several in the same area don't sit exactly on top of one another.
+  const fallbackByArea = new Map<string, Property[]>();
   for (const p of properties) {
-    const list = byArea.get(p.area) ?? [];
+    if (p.coords) continue;
+    const list = fallbackByArea.get(p.area) ?? [];
     list.push(p);
-    byArea.set(p.area, list);
+    fallbackByArea.set(p.area, list);
   }
+
   const out: { slug: string; name: string; areaName: string; price: number; lat: number; lng: number }[] = [];
-  for (const [areaSlug, list] of byArea) {
+
+  for (const p of properties) {
+    if (!p.coords) continue;
+    out.push({
+      slug: p.slug,
+      name: p.name,
+      areaName: p.areaName,
+      price: p.price,
+      lat: p.coords.lat,
+      lng: p.coords.lng,
+    });
+  }
+
+  for (const [areaSlug, list] of fallbackByArea) {
     const base = areas.find((a) => a.slug === areaSlug)?.coords ?? { lat: -8.7, lng: 115.17 };
     list.forEach((p, i) => {
       const angle = list.length > 1 ? (i / list.length) * Math.PI * 2 : 0;
-      const r = list.length > 1 ? 0.007 : 0; // ~700 m area-level spread
+      const r = list.length > 1 ? 0.012 : 0;
       out.push({
         slug: p.slug,
         name: p.name,
@@ -61,7 +79,7 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
       if (cancelled || !el) return;
 
       const data = pins(properties);
-      map = L.map(el, { scrollWheelZoom: false, attributionControl: true }).setView([-8.71, 115.17], 11);
+      map = L.map(el, { scrollWheelZoom: false, attributionControl: true }).setView([-8.71, 115.17], 12);
 
       L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
         maxZoom: 19,
@@ -92,7 +110,7 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
       }
 
       if (data.length > 1) {
-        map.fitBounds(L.featureGroup(group).getBounds().pad(0.15));
+        map.fitBounds(L.featureGroup(group).getBounds().pad(0.05));
       }
       setTimeout(() => map?.invalidateSize(), 200);
     })();
