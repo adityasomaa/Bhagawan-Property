@@ -16,13 +16,26 @@ interface SelectProps {
   /** When set, renders a hidden input so the value posts with FormData. */
   name?: string;
   className?: string;
+  /** Overrides the trigger's look (defaults to the site's underline field). */
+  triggerClassName?: string;
+  /** Use when the label is rendered by a wrapper instead of this component. */
+  ariaLabel?: string;
 }
 
 /**
  * Styled replacement for the native <select> — paper popover, warm hover
  * states, Escape/outside-click to close, arrow-key navigation.
  */
-export default function Select({ label, value, onChange, options, name, className }: SelectProps) {
+export default function Select({
+  label,
+  value,
+  onChange,
+  options,
+  name,
+  className,
+  triggerClassName,
+  ariaLabel,
+}: SelectProps) {
   const [open, setOpen] = useState(false);
   const { mounted, show } = useMountTransition(open);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -92,9 +105,10 @@ export default function Select({ label, value, onChange, options, name, classNam
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-labelledby={label ? `${id}-label` : undefined}
+        aria-label={!label ? ariaLabel : undefined}
         onClick={() => setOpen((v) => !v)}
         onKeyDown={onTriggerKeyDown}
-        className="field mt-1 flex w-full cursor-pointer items-center justify-between gap-3 text-left"
+        className={`${triggerClassName ?? "field mt-1"} flex w-full cursor-pointer items-center justify-between gap-3 text-left`}
       >
         <span className="truncate">{current?.label}</span>
         <svg
@@ -115,6 +129,7 @@ export default function Select({ label, value, onChange, options, name, classNam
           ref={listRef}
           role="listbox"
           aria-labelledby={label ? `${id}-label` : undefined}
+          aria-label={!label ? ariaLabel : undefined}
           onKeyDown={onListKeyDown}
           data-lenis-prevent
           className={`glass-light absolute inset-x-0 top-full z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl p-1.5 origin-top transition-all duration-240 ease-[cubic-bezier(0.22,1,0.36,1)] ${

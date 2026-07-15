@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
+import Select from "@/components/Select";
 import { useT } from "@/lib/i18n/provider";
 import { useOverrides, type Override, type BlogPost } from "@/lib/overrides";
 import {
@@ -42,6 +43,18 @@ const btnSolid =
   "rounded-full bg-ink px-5 py-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-cream hover:opacity-90 disabled:opacity-40";
 const btnGhost =
   "rounded-full border border-line px-4 py-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-muted hover:border-ink hover:text-ink disabled:opacity-40";
+
+const TENURE_OPTIONS = [
+  { value: "freehold", label: "Freehold" },
+  { value: "leasehold", label: "Leasehold" },
+];
+const TYPE_OPTIONS = [
+  { value: "villa", label: "Villa" },
+  { value: "land", label: "Land" },
+  { value: "townhouse", label: "Townhouse" },
+];
+const AREA_OPTIONS = areas.map((a) => ({ value: a.slug, label: a.name }));
+const CATEGORY_OPTIONS = categories.map((c) => ({ value: c, label: c }));
 
 const toLines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 const toParas = (s: string) => s.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
@@ -301,10 +314,13 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
 
           <div className="grid gap-4 sm:grid-cols-3">
             <Field label="Tenure">
-              <select className={inputCls} value={d.tenure} onChange={(e) => set({ tenure: e.target.value as Tenure })}>
-                <option value="freehold">Freehold</option>
-                <option value="leasehold">Leasehold</option>
-              </select>
+              <Select
+                ariaLabel="Tenure"
+                value={d.tenure}
+                onChange={(v) => set({ tenure: v as Tenure })}
+                options={TENURE_OPTIONS}
+                triggerClassName={inputCls}
+              />
             </Field>
             <Field label="Lease years">
               <input
@@ -316,11 +332,13 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
               />
             </Field>
             <Field label="Type">
-              <select className={inputCls} value={d.type} onChange={(e) => set({ type: e.target.value as PropertyType })}>
-                <option value="villa">Villa</option>
-                <option value="land">Land</option>
-                <option value="townhouse">Townhouse</option>
-              </select>
+              <Select
+                ariaLabel="Type"
+                value={d.type}
+                onChange={(v) => set({ type: v as PropertyType })}
+                options={TYPE_OPTIONS}
+                triggerClassName={inputCls}
+              />
             </Field>
           </div>
 
@@ -502,22 +520,25 @@ function NewProperty({ onDone }: { onDone: () => void }) {
           />
         </Field>
         <Field label="Area">
-          <select className={inputCls} value={f.area} onChange={(e) => set({ area: e.target.value })}>
-            {areas.map((a) => (
-              <option key={a.slug} value={a.slug}>
-                {a.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            ariaLabel="Area"
+            value={f.area}
+            onChange={(v) => set({ area: v })}
+            options={AREA_OPTIONS}
+            triggerClassName={inputCls}
+          />
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Tenure">
-          <select className={inputCls} value={f.tenure} onChange={(e) => set({ tenure: e.target.value as Tenure })}>
-            <option value="freehold">Freehold</option>
-            <option value="leasehold">Leasehold</option>
-          </select>
+          <Select
+            ariaLabel="Tenure"
+            value={f.tenure}
+            onChange={(v) => set({ tenure: v as Tenure })}
+            options={TENURE_OPTIONS}
+            triggerClassName={inputCls}
+          />
         </Field>
         <Field label="Lease years">
           <input
@@ -529,11 +550,13 @@ function NewProperty({ onDone }: { onDone: () => void }) {
           />
         </Field>
         <Field label="Type">
-          <select className={inputCls} value={f.type} onChange={(e) => set({ type: e.target.value as PropertyType })}>
-            <option value="villa">Villa</option>
-            <option value="land">Land</option>
-            <option value="townhouse">Townhouse</option>
-          </select>
+          <Select
+            ariaLabel="Type"
+            value={f.type}
+            onChange={(v) => set({ type: v as PropertyType })}
+            options={TYPE_OPTIONS}
+            triggerClassName={inputCls}
+          />
         </Field>
       </div>
 
@@ -713,13 +736,13 @@ function BlogEditor({ initial, onDone }: { initial?: BlogPost; onDone: () => voi
           />
         </Field>
         <Field label="Category">
-          <select className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+          <Select
+            ariaLabel="Category"
+            value={category}
+            onChange={setCategory}
+            options={CATEGORY_OPTIONS}
+            triggerClassName={inputCls}
+          />
         </Field>
       </div>
 
