@@ -110,7 +110,7 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
           block for position:fixed — which trapped the lightbox mid-page. */}
       {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-[100] flex h-[100dvh] w-screen flex-col bg-ink"
+          className="bp-lightbox fixed inset-0 z-[100] flex h-[100dvh] w-screen flex-col"
           role="dialog"
           aria-modal="true"
           aria-label={`${t("gallery.open")} — ${name}`}
@@ -133,19 +133,22 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
             </button>
           </div>
 
-          {/* main stage */}
+          {/* main stage.
+              Intrinsic sizing (not `fill`) on purpose: with fill+object-contain
+              the <img> spans the whole letterboxed box, so a border-radius would
+              round the invisible box instead of the picture. Letting the element
+              size to the photo means the rounded corners land on the photo. */}
           <div className="relative flex min-h-0 flex-1 items-center justify-center px-4 md:px-20">
-            <div className="relative h-full max-h-[72vh] w-full max-w-5xl">
-              <Image
-                key={index}
-                src={images[index]}
-                alt={`${name} — ${t("gallery.photo")} ${index + 1}`}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 1024px"
-                className="animate-[fadeIn_.3s_ease] object-contain"
-              />
-            </div>
+            <Image
+              key={index}
+              src={images[index]}
+              alt={`${name} — ${t("gallery.photo")} ${index + 1}`}
+              width={1600}
+              height={1067}
+              priority
+              sizes="(max-width: 1024px) 100vw, 1024px"
+              className="h-auto max-h-full w-auto max-w-full animate-[fadeIn_.3s_ease] rounded-2xl object-contain shadow-[0_30px_80px_-20px_rgba(0,0,0,0.55)]"
+            />
 
             {total > 1 && (
               <>

@@ -447,3 +447,14 @@ input[type="range"]::-moz-range-thumb {
 .bp-map .leaflet-tooltip-top::before {
   border-top-color: var(--ink);
 }
+
+/* Photo lightbox backdrop — blurred rather than a solid fill, so the page
+   still reads faintly behind it. The blur value goes through a var() for the
+   same reason as .glass: Lightning CSS would otherwise merge the prefixed and
+   standard backdrop-filter pair and drop the unprefixed one. */
+.bp-lightbox {
+  --glass: blur(32px) saturate(130%);
+  background: rgba(56, 35, 18, 0.55);
+  -webkit-backdrop-filter: var(--glass);
+  backdrop-filter: var(--glass);
+}
