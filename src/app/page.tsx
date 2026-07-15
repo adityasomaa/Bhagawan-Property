@@ -7,12 +7,11 @@ import HeroSlider, { type HeroSlide } from "@/components/HeroSlider";
 import SectionHeading from "@/components/SectionHeading";
 import PropertyCard from "@/components/PropertyCard";
 import AreaCard from "@/components/AreaCard";
-import ArticleCard from "@/components/ArticleCard";
+import ArticleGrid from "@/components/ArticleGrid";
 import ContactForm from "@/components/ContactForm";
 import { T } from "@/lib/i18n/provider";
 import { featuredProperties } from "@/data/properties";
 import { areas, img } from "@/data/areas";
-import { articles } from "@/data/articles";
 import { site, waLink } from "@/lib/site";
 
 // Hero slider order + landmark labels requested for the homepage.
@@ -273,13 +272,7 @@ export default function HomePage() {
             </TransitionLink>
           </Reveal>
         </div>
-        <div className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-          {articles.slice(0, 4).map((a, i) => (
-            <Reveal key={a.slug} delay={(i % 4) * 0.08}>
-              <ArticleCard article={a} />
-            </Reveal>
-          ))}
-        </div>
+        <ArticleGrid limit={4} />
       </section>
 
       {/* ── Contact ──────────────────────────────────────────── */}

@@ -4,8 +4,7 @@ import Reveal from "@/components/motion/Reveal";
 import ArticleCard from "@/components/ArticleCard";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import { useT } from "@/lib/i18n/provider";
-import { useOverrides } from "@/lib/overrides";
-import { articles } from "@/data/articles";
+import { useOverrides, useArticles } from "@/lib/overrides";
 import { site } from "@/lib/site";
 
 /**
@@ -16,12 +15,9 @@ import { site } from "@/lib/site";
  */
 export default function CustomArticle({ slug }: { slug: string }) {
   const t = useT();
-  const { blogs, ready } = useOverrides();
+  const { blogs } = useOverrides();
+  const all = useArticles();
   const post = blogs.find((b) => b.slug === slug);
-
-  if (!ready) {
-    return <div className="container-x min-h-screen pb-24 pt-40" aria-busy="true" />;
-  }
 
   if (!post) {
     return (
@@ -29,8 +25,7 @@ export default function CustomArticle({ slug }: { slug: string }) {
         <div className="mx-auto max-w-xl rounded-3xl border border-line bg-paper p-12 text-center">
           <p className="font-display text-3xl text-ink">404</p>
           <p className="mt-3 text-sm leading-relaxed text-muted">
-            This article doesn&apos;t exist (or was written in another browser and hasn&apos;t been
-            published yet).
+            This article doesn&apos;t exist or has been removed.
           </p>
           <TransitionLink href="/knowledge-base" className="btn btn-solid mt-8">
             {t("nav.kb")}
@@ -40,7 +35,7 @@ export default function CustomArticle({ slug }: { slug: string }) {
     );
   }
 
-  const related = articles.slice(0, 3);
+  const related = all.filter((a) => a.slug !== slug).slice(0, 3);
 
   return (
     <article className="container-x pb-24 pt-32 md:pb-32 md:pt-40">

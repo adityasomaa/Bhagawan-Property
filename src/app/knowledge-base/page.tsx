@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Reveal from "@/components/motion/Reveal";
 import { T } from "@/lib/i18n/provider";
 import KnowledgeFilter from "@/components/KnowledgeFilter";
-import { articles } from "@/data/articles";
 
 export const metadata: Metadata = {
   title: "Knowledge Base — Bali Property Guides, Legal, Tax & Investment",
@@ -27,7 +26,7 @@ export default function KnowledgeBasePage() {
       </section>
       <section className="container-x pb-24 md:pb-32">
         <Reveal delay={0.1}>
-          <KnowledgeFilter articles={[...articles]} />
+          <KnowledgeFilter />
         </Reveal>
       </section>
     </>

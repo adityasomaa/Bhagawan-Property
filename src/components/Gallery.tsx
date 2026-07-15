@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { useT } from "@/lib/i18n/provider";
 
@@ -13,8 +14,11 @@ import { useT } from "@/lib/i18n/provider";
 export default function Gallery({ images, name }: { images: string[]; name: string }) {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [index, setIndex] = useState(0);
   const total = images.length;
+
+  useEffect(() => setMounted(true), []);
 
   const openAt = useCallback((i: number) => {
     setIndex(i);
@@ -101,9 +105,12 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
         </div>
       </div>
 
-      {open && (
+      {/* Portalled to <body>: the trigger grid sits inside GSAP-transformed
+          wrappers (Reveal), and a transformed ancestor becomes the containing
+          block for position:fixed — which trapped the lightbox mid-page. */}
+      {open && mounted && createPortal(
         <div
-          className="fixed inset-0 z-[80] flex flex-col bg-ink/97"
+          className="fixed inset-0 z-[100] flex h-[100dvh] w-screen flex-col bg-ink"
           role="dialog"
           aria-modal="true"
           aria-label={`${t("gallery.open")} — ${name}`}
@@ -191,7 +198,8 @@ export default function Gallery({ images, name }: { images: string[]; name: stri
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

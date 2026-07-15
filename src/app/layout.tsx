@@ -11,6 +11,7 @@ import { cookies } from "next/headers";
 import { LocaleProvider } from "@/lib/i18n/provider";
 import { OverridesProvider } from "@/lib/overrides";
 import { ACCESS_COOKIE, ACCESS_TOKEN } from "@/lib/auth";
+import { readContent } from "@/lib/cms";
 import UnderConstruction from "@/components/UnderConstruction";
 import FloatingUI from "@/components/FloatingUI";
 import { site } from "@/lib/site";
@@ -120,6 +121,8 @@ export default async function RootLayout({
   // route to the standalone under-construction page — so we drop the marketing
   // chrome (header/footer/preloader/floating controls) entirely in that state.
   const authed = (await cookies()).get(ACCESS_COOKIE)?.value === ACCESS_TOKEN;
+  // Published CMS content — same snapshot for every visitor.
+  const content = await readContent();
 
   return (
     <html lang="en" className={`${space.variable} ${inter.variable}`} suppressHydrationWarning>
@@ -138,7 +141,7 @@ export default async function RootLayout({
       </head>
       <body className="antialiased">
         <LocaleProvider>
-          <OverridesProvider>
+          <OverridesProvider initial={content}>
             {authed ? (
               <>
                 <SmoothScroll />

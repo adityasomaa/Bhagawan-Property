@@ -14,16 +14,17 @@ export default function ArticleCard({ article }: { article: Article }) {
   return (
     <TransitionLink href={`/knowledge-base/${article.slug}`} className="group block">
       <div className="img-frame relative aspect-[16/10] rounded-2xl">
-        <Image
-          src={article.image}
-          alt={article.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-          className="object-cover"
-          // Admin-authored posts carry arbitrary image URLs that aren't in
-          // next.config's remotePatterns — skip the optimizer for those.
-          unoptimized={"custom" in article}
-        />
+        {article.image ? (
+          <Image
+            src={article.image}
+            alt={article.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-sand" />
+        )}
         <span className="glass-dark absolute left-3.5 top-3.5 rounded-full px-3 py-1.5 text-[9px] font-semibold tracking-[0.22em] uppercase text-white">
           {t(`kb.cat.${article.category}`)}
         </span>

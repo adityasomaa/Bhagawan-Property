@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
-import Gallery from "@/components/Gallery";
+import PropertyGallery from "@/components/PropertyGallery";
 import PropertyCard from "@/components/PropertyCard";
 import PropertyProse from "@/components/PropertyProse";
 import PropertyHeader from "@/components/PropertyHeader";
@@ -80,7 +80,7 @@ export default async function PropertyDetailPage({
             <span>/</span>
             <span className="text-ink">{property.name}</span>
           </nav>
-          <Gallery images={property.images} name={property.name} />
+          <PropertyGallery property={property} />
         </Reveal>
 
         <div className="mt-12 grid gap-14 lg:grid-cols-[1.6fr_1fr]">

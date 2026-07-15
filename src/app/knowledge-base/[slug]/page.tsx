@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import Reveal from "@/components/motion/Reveal";
 import ArticleCard from "@/components/ArticleCard";
 import CustomArticle from "@/components/CustomArticle";
@@ -8,6 +9,7 @@ import { T, AL } from "@/lib/i18n/provider";
 import { articleTr } from "@/data/tr/articles";
 import ArticleBody from "@/components/ArticleBody";
 import { articles, getArticle } from "@/data/articles";
+import { readContent } from "@/lib/cms";
 import { site } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -20,7 +22,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const { blogs, hiddenArticles } = await readContent();
+  if (hiddenArticles.includes(slug)) return {};
+  const article = blogs.find((b) => b.slug === slug) ?? getArticle(slug);
   if (!article) return {};
   return {
     title: article.title,
@@ -40,9 +44,14 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const { blogs, hiddenArticles } = await readContent();
+
+  // Removed in /admin.
+  if (hiddenArticles.includes(slug)) notFound();
+  // Authored (or edited) in /admin — render the same template from the CMS.
+  if (blogs.some((b) => b.slug === slug)) return <CustomArticle slug={slug} />;
+
   const article = getArticle(slug);
-  // Slugs outside the static set may be admin-authored blog posts, which only
-  // exist client-side — render the same template from the blog store.
   if (!article) return <CustomArticle slug={slug} />;
 
   const aTr = articleTr[article.slug];
