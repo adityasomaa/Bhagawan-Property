@@ -10,23 +10,6 @@ import {
   readContent,
 } from "@/lib/cms";
 import { getProperty } from "@/data/properties";
-import { geocode } from "@/lib/geocode";
-
-/**
- * Resolve an address to coordinates when it's set or changed. A failed or
- * out-of-Bali lookup clears coords so the map falls back to the area centre
- * rather than pointing somewhere wrong.
- */
-async function withCoords<T extends { mapQuery?: string; coords?: { lat: number; lng: number } }>(
-  data: T,
-  previousAddress?: string
-): Promise<T> {
-  const address = data.mapQuery?.trim();
-  if (!address) return data;
-  if (address === previousAddress && data.coords) return data;
-  const coords = await geocode(address);
-  return { ...data, coords: coords ?? undefined };
-}
 
 export async function POST(req: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -50,7 +33,7 @@ export async function POST(req: Request) {
       if (getProperty(p.slug) || customProperties.some((c) => c.slug === p.slug)) {
         return NextResponse.json({ error: "That URL slug is already taken" }, { status: 409 });
       }
-      await createProperty(await withCoords(p));
+      await createProperty(p);
       return NextResponse.json({ ok: true });
     }
 
@@ -69,8 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const previousAddress = getProperty(slug)?.mapQuery;
-    await writeOverride(slug, await withCoords(body.data ?? {}, previousAddress));
+    await writeOverride(slug, body.data ?? {});
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });

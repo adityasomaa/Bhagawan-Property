@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/adminGuard";
 import { cmsConfigured, uploadMedia } from "@/lib/cms";
 
-const MAX_BYTES = 8 * 1024 * 1024; // 8 MB per image
+/**
+ * Vercel rejects serverless request bodies over ~4.5 MB with a raw 413 before
+ * this handler runs, so the ceiling here must sit under that — advertising
+ * more just produces an opaque platform error. The client downscales photos
+ * before sending, so this is a backstop rather than the usual path.
+ */
+const MAX_BYTES = 4 * 1024 * 1024;
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
 
 export async function POST(req: Request) {
@@ -17,10 +23,16 @@ export async function POST(req: Request) {
 
     for (const f of files) {
       if (f.size > MAX_BYTES) {
-        return NextResponse.json({ error: `${f.name} is over 8 MB` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${f.name} is ${(f.size / 1024 / 1024).toFixed(1)} MB — the limit is 4 MB.` },
+          { status: 400 }
+        );
       }
       if (f.type && !ALLOWED.includes(f.type)) {
-        return NextResponse.json({ error: `${f.name} is not an image` }, { status: 400 });
+        return NextResponse.json(
+          { error: `${f.name} is a ${f.type || "unknown"} file — use JPG, PNG, WebP or AVIF.` },
+          { status: 400 }
+        );
       }
     }
 

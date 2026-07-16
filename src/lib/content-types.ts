@@ -22,7 +22,7 @@ export interface Override {
   nightlyRate?: number;
   occupancy?: number;
   images?: string[];
-  /** Address; the server re-geocodes `coords` whenever this changes. */
+  /** Place label kept for reference; the map is driven by `coords`. */
   mapQuery?: string;
   coords?: { lat: number; lng: number };
 }

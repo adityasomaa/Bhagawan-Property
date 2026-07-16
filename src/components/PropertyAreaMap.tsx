@@ -15,7 +15,7 @@ import type { Property } from "@/data/properties";
 export default function PropertyAreaMap({ property }: { property: Property }) {
   const p = usePropertyView(property);
   const ref = useRef<HTMLDivElement>(null);
-  // The geocoded address when we have one, else the area centre.
+  // The listing's own coordinates when set, else the area centre.
   const fallback = areas.find((a) => a.slug === p.area)?.coords;
   const lat = p.coords?.lat ?? fallback?.lat ?? -8.71;
   const lng = p.coords?.lng ?? fallback?.lng ?? 115.17;
@@ -50,8 +50,15 @@ export default function PropertyAreaMap({ property }: { property: Property }) {
         fillOpacity: 0.16,
       }).addTo(map);
 
-      map.fitBounds(circle.getBounds().pad(0.25));
-      setTimeout(() => map?.invalidateSize(), 200);
+      // Size first, then fit. `animate: false` because an animated zoom needs
+      // requestAnimationFrame, which is paused in a backgrounded tab — the
+      // initial view would silently never apply.
+      const fit = () => {
+        map?.invalidateSize();
+        map?.fitBounds(circle.getBounds().pad(0.4), { animate: false });
+      };
+      fit();
+      setTimeout(fit, 250);
     })();
 
     return () => {

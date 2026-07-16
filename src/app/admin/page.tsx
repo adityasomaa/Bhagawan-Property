@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/motion/PageTransition";
 import Select from "@/components/Select";
+import CoordsField from "@/components/CoordsField";
 import DateField from "@/components/DateField";
 import { useT } from "@/lib/i18n/provider";
 import { useOverrides, useProperties, useArticles, type Override, type BlogPost } from "@/lib/overrides";
@@ -103,20 +104,30 @@ function ImageUploader({
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
 
   const pick = async (files: FileList | null) => {
     if (!files?.length) return;
+    const list = Array.from(files);
     setBusy(true);
     setErr("");
+    setProgress({ done: 0, total: list.length });
     try {
-      const uploaded = await uploadMedia(Array.from(files), prefix);
+      // Uploaded one at a time, so report progress as they land.
+      const uploaded: string[] = [];
+      for (const f of list) {
+        const [url] = await uploadMedia([f], prefix);
+        uploaded.push(url);
+        setProgress({ done: uploaded.length, total: list.length });
+      }
       onChange(multiple ? [...urls, ...uploaded] : uploaded.slice(0, 1));
     } catch (e) {
       setErr((e as Error).message);
     }
     setBusy(false);
+    setProgress(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -228,12 +239,24 @@ function ImageUploader({
       <input
         ref={fileRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp,image/avif"
         multiple={multiple}
+        disabled={busy}
         onChange={(e) => pick(e.target.files)}
-        className="block w-full text-xs text-muted file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-[10px] file:font-semibold file:uppercase file:tracking-[0.2em] file:text-cream hover:file:opacity-90"
+        className="block w-full text-xs text-muted file:mr-3 file:rounded-full file:border-0 file:bg-ink file:px-4 file:py-2 file:text-[10px] file:font-semibold file:uppercase file:tracking-[0.2em] file:text-cream hover:file:opacity-90 disabled:opacity-50"
       />
-      {busy && <p className="mt-2 text-xs text-bronze">Uploading…</p>}
+      <p className="mt-2 text-[11px] leading-relaxed text-muted">
+        JPG, PNG, WebP or AVIF{multiple ? " — you can pick several at once" : ""}. Large photos are
+        resized automatically, so most phone and camera shots are fine. iPhone HEIC photos
+        aren&apos;t supported — set Camera → Formats to &ldquo;Most Compatible&rdquo;.
+      </p>
+      {busy && (
+        <p className="mt-2 text-xs text-bronze">
+          {progress && progress.total > 1
+            ? `Uploading ${progress.done + 1} of ${progress.total}…`
+            : "Uploading…"}
+        </p>
+      )}
       {err && <p className="mt-2 text-xs text-red-600">{err}</p>}
     </div>
   );
@@ -244,7 +267,7 @@ function ImageUploader({
 interface Draft {
   name: string;
   area: string;
-  mapQuery: string;
+  coords?: { lat: number; lng: number };
   tenures: Tenure[];
   leaseholdYears: string;
   type: PropertyType;
@@ -268,7 +291,7 @@ function draftFrom(p: Property, o: Override | undefined): Draft {
   return {
     name: v.name,
     area: v.area,
-    mapQuery: v.mapQuery,
+    coords: v.coords,
     tenures: v.tenures,
     leaseholdYears: String(v.leaseholdYears ?? ""),
     type: v.type,
@@ -297,7 +320,7 @@ function diff(p: Property, d: Draft): Override {
   const out: Override = {
     name: pick(d.name.trim(), p.name),
     area: pick(d.area, p.area),
-    mapQuery: pick(d.mapQuery.trim(), p.mapQuery),
+    coords: pick(d.coords, p.coords),
     areaName: pick(areas.find((a) => a.slug === d.area)?.name ?? p.areaName, p.areaName),
     tenures: pick(d.tenures, p.tenures),
     leaseholdYears: pick(num(d.leaseholdYears), p.leaseholdYears),
@@ -408,16 +431,8 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
             </Field>
           </div>
 
-          <Field label="Address (used to place the map)">
-            <input
-              className={inputCls}
-              value={d.mapQuery}
-              onChange={(e) => set({ mapQuery: e.target.value })}
-              placeholder="e.g. Jalan Pantai Berawa, Canggu, Bali"
-            />
-            <p className="mt-1.5 text-[11px] text-muted">
-              We look this up and draw a 2 km circle around it — the exact address is never shown.
-            </p>
+          <Field label="Location (coordinates)">
+            <CoordsField value={d.coords} onChange={(coords) => set({ coords })} />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -521,7 +536,6 @@ function NewProperty({ onDone }: { onDone: () => void }) {
     name: "",
     slug: "",
     area: areas[0].slug,
-    mapQuery: "",
     tenures: ["freehold"] as Tenure[],
     leaseholdYears: "",
     type: "villa" as PropertyType,
@@ -540,6 +554,7 @@ function NewProperty({ onDone }: { onDone: () => void }) {
   });
   const [slugTouched, setSlugTouched] = useState(false);
   const [tags, setTags] = useState<PropertyTag[]>(["new-listing"]);
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | undefined>();
   const [images, setImages] = useState<string[]>([]);
   const [err, setErr] = useState("");
   const set = (patch: Partial<typeof f>) => setF({ ...f, ...patch });
@@ -572,7 +587,8 @@ function NewProperty({ onDone }: { onDone: () => void }) {
         highlights: toLines(f.highlights),
         features: toLines(f.features),
         featured: f.featured,
-        mapQuery: f.mapQuery.trim() || `${area.name}, Bali`,
+        mapQuery: `${area.name}, Bali`,
+        coords,
         nightlyRate: num(f.nightlyRate),
         occupancy: num(f.occupancy),
         tags,
@@ -624,17 +640,8 @@ function NewProperty({ onDone }: { onDone: () => void }) {
         </Field>
       </div>
 
-      <Field label="Address (used to place the map)">
-        <input
-          className={inputCls}
-          value={f.mapQuery}
-          onChange={(e) => set({ mapQuery: e.target.value })}
-          placeholder="e.g. Jalan Pantai Berawa, Canggu, Bali"
-        />
-        <p className="mt-1.5 text-[11px] text-muted">
-          We look this up and draw a 2 km circle around it — the exact address is never shown.
-          Leave blank to use the area centre.
-        </p>
+      <Field label="Location (coordinates)">
+        <CoordsField value={coords} onChange={setCoords} />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-3">

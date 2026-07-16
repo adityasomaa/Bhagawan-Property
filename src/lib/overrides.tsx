@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import { useRouter } from "next/navigation";
 import { properties as baseProperties, type Property } from "@/data/properties";
 import { articles, type Article } from "@/data/articles";
+import { compressImage } from "@/lib/imageCompress";
 import { applyOverride, type Content, type Override, type BlogPost } from "@/lib/content-types";
 
 /**
@@ -129,14 +130,42 @@ export function OverridesProvider({
     [run]
   );
 
+  /**
+   * Compress each photo, then send them ONE PER REQUEST. Batching them into a
+   * single body used to blow past Vercel's ~4.5 MB serverless body cap, which
+   * fails with a raw (non-JSON) 413 before the route runs.
+   */
   const uploadMedia = useCallback(async (files: File[], prefix: string) => {
-    const form = new FormData();
-    form.append("prefix", prefix);
-    for (const f of files) form.append("files", f);
-    const res = await fetch("/api/admin/upload", { method: "POST", body: form });
-    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "Upload failed");
-    const json = await res.json();
-    return json.urls as string[];
+    const urls: string[] = [];
+    for (const original of files) {
+      const file = await compressImage(original);
+
+      const form = new FormData();
+      form.append("prefix", prefix);
+      form.append("files", file);
+
+      const res = await fetch("/api/admin/upload", { method: "POST", body: form });
+      if (!res.ok) {
+        // A platform-level 413 isn't JSON, so parse defensively.
+        const text = await res.text().catch(() => "");
+        let msg = "";
+        try {
+          msg = JSON.parse(text).error ?? "";
+        } catch {
+          msg = "";
+        }
+        if (!msg) {
+          msg =
+            res.status === 413
+              ? `${original.name} is too large to upload even after resizing.`
+              : `Upload failed (${res.status}). Please try again.`;
+        }
+        throw new Error(msg);
+      }
+      const json = await res.json();
+      urls.push(...(json.urls as string[]));
+    }
+    return urls;
   }, []);
 
   const value = useMemo<ContentState>(

@@ -40,10 +40,10 @@ export interface Property {
   highlights: string[];
   features: string[];
   featured: boolean;
-  /** Street address / place used to geocode `coords`. */
+  /** Place label kept for reference; the map is driven by `coords`. */
   mapQuery: string;
-  /** Precise point from geocoding the address; the map only ever draws an
-      approximate radius around it, never a pin. Falls back to the area centre. */
+  /** The listing's point, entered as coordinates in /admin. The map only ever
+      draws a 500 m radius around it, never a pin. Falls back to the area centre. */
   coords?: { lat: number; lng: number };
   nightlyRate?: number;
   occupancy?: number;

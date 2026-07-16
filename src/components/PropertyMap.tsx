@@ -18,10 +18,10 @@ import { formatIDR } from "@/lib/format";
 
 /** The circle drawn around a listing's precise point, so the map communicates
     a neighbourhood rather than an address. */
-export const AREA_RADIUS_M = 2000;
+export const AREA_RADIUS_M = 500;
 
 function pins(properties: Property[]) {
-  // Listings without a geocoded point fall back to their area centre, spread
+  // Listings without coordinates fall back to their area centre, spread
   // slightly so several in the same area don't sit exactly on top of one another.
   const fallbackByArea = new Map<string, Property[]>();
   for (const p of properties) {
@@ -109,10 +109,19 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
         group.push(c);
       }
 
-      if (data.length > 1) {
-        map.fitBounds(L.featureGroup(group).getBounds().pad(0.05));
-      }
-      setTimeout(() => map?.invalidateSize(), 200);
+      // Size first, then fit. `animate: false` matters: an animated zoom is
+      // driven by requestAnimationFrame, which is paused while the tab is
+      // backgrounded — the initial view would never apply and circles outside
+      // it get culled to an empty path. There's nothing to animate from on
+      // first paint anyway.
+      const fit = () => {
+        map?.invalidateSize();
+        const opts = { animate: false as const };
+        if (group.length > 1) map?.fitBounds(L.featureGroup(group).getBounds().pad(0.08), opts);
+        else if (group[0]) map?.fitBounds(group[0].getBounds().pad(0.4), opts);
+      };
+      fit();
+      setTimeout(fit, 250);
     })();
 
     return () => {
