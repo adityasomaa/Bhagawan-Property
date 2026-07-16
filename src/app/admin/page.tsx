@@ -363,17 +363,17 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
 
   return (
     <div className="rounded-2xl border border-line bg-paper p-5 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <TransitionLink href={`/properties/${property.slug}`} className="font-display text-lg text-ink hover:text-muted">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <TransitionLink href={`/properties/${property.slug}`} className="font-display block truncate text-lg text-ink hover:text-muted">
             {o?.name ?? property.name}
           </TransitionLink>
-          <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
+          <p className="mt-0.5 truncate text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
             {o?.areaName ?? property.areaName} · {(o?.tenures ?? property.tenures).join(" / ")}
             {custom && <span className="ml-2 text-bronze">· added by you</span>}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={() => {
@@ -1006,22 +1006,22 @@ function BlogTab() {
       {rows.map(({ post, builtIn, edited, hidden }) => (
         <div
           key={post.slug}
-          className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-5 ${
+          className={`flex items-center justify-between gap-3 rounded-2xl border p-5 ${
             hidden ? "border-line bg-cream/50 opacity-60" : edited ? "border-bronze/50 bg-bronze/5" : "border-line bg-paper"
           }`}
         >
-          <div>
-            <TransitionLink href={`/knowledge-base/${post.slug}`} className="font-display text-lg text-ink hover:text-muted">
+          <div className="min-w-0 flex-1">
+            <TransitionLink href={`/knowledge-base/${post.slug}`} className="font-display block truncate text-lg text-ink hover:text-muted">
               {post.title}
             </TransitionLink>
-            <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
+            <p className="mt-0.5 truncate text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
               {post.category} · {post.date} · {post.readTime}
               {builtIn && <span className="ml-2 text-muted/70">· built-in</span>}
               {edited && <span className="ml-2 text-bronze">· edited</span>}
               {hidden && <span className="ml-2 text-red-600">· removed</span>}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {hidden ? (
               <button type="button" disabled={saving} onClick={() => restoreBlog(post.slug)} className={btnSolid}>
                 Restore
@@ -1099,15 +1099,15 @@ function PropertiesTab() {
             {removed.map((p) => (
               <div
                 key={p.slug}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-cream/50 p-4 opacity-70"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-line bg-cream/50 p-4 opacity-70"
               >
-                <div>
-                  <p className="font-display text-base text-ink">{p.name}</p>
-                  <p className="mt-0.5 text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
+                <div className="min-w-0 flex-1">
+                  <p className="font-display truncate text-base text-ink">{p.name}</p>
+                  <p className="mt-0.5 truncate text-[11px] font-medium tracking-[0.2em] uppercase text-muted">
                     {p.areaName} · <span className="text-red-600">removed</span>
                   </p>
                 </div>
-                <button type="button" disabled={saving} onClick={() => restoreProperty(p.slug)} className={btnSolid}>
+                <button type="button" disabled={saving} onClick={() => restoreProperty(p.slug)} className={`${btnSolid} shrink-0`}>
                   Restore
                 </button>
               </div>
