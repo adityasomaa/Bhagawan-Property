@@ -2,24 +2,37 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { formatPrice, formatPercent, formatNumber } from "@/lib/format";
-import { useT } from "@/lib/i18n/provider";
+import { formatPercent, formatNumber } from "@/lib/format";
+import { useLocale, IDR_PER } from "@/lib/i18n/provider";
 
 function num(v: string | null, fallback: number, min: number, max: number) {
   const n = Number(v);
   return v && Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : fallback;
 }
 
+/**
+ * Property links pass the price in IDR (the site's base currency) while the
+ * model runs in USD. Anything above this is clearly an IDR amount — no villa
+ * costs USD 10M+ here, and none costs under IDR 10M — so convert it.
+ */
+function priceParamToUsd(v: string | null): string | null {
+  const n = Number(v);
+  if (!v || !Number.isFinite(n)) return v;
+  return n > 10_000_000 ? String(Math.round(n / IDR_PER.USD)) : v;
+}
+
 type Mode = "freehold" | "leasehold";
 
 export default function RoiCalculator() {
   const params = useSearchParams();
-  const t = useT();
+  const { t, money } = useLocale();
+  /** Display a USD model figure in the visitor's selected currency. */
+  const m = (usd: number) => money(usd * IDR_PER.USD);
 
   const [mode, setMode] = useState<Mode>(() =>
     num(params.get("years"), 0, 0, 50) > 0 ? "leasehold" : "freehold"
   );
-  const [price, setPrice] = useState(() => num(params.get("price"), 500000, 50000, 5000000));
+  const [price, setPrice] = useState(() => num(priceParamToUsd(params.get("price")), 500000, 50000, 5000000));
   const [nightly, setNightly] = useState(() => num(params.get("nightly"), 350, 50, 3000));
   const [occupancy, setOccupancy] = useState(() => num(params.get("occupancy"), 70, 30, 95));
   const [mgmtFee, setMgmtFee] = useState(20);
@@ -135,7 +148,7 @@ export default function RoiCalculator() {
         <div className="border-t border-line pt-8">
           <p className="font-display text-xl text-ink">{t("roi.property")}</p>
           <div className="mt-6 space-y-7">
-            {slider(t("roi.purchasePrice"), price, setPrice, 100000, 3000000, 10000, formatPrice(price))}
+            {slider(t("roi.purchasePrice"), price, setPrice, 100000, 3000000, 10000, m(price))}
             {isLease
               ? slider(
                   t("roi.remainingLease"),
@@ -171,7 +184,7 @@ export default function RoiCalculator() {
         <div className="border-t border-line pt-8">
           <p className="font-display text-xl text-ink">{t("roi.rental")}</p>
           <div className="mt-6 space-y-7">
-            {slider(t("roi.nightlyRate"), nightly, setNightly, 80, 1500, 10, formatPrice(nightly))}
+            {slider(t("roi.nightlyRate"), nightly, setNightly, 80, 1500, 10, m(nightly))}
             {slider(
               t("roi.occupancy"),
               occupancy,
@@ -190,7 +203,7 @@ export default function RoiCalculator() {
               0,
               60000,
               500,
-              `${formatPrice(runningCosts)} / yr`,
+              `${m(runningCosts)} / yr`,
               t("roi.runningHint")
             )}
             {slider(
@@ -224,11 +237,11 @@ export default function RoiCalculator() {
             </div>
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.grossRev")}</p>
-              <p className="font-display mt-1.5 text-2xl text-cream">{formatPrice(r.grossRevenue)}</p>
+              <p className="font-display mt-1.5 text-2xl text-cream">{m(r.grossRevenue)}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.netIncome")}</p>
-              <p className="font-display mt-1.5 text-2xl text-cream">{formatPrice(r.netIncome)}</p>
+              <p className="font-display mt-1.5 text-2xl text-cream">{m(r.netIncome)}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-[0.22em] uppercase text-cream/50">{t("roi.payback")}</p>
@@ -249,18 +262,18 @@ export default function RoiCalculator() {
             <div className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between gap-4">
                 <span className="text-cream/60">{t("roi.totalNetIncome")}</span>
-                <span className="font-medium">{formatPrice(r.totalIncome)}</span>
+                <span className="font-medium">{m(r.totalIncome)}</span>
               </div>
               <div className="flex justify-between gap-4">
                 <span className="text-cream/60">
                   {isLease ? t("roi.remainingLeaseValue") : t("roi.projectedValue")}
                 </span>
-                <span className="font-medium">{formatPrice(r.endValue)}</span>
+                <span className="font-medium">{m(r.endValue)}</span>
               </div>
               <div className="flex justify-between gap-4 border-t border-cream/15 pt-3 text-base">
                 <span className="text-cream/80">{t("roi.totalReturn")}</span>
                 <span className={`font-display text-xl ${r.totalReturn >= 0 ? "text-white" : "text-red-300"}`}>
-                  {formatPrice(r.totalReturn)} ({formatPercent(r.totalReturnPct, 0)})
+                  {m(r.totalReturn)} ({formatPercent(r.totalReturnPct, 0)})
                 </span>
               </div>
               <div className="flex justify-between gap-4">

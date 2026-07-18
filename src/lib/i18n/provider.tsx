@@ -18,7 +18,7 @@ export type Currency = "USD" | "AUD" | "IDR" | "GBP" | "EUR" | "JPY" | "CNY" | "
 export const CURRENCIES: Currency[] = ["USD", "AUD", "IDR", "GBP", "EUR", "JPY", "CNY", "SGD", "MYR"];
 
 // Indicative IDR value of 1 unit of each currency (approximate, mid-2026).
-const IDR_PER: Record<Currency, number> = {
+export const IDR_PER: Record<Currency, number> = {
   IDR: 1,
   USD: 16300,
   AUD: 10800,
