@@ -26,14 +26,18 @@ export default function PropertyCard({ property }: { property: Property }) {
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
           className="object-cover"
         />
-        <span className="glass-dark absolute left-4 top-4 rounded-full px-3.5 py-1.5 text-[9px] font-semibold tracking-[0.24em] uppercase text-white">
-          {p.tenures.map((x) => (x === "leasehold" ? t("card.leasehold") : t("card.freehold"))).join(" / ")}
-          {p.tenures.includes("leasehold") && p.leaseholdYears ? ` · ${p.leaseholdYears} ${t("card.yrs")}` : ""}
-        </span>
+        {/* One flowing row: tenure chip first, then the status tags beside it
+            (display:contents lets the tag chips join this flex row directly). */}
+        <div className="absolute inset-x-4 top-4 flex flex-wrap items-start gap-1.5">
+          <span className="glass-dark rounded-full px-3.5 py-1.5 text-[9px] font-semibold tracking-[0.24em] uppercase text-white">
+            {p.tenures.map((x) => (x === "leasehold" ? t("card.leasehold") : t("card.freehold"))).join(" / ")}
+            {p.tenures.includes("leasehold") && p.leaseholdYears ? ` · ${p.leaseholdYears} ${t("card.yrs")}` : ""}
+          </span>
+          <PropertyTags property={property} className="contents" />
+        </div>
         <span className="glass-dark absolute bottom-4 left-4 rounded-full px-4 py-2 text-sm font-semibold tracking-wide text-white">
           {money(p.price)}
         </span>
-        <PropertyTags property={property} className="absolute right-4 top-4 max-w-[60%] justify-end" />
       </div>
       <div className="px-1 pt-5">
         <div className="flex items-baseline justify-between gap-4">

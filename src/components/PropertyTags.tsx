@@ -19,7 +19,9 @@ const STYLE: Record<PropertyTag, string> = {
  */
 export default function PropertyTags({
   property,
-  className = "",
+  // Replaces the wrapper's classes entirely — pass "contents" to let the
+  // chips join a parent flex row as direct items.
+  className = "flex flex-wrap gap-1.5",
 }: {
   property: Property;
   className?: string;
@@ -29,7 +31,7 @@ export default function PropertyTags({
   if (!tags.length) return null;
 
   return (
-    <div className={`flex flex-wrap gap-1.5 ${className}`}>
+    <div className={className}>
       {tags.map((tag) => (
         <span
           key={tag}

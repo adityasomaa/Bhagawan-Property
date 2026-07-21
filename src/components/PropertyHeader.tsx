@@ -13,7 +13,7 @@ export default function PropertyHeader({ property }: { property: Property }) {
   return (
     <div className="flex flex-wrap items-start justify-between gap-6">
       <div>
-        <PropertyTags property={property} className="mb-3" />
+        <PropertyTags property={property} className="mb-3 flex flex-wrap gap-1.5" />
         <p className="eyebrow">
           {p.areaName}, Bali &middot;{" "}
           {p.tenures.map((x) => (x === "leasehold" ? t("card.leasehold") : t("card.freehold"))).join(" / ")}
