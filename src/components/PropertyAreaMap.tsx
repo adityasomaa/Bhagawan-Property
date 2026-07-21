@@ -43,10 +43,10 @@ export default function PropertyAreaMap({ property }: { property: Property }) {
 
       const circle = L.circle([lat, lng], {
         radius: AREA_RADIUS_M,
-        color: "#834c25",
+        color: "#31351e",
         weight: 1.5,
         opacity: 0.9,
-        fillColor: "#834c25",
+        fillColor: "#31351e",
         fillOpacity: 0.16,
       }).addTo(map);
 

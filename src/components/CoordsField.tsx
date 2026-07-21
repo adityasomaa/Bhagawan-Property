@@ -79,7 +79,7 @@ export default function CoordsField({
       )}
       {parsed && !outside && (
         <p className="mt-1.5 text-[11px] text-bronze">
-          ✓ In Bali — the map will show a 500 m circle around this point.
+          ✓ In Bali — the map will show a 1 km circle around this point.
         </p>
       )}
       <p className="mt-1.5 text-[11px] leading-relaxed text-muted">

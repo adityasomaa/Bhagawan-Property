@@ -18,7 +18,7 @@ import { formatIDR } from "@/lib/format";
 
 /** The circle drawn around a listing's precise point, so the map communicates
     a neighbourhood rather than an address. */
-export const AREA_RADIUS_M = 500;
+export const AREA_RADIUS_M = 1000;
 
 function pins(properties: Property[]) {
   // Listings without coordinates fall back to their area centre, spread
@@ -91,10 +91,10 @@ export default function PropertyMap({ className = "" }: { className?: string }) 
       for (const d of data) {
         const c = L.circle([d.lat, d.lng], {
           radius: AREA_RADIUS_M,
-          color: "#834c25",
+          color: "#31351e",
           weight: 1.5,
           opacity: 0.9,
-          fillColor: "#834c25",
+          fillColor: "#31351e",
           fillOpacity: 0.16,
           className: "bp-area",
         })

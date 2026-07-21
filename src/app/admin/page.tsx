@@ -114,17 +114,33 @@ function ImageUploader({
     setBusy(true);
     setErr("");
     setProgress({ done: 0, total: list.length });
-    try {
-      // Uploaded one at a time, so report progress as they land.
-      const uploaded: string[] = [];
-      for (const f of list) {
+
+    // One file at a time, and one failure never discards the others — the
+    // photos that made it are kept and the failed ones are named so they can
+    // simply be picked again.
+    const uploaded: string[] = [];
+    const failed: string[] = [];
+    let firstError = "";
+    for (const [i, f] of list.entries()) {
+      try {
         const [url] = await uploadMedia([f], prefix);
         uploaded.push(url);
-        setProgress({ done: uploaded.length, total: list.length });
+      } catch (e) {
+        failed.push(f.name);
+        if (!firstError) firstError = (e as Error).message;
       }
+      setProgress({ done: i + 1, total: list.length });
+    }
+
+    if (uploaded.length) {
       onChange(multiple ? [...urls, ...uploaded] : uploaded.slice(0, 1));
-    } catch (e) {
-      setErr((e as Error).message);
+    }
+    if (failed.length) {
+      setErr(
+        `${failed.length} of ${list.length} photo${list.length > 1 ? "s" : ""} failed ` +
+          `(${failed.join(", ")}) — ${firstError} The rest were added; just pick the failed ` +
+          `one${failed.length > 1 ? "s" : ""} again.`
+      );
     }
     setBusy(false);
     setProgress(null);
@@ -350,15 +366,22 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saved, setSaved] = useState(false);
+  const [saveErr, setSaveErr] = useState("");
 
   const d = draft ?? draftFrom(property, o);
   const set = (patch: Partial<Draft>) => setDraft({ ...d, ...patch });
 
   const save = async () => {
-    await patchProperty(property.slug, diff(property, d));
-    setDraft(null);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1600);
+    setSaveErr("");
+    try {
+      await patchProperty(property.slug, diff(property, d));
+      setDraft(null);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1600);
+    } catch (e) {
+      // A failed save must never look like a successful one.
+      setSaveErr(`Couldn't save: ${(e as Error).message}`);
+    }
   };
 
   return (
@@ -509,6 +532,7 @@ function PropertyEditor({ property, custom }: { property: Property; custom: bool
             <textarea rows={4} className={inputCls} value={d.features} onChange={(e) => set({ features: e.target.value })} />
           </Field>
 
+          {saveErr && <p className="text-xs text-red-600">{saveErr}</p>}
           <div className="flex items-center gap-3">
             <button type="button" onClick={save} disabled={saving} className={btnSolid}>
               {saved ? "Saved ✓" : saving ? "Saving…" : "Save"}

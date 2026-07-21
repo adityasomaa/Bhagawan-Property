@@ -190,11 +190,22 @@ export async function restoreBlog(slug: string) {
 export async function uploadMedia(file: File, prefix: string): Promise<string> {
   if (!supabase) throw new Error("CMS not configured");
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const safe = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const { error } = await supabase.storage
-    .from(MEDIA_BUCKET)
-    .upload(safe, file, { contentType: file.type || "image/jpeg", upsert: false });
-  if (error) throw new Error(error.message);
-  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(safe);
-  return data.publicUrl;
+
+  // Supabase Storage occasionally rejects a perfectly valid upload with a
+  // transient "Bad Request" (observed ~1 in 15 in production); an immediate
+  // retry with a fresh object name succeeds. Retry twice before giving up.
+  let lastError = "";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const safe = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage
+      .from(MEDIA_BUCKET)
+      .upload(safe, file, { contentType: file.type || "image/jpeg", upsert: false });
+    if (!error) {
+      const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(safe);
+      return data.publicUrl;
+    }
+    lastError = error.message;
+    await new Promise((r) => setTimeout(r, 350 * (attempt + 1)));
+  }
+  throw new Error(`Storage rejected ${file.name}: ${lastError}. Please try again.`);
 }

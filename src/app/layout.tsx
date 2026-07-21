@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
-import Script from "next/script";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import Preloader from "@/components/motion/Preloader";
 import SmoothScroll from "@/components/motion/SmoothScroll";
 import { TransitionProvider } from "@/components/motion/PageTransition";
 import { cookies } from "next/headers";
@@ -16,10 +15,11 @@ import UnderConstruction from "@/components/UnderConstruction";
 import FloatingUI from "@/components/FloatingUI";
 import { site } from "@/lib/site";
 
-const space = Space_Grotesk({
-  subsets: ["latin"],
+// Brand display face (from the client's brand kit) — single Regular weight.
+const space = localFont({
+  src: "../fonts/Gambarino-Regular.woff2",
   variable: "--font-space",
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 const inter = Inter({
@@ -127,9 +127,6 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${space.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
-        <Script id="preload-check" strategy="beforeInteractive">
-          {`try{if(sessionStorage.getItem("bp-preloaded")==="1"){document.documentElement.dataset.preloaded="1";document.documentElement.dataset.appReady="1"}}catch(e){}`}
-        </Script>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -146,7 +143,6 @@ export default async function RootLayout({
               <>
                 <SmoothScroll />
                 <TransitionProvider>
-                  <Preloader />
                   <Header />
                   <main>{children}</main>
                   <Footer />

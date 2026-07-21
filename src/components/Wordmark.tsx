@@ -26,8 +26,8 @@ export default function Wordmark({
     <Image
       src={SRC[tone]}
       alt="Bhagawan Property Bali"
-      width={538}
-      height={186}
+      width={1503}
+      height={281}
       priority={priority}
       className={className}
     />

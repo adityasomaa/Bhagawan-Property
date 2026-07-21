@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand palette — warm white (light) + brown (dark), keyed to the logo
-     copper #834c25. Token names kept for compatibility. */
-  --cream: #fbf8f3; /* page background (light / "white") */
+  /* Brand palette — beige (light) + army green (dark), keyed to the new
+     brand kit: green #31351e, beige #e9dfd5. Token names kept. */
+  --cream: #f6f2ea; /* page background — light tint of the brand beige */
   --paper: #ffffff; /* raised surfaces */
-  --sand: #f1e9dd; /* alt section background (warm beige) */
-  --ink: #382312; /* dark = deep espresso brown */
-  --ink-soft: #574230;
-  --muted: #7d6547; /* warm taupe (labels / secondary) */
-  --line: #e8dfd0; /* warm hairline borders */
-  --bronze: #834c25; /* accent-mid = logo copper */
-  --bronze-deep: #5c3417; /* accent-strong */
+  --sand: #e9dfd5; /* alt section background = brand beige */
+  --ink: #31351e; /* dark = brand army green */
+  --ink-soft: #494e30;
+  --muted: #7d8065; /* grey-olive (labels / secondary) */
+  --line: #ddd6c7; /* warm hairline borders */
+  --bronze: #5a5f3a; /* accent-mid = olive */
+  --bronze-deep: #31351e; /* accent-strong */
 }
 
 @theme inline {
@@ -239,62 +239,6 @@ body {
   border-color: var(--ink);
 }
 
-/* ── Page transition curtain — CSS/compositor-driven so it can never be
-      desynced by main-thread jank. JS only toggles classes and listens to
-      transitionend. Sequence: close → swap content → scroll top → open. ── */
-#transition-curtain {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: var(--ink);
-  transform: translateY(102%);
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-#transition-curtain.is-animating {
-  transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
-}
-#transition-curtain.is-closed {
-  transform: translateY(0);
-}
-#transition-curtain.is-closed.is-opening {
-  transform: translateY(-102%);
-}
-#transition-curtain .curtain-mark {
-  color: var(--cream);
-  opacity: 0;
-  transform: translateY(18px) scale(0.92);
-  transition:
-    opacity 0.35s ease 0s,
-    transform 0.35s ease 0s;
-}
-#transition-curtain.is-closed .curtain-mark {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.25s;
-}
-#transition-curtain.is-closed.is-opening .curtain-mark {
-  opacity: 0;
-  transform: translateY(-14px) scale(0.96);
-  transition-delay: 0s;
-}
-
-/* Preloader */
-#preloader {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-html[data-preloaded="1"] #preloader {
-  display: none;
-}
-
 /* Range slider (ROI calculator) */
 input[type="range"] {
   -webkit-appearance: none;
@@ -418,7 +362,7 @@ input[type="range"]::-moz-range-thumb {
 }
 .bp-map .leaflet-container {
   font-family: inherit;
-  background: #e9e5dd;
+  background: #e9dfd5;
 }
 .bp-map .bp-area {
   cursor: pointer;
@@ -454,7 +398,7 @@ input[type="range"]::-moz-range-thumb {
    standard backdrop-filter pair and drop the unprefixed one. */
 .bp-lightbox {
   --glass: blur(32px) saturate(130%);
-  background: rgba(56, 35, 18, 0.55);
+  background: rgba(49, 53, 30, 0.55);
   -webkit-backdrop-filter: var(--glass);
   backdrop-filter: var(--glass);
 }
